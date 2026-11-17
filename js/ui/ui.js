@@ -208,8 +208,14 @@
     if (box) box.classList.toggle('narration', sp.narr);
     const portraitEl = document.getElementById('dlg-portrait');
     if (portraitEl) {
-      portraitEl.innerHTML = sp.narr ? '' : sp.portrait;
+      const who = page.speaker === 'player' ? 'player' : page.speaker;
+      const mood = SAN.render.moodFor(page.text);
+      portraitEl.innerHTML = sp.narr ? '' : SAN.render.portrait(who, { mood });
       portraitEl.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.7) : '';
+      portraitEl.classList.remove('expr-in');
+      void portraitEl.offsetWidth;
+      portraitEl.classList.add('expr-in');
+      portraitEl.dataset.mood = mood;
     }
     const nameEl = document.getElementById('dlg-name');
     if (nameEl) {

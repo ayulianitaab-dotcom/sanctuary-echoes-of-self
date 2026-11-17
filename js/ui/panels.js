@@ -561,6 +561,13 @@
     const f = SAN.rel.get(id);
     const tier = SAN.data.friendTier(f.pts);
     const knowsTastes = f.pts >= 21;
+    const S_ = SAN.state.S;
+    const nearby = (SAN.world.npcs || []).find((n) => n.def.id === id);
+    const here = nearby ? SAN.world.area.name : (SAN.world.areas[npc.homeArea] || {}).name || 'Somewhere in Sanctuary';
+    const doing = nearby ? (nearby.act || 'going about their day') : 'away from the path';
+    const milestones = ((SAN.data.npcLife[id] || {}).milestones) || {};
+    const reached = Object.keys(milestones).map(Number).filter((n) => f.pts >= n).sort((a, b) => a - b);
+    const next = Object.keys(milestones).map(Number).filter((n) => f.pts < n).sort((a, b) => a - b)[0];
     const d = UI.panel('reldetail', npc.name, `
       <div class="rel-detail-head">
         <div class="rel-detail-portrait">${SAN.render.portrait(id)}</div>
@@ -573,6 +580,15 @@
       </div>
       <p class="rel-bio">${U.esc(npc.bio)}</p>
       <p class="rel-personality">${U.esc(npc.personality)}</p>
+      <div class="rel-where">
+        <span class="rel-where-dot"></span>
+        <span><b>${U.esc(here)}</b> · ${U.esc(doing)}</span>
+      </div>
+      <div class="rel-milestones">
+        <div class="prompt-label">Moments you have shared</div>
+        <div class="ms-track">${Object.keys(milestones).map((k) => `<span class="ms-pip ${f.pts >= Number(k) ? 'on' : ''}" title="${Number(k)} friendship">${f.pts >= Number(k) ? '✦' : '·'}</span>`).join('')}</div>
+        <div class="fineprint">${reached.length ? reached.length + ' of ' + Object.keys(milestones).length + ' milestone scenes unlocked' : 'No milestone scenes yet'}${next ? ' · next at ' + next + ' friendship' : ''}</div>
+      </div>
       <div class="likes-box">
         <div class="prompt-label">${knowsTastes ? 'Loves' : 'You do not know their tastes yet'}</div>
         <div class="likes-list">${knowsTastes ? (npc.loves || []).map((i) => `<span class="tag-pill">${U.esc(SAN.data.item(i).name)}</span>`).join('') : '<span class="fineprint">Talk with them more. People reveal themselves slowly.</span>'}</div>

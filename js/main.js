@@ -23,6 +23,17 @@
     SAN.input.onKey(function (k) { return SAN.ui.handleKey(k); });
 
     canvas.addEventListener('click', onCanvasClick);
+    let resizeTimer = 0;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        SAN.render.resize();
+        if (SAN.world.area) SAN.world.clampCam();
+      }, 60);
+    });
+    window.addEventListener('orientationchange', function () {
+      setTimeout(function () { SAN.render.resize(); if (SAN.world.area) SAN.world.clampCam(); }, 220);
+    });
     const resumeAudio = () => { SAN.audio.init(); };
     document.addEventListener('pointerdown', resumeAudio);
     document.addEventListener('keydown', resumeAudio);

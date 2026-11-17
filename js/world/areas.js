@@ -157,6 +157,22 @@
     add(a, 'birdfeeder', 25, 19, { solid: true, interact: { type: 'birds', line: 'A wooden feeder on a post. Someone keeps it filled, even in winter.' } });
     add(a, 'lamp', 31, 23, { solid: false });
     add(a, 'notes', 26, 20, { solid: false, fid: 'wmnote_village', interact: { type: 'forage', fid: 'wmnote_village', items: ['windmill_note'], name: 'a folded page by the fountain' } });
+    add(a, 'bunting', 27, 14, { w: 8, solid: false });
+    add(a, 'bush', 24, 16, { solid: true });
+    add(a, 'bush', 39, 16, { solid: true });
+    add(a, 'flowerpot', 24, 22, { solid: false });
+    add(a, 'flowerpot', 39, 21, { solid: false });
+    add(a, 'flowerpot', 32, 26, { solid: false });
+    add(a, 'bench', 31, 22, { solid: true, interact: { type: 'sit', line: 'You sit in the middle of the square. The village moves around you, unhurried.' } });
+    add(a, 'birdfeeder', 33, 16, { solid: true });
+    add(a, 'teatable', 36, 34, { w: 2, h: 2, solid: true, interact: { type: 'sit', line: 'A cafe table outside the teashop. Someone left a saucer for the birds.' } });
+    add(a, 'chair', 35, 35, { solid: true });
+    add(a, 'chair', 38, 35, { solid: true });
+    add(a, 'teatable', 43, 34, { w: 2, h: 2, solid: true });
+    add(a, 'chair', 42, 35, { solid: true });
+    add(a, 'chair', 45, 35, { solid: true });
+    add(a, 'crate', 45, 20, { solid: true });
+    add(a, 'barrel', 44, 20, { solid: true });
 
     scatter(a, 'tree', 26, 101, { noEdge: true, avoid: (x, y) => x > 8 && x < 56 && y > 5 && y < 40 });
     scatter(a, 'bush', 14, 102, { noEdge: true });
@@ -185,23 +201,43 @@
     setTile(a, 4, 1, 'w'); setTile(a, 5, 1, 'w');
     setTile(a, 14, 1, 'w'); setTile(a, 15, 1, 'w');
     add(a, 'window', 4, 1, { w: 2, solid: true });
-    add(a, 'window', 14, 1, { w: 2, solid: true, interact: { type: 'peek' } });
+    add(a, 'window', 14, 1, { w: 2, solid: true });
+    add(a, 'window', 7, 1, { w: 2, solid: true, interact: { type: 'peek' } });
     a.spawn = { x: 10, y: 12 };
     door(a, 10, 13, 'village', 14, 16, 'Sanctuary Village');
     a.spawn = { x: 10, y: 11 };
 
+    /* bedroom corner */
     add(a, 'bed', 2, 2, { w: 3, h: 3, solid: true, interact: { type: 'sleep' } });
+    add(a, 'nightstand', 5, 2, { solid: true });
     add(a, 'wardrobe', 6, 2, { w: 2, h: 2, solid: true, interact: { type: 'customize' } });
-    add(a, 'desk', 10, 2, { w: 2, h: 2, solid: true, interact: { type: 'journal' } });
-    add(a, 'bookshelf', 13, 2, { w: 3, h: 2, solid: true, interact: { type: 'collection' } });
-    add(a, 'fireplace', 16, 5, { w: 2, h: 2, solid: true, interact: { type: 'fireplace' } });
-    add(a, 'stove', 16, 9, { w: 2, h: 2, solid: true, interact: { type: 'cook' } });
-    add(a, 'craftbench', 2, 9, { w: 2, h: 2, solid: true, interact: { type: 'craft' } });
-    add(a, 'table', 9, 6, { w: 2, h: 2, solid: true, interact: { type: 'sign', text: 'A cup of tea left to go cold. You will make another.' } });
-    add(a, 'chair', 8, 7, { solid: true });
-    add(a, 'chair', 11, 7, { solid: true });
-    fillRect(a, 8, 9, 4, 3, 'r');
-    add(a, 'plant', 5, 6, { solid: false });
+    add(a, 'plant', 5, 5, { solid: false });
+
+    /* living room: sofa, rug, low table, reading shelf */
+    add(a, 'sofa', 7, 5, { w: 3, h: 1, solid: true });
+    fillRect(a, 6, 6, 7, 4, 'r');
+    add(a, 'table', 9, 7, { w: 2, h: 2, solid: true, interact: { type: 'sign', text: 'A cup of tea gone cold beside an open book. You will make another and read the same page twice.' } });
+    add(a, 'chair', 8, 9, { solid: true });
+    add(a, 'chair', 12, 9, { solid: true });
+    add(a, 'plant', 7, 11, { solid: false });
+
+    /* journal corner + library wall */
+    add(a, 'bookshelf', 10, 2, { w: 3, h: 2, solid: true, interact: { type: 'collection' } });
+    add(a, 'desk', 13, 2, { w: 2, h: 2, solid: true, interact: { type: 'journal' } });
+    add(a, 'nightstand', 15, 2, { solid: true });
+    add(a, 'plant', 17, 5, { solid: false });
+
+    /* hearth + kitchen */
+    add(a, 'fireplace', 16, 2, { w: 2, h: 2, solid: true, interact: { type: 'fireplace' } });
+    add(a, 'stove', 16, 6, { w: 2, h: 2, solid: true, interact: { type: 'cook' } });
+    add(a, 'counter', 16, 9, { w: 2, h: 1, solid: true });
+    add(a, 'sink', 16, 11, { w: 2, h: 1, solid: true });
+
+    /* workshop + cat corner */
+    add(a, 'craftbench', 2, 8, { w: 2, h: 2, solid: true, interact: { type: 'craft' } });
+    add(a, 'cattower', 2, 11, { h: 2, solid: true });
+    add(a, 'catbed', 4, 11, { w: 2, h: 1, solid: false });
+    add(a, 'catbowl', 6, 11, { solid: false });
     add(a, 'window', 2, 1, { solid: true });
     add(a, 'plaque', 10, 1, { solid: false, text: 'Home' });
     return a;

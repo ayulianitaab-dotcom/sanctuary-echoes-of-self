@@ -371,4 +371,26 @@
     for (const x of D.FRIEND_TIERS) if (pts >= x.min) t = x;
     return t;
   };
+
+  /* refined anime palette — silver/lavender/navy/rose fantasy tones */
+  const PALETTE = {
+    nyssa: { hair: '#ece9f6', skin: '#f7efe9', eye: '#c3b2e8', dress: '#ded8f0', accent: '#fffaf0', ribbon: '#cbb8e6' },
+    liora: { hair: '#4b3a5c', skin: '#f6e2d2', eye: '#8063b4', dress: '#3f4a6e', accent: '#e4e9f4', ribbon: '#a9b4d0' },
+    elowen: { hair: '#f2b9c6', skin: '#f8e6da', eye: '#7fae86', dress: '#cfdcc2', accent: '#fbf4e4', ribbon: '#e8a9b8' },
+    rowan: { hair: '#4a3328', skin: '#f0d6bc', eye: '#c68a4a', dress: '#46506b', accent: '#cbb79a', ribbon: '#8a6d52' },
+    mira: { hair: '#8a5a3c', skin: '#f7ddc7', eye: '#d9a95e', dress: '#e8cfd0', accent: '#fbf1e4', ribbon: '#c98f7a' },
+    celeste: { hair: '#e9d095', skin: '#f8e4d0', eye: '#9dbb8f', dress: '#e6d3e8', accent: '#f8f2e2', ribbon: '#d9be7a' },
+    theo: { hair: '#b9c6d9', skin: '#f2ddcd', eye: '#6f9fc4', dress: '#5a5266', accent: '#dfe3ea', ribbon: '#8fa0b8' },
+    aria: { hair: '#2f3a56', skin: '#f5e2d4', eye: '#9b7fc4', dress: '#7186a8', accent: '#f3efe2', ribbon: '#b9a6d8' },
+    finn: { hair: '#a85c3e', skin: '#efcfae', eye: '#9b6b46', dress: '#c9c0a8', accent: '#f6efe0', ribbon: '#7f9bb0' },
+  };
+  Object.keys(PALETTE).forEach((id) => {
+    if (N[id]) N[id].colors = Object.assign({}, N[id].colors, PALETTE[id]);
+  });
+  // distinct silhouettes: the three men wear tailored tunics/coats
+  ['rowan', 'theo', 'finn'].forEach((id) => {
+    if (!N[id]) return;
+    N[id].gender = 'masculine';
+    N[id].outfit = 'tunic';
+  });
 })();
