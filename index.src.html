@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#2b2334">
+<title>Sanctuary: Echoes of Self</title>
+<!-- CSS_HERE -->
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap">
+    <canvas id="game" width="480" height="270"></canvas>
+  </div>
+  <div id="ui-root">
+
+    <div id="hud" class="hidden">
+      <div class="hud-top-left">
+        <div class="hud-card">
+          <div class="loc-name" id="hud-location">Your Cottage</div>
+          <div class="loc-sub"><span id="hud-date">Spring 1</span> · <span id="hud-phase">morning</span></div>
+        </div>
+        <div class="hud-quest" id="hud-quest"></div>
+      </div>
+      <div class="hud-top-right">
+        <div class="hud-pill time-pill"><span class="clock-ico">◷</span><span id="hud-time">06:00</span></div>
+        <div class="hud-pill weather-pill"><span id="hud-weather-icon">☀</span><span id="hud-weather-label">sunny</span></div>
+        <div class="hud-pill money-pill"><span class="coin">◈</span><b id="hud-money">320</b></div>
+      </div>
+      <div class="hud-energy">
+        <span class="energy-label">Energy</span>
+        <div class="energy-track"><div class="energy-fill" id="hud-energy-fill"></div></div>
+        <span class="energy-text" id="hud-energy-text">100/100</span>
+      </div>
+      <div class="hud-live" id="hud-live"></div>
+      <button id="hud-camera" class="hud-camera" title="Camera (P)" aria-label="Camera">📷</button>
+      <div class="hud-cat" id="hud-cat">
+        <span class="cat-emoji">🐈</span><span class="cat-label">Mochi · content</span>
+      </div>
+    </div>
+
+    <div id="dock" class="hidden">
+      <button class="dock-btn" data-panel="journal"><span class="dock-ico">✎</span><span class="dock-lbl">Journal</span></button>
+      <button class="dock-btn" data-panel="inventory"><span class="dock-ico">🎒</span><span class="dock-lbl">Satchel</span></button>
+      <button class="dock-btn" data-panel="map"><span class="dock-ico">🗺</span><span class="dock-lbl">Map</span></button>
+      <button class="dock-btn" data-panel="quests"><span class="dock-ico">✦</span><span class="dock-lbl">Quests</span></button>
+      <button class="dock-btn" data-panel="memories"><span class="dock-ico">🪨</span><span class="dock-lbl">Memories</span></button>
+      <button class="dock-btn" data-panel="relations"><span class="dock-ico">♡</span><span class="dock-lbl">People</span></button>
+      <button class="dock-btn" data-panel="collection"><span class="dock-ico">❀</span><span class="dock-lbl">Album</span></button>
+      <button class="dock-btn" data-panel="pause"><span class="dock-ico">⚙</span><span class="dock-lbl">Menu</span></button>
+    </div>
+
+    <div id="touch-ui" class="hidden">
+      <div id="joystick" class="joystick"><div id="joystick-knob" class="joystick-knob"></div></div>
+      <div class="touch-right">
+        <button id="btn-run" class="touch-btn small">RUN</button>
+        <button id="btn-action" class="touch-btn action">E</button>
+        <button id="btn-menu" class="touch-btn small">☰</button>
+      </div>
+    </div>
+
+    <div id="panel-layer" class="hidden"></div>
+    <div id="dialogue-layer" class="hidden"></div>
+    <div id="toasts"></div>
+    <div id="day-card"></div>
+    <div id="autosave-indicator">✎ autosaved</div>
+    <div id="fade"></div>
+    <div id="title-screen"></div>
+  </div>
+</div>
+<!-- JS_HERE -->
+</body>
+</html>
