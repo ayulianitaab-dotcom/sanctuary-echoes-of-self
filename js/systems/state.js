@@ -72,7 +72,7 @@
     return {
       name: 'Elara',
       gender: 'feminine',
-      hair: 'long',
+      hair: 'wavy',
       hairColor: '#dcc9a8',
       eyeColor: '#a58fd0',
       skinColor: '#f7e3d4',
@@ -93,6 +93,10 @@
       accent: outfit.accent,
       trim: outfit.trim,
       ribbon: SAN.util.mix(outfit.dress, '#ffffff', 0.45),
+      accColor: SAN.util.mix(outfit.trim, '#ffffff', 0.3),
+      accColor2: '#f0d98a',
+      // the main character reference pairs her flower cluster with a ribbon bow
+      accRibbon: true,
     };
   };
 

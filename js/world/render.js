@@ -1361,42 +1361,61 @@
         const nx = p.facing === 'left' ? hx + 1 : hx + 9;
         px(nx, hy + 8, 1, 1, skinDark);
       }
-      // accessories on the head
-      if (p.accessory === 'flower') {
-        circle(hx + 1.5, hy + 1.5, 2.2, '#f2c9dc');
-        circle(hx + 1.5, hy + 1.5, 1, '#f0d98a');
-        px(hx + 3, hy + 2, 1, 1, '#c9dfae');
-      }
-      if (p.accessory === 'ribbon') {
-        px(hx + 8, hy - 1, 3, 2, c.ribbon || '#e8a9c0');
-        px(hx + 7, hy, 1, 2, c.ribbon || '#e8a9c0');
-        px(hx + 11, hy, 1, 2, c.ribbon || '#e8a9c0');
-      }
-      if (p.accessory === 'hat') {
-        px(hx - 2, hy - 2, 16, 3, accent);
-        px(hx + 1, hy - 5, 10, 4, accent);
-        px(hx + 1, hy - 3, 10, 1, c.ribbon || '#a8766a');
-      }
-      if (p.accessory === 'halo') {
-        ellipse(hx + 6, hy - 3, 6, 1.6, 'rgba(255,240,190,0.85)');
-      }
-      if (p.accessory === 'scarf') { px(hx + 1, hy + 10, 10, 2, c.ribbon || '#a8916a'); px(hx + 8, hy + 12, 2, 4, c.ribbon || '#a8916a'); }
-      if (p.accessory === 'glasses') {
-        px(hx + 1, hy + 6, 4, 1, '#8a7d6b'); px(hx + 7, hy + 6, 4, 1, '#8a7d6b');
-        px(hx + 5, hy + 6, 2, 1, '#8a7d6b');
-        px(hx + 2, hy + 7, 2, 2, 'rgba(220,235,240,0.35)'); px(hx + 8, hy + 7, 2, 2, 'rgba(220,235,240,0.35)');
-      }
-      if (p.accessory === 'cap') {
-        px(hx - 1, hy - 2, 14, 3, '#5f7f78'); px(hx + 7, hy, 8, 2, '#4f6f68');
-      }
-      if (p.accessory === 'leaf') { px(hx + 2, hy + 1, 3, 2, '#7dad6e'); px(hx + 3, hy, 1, 1, '#8fbf7a'); }
-      if (p.accessory === 'apron') { px(hx + 4, hy + 10, 7, 3, accent); px(hx + 4, hy + 9, 1, 2, accent); px(hx + 10, hy + 9, 1, 2, accent); }
+      // accessories — shapes and colours come from the reference sheets
+      const accC = c.accColor || '#f2c9dc';
+      const accC2 = c.accColor2 || '#f0d98a';
+      const drawAcc = (acc) => {
+        if (acc === 'flower') {
+          if (c.accRibbon) {
+            px(hx + 1, hy + 4, 1, 4, c.ribbon || '#c7bdd8');
+            px(hx + 2, hy + 5, 1, 3, c.ribbon || '#c7bdd8');
+          }
+          circle(hx + 1.5, hy + 1.5, 2.2, accC);
+          circle(hx + 1.5, hy + 1.5, 1, accC2);
+          px(hx + 3, hy + 2, 1, 1, '#c9dfae');
+        } else if (acc === 'headband') {
+          px(hx, hy, 12, 1, accC);
+          px(hx + 1, hy - 1, 1, 1, accC2);
+          px(hx + 5, hy - 1, 1, 1, accC2);
+          px(hx + 9, hy - 1, 1, 1, accC2);
+        } else if (acc === 'ribbon') {
+          px(hx + 8, hy - 1, 3, 2, c.ribbon || '#e8a9c0');
+          px(hx + 7, hy, 1, 2, c.ribbon || '#e8a9c0');
+          px(hx + 11, hy, 1, 2, c.ribbon || '#e8a9c0');
+        } else if (acc === 'hat') {
+          px(hx - 2, hy - 2, 16, 3, accC);
+          px(hx + 1, hy - 5, 10, 4, shade(accC, 0.1));
+          px(hx + 1, hy - 3, 10, 1, c.ribbon || '#a8766a');
+        } else if (acc === 'halo') {
+          ellipse(hx + 6, hy - 3, 6, 1.6, 'rgba(255,240,190,0.85)');
+        } else if (acc === 'scarf') {
+          px(hx + 1, hy + 10, 10, 2, c.ribbon || '#a8916a');
+          px(hx + 8, hy + 12, 2, 4, c.ribbon || '#a8916a');
+        } else if (acc === 'glasses') {
+          px(hx + 1, hy + 6, 4, 1, accC); px(hx + 7, hy + 6, 4, 1, accC);
+          px(hx + 5, hy + 6, 2, 1, accC);
+          px(hx + 2, hy + 7, 2, 2, 'rgba(220,235,240,0.35)'); px(hx + 8, hy + 7, 2, 2, 'rgba(220,235,240,0.35)');
+        } else if (acc === 'cap') {
+          px(hx - 1, hy - 2, 14, 3, accC); px(hx + 7, hy, 8, 2, shade(accC, -0.15));
+        } else if (acc === 'leaf') {
+          px(hx + 2, hy + 1, 3, 2, '#7dad6e'); px(hx + 3, hy, 1, 1, '#8fbf7a');
+        } else if (acc === 'apron') {
+          px(hx + 4, hy + 10, 7, 3, accent); px(hx + 4, hy + 9, 1, 2, accent); px(hx + 10, hy + 9, 1, 2, accent);
+        } else if (acc === 'clip') {
+          px(hx + 8, hy + 2, 4, 1, accC); px(hx + 9, hy + 2, 1, 1, accC2);
+        } else if (acc === 'suspenders') {
+          px(hx + 3, hy + 11, 1, 4, accC); px(hx + 8, hy + 11, 1, 4, accC);
+          px(hx + 3, hy + 13, 1, 1, accC2); px(hx + 8, hy + 13, 1, 1, accC2);
+        }
+      };
+      [p.accessory].concat(p.extras || []).forEach(drawAcc);
     } else {
       px(hx, hy + 1, 12, 11, hair);
       px(hx + 1, hy + 1, 10, 4, hair);
       px(hx + 2, hy + 3, 8, 1, hairLight);
       px(hx + 2, hy + 9, 8, 3, hairDark);
-      if (p.accessory === 'hat' || p.accessory === 'cap') px(hx - 1, hy - 2, 14, 4, accent);
+      if (p.accessory === 'hat' || p.accessory === 'cap') px(hx - 1, hy - 2, 14, 4, c.accColor || accent);
+      if (p.accessory === 'headband') px(hx, hy + 1, 12, 2, c.accColor || '#f2c9dc');
       if (p.accessory === 'halo') ellipse(hx + 6, hy - 3, 6, 1.6, 'rgba(255,240,190,0.85)');
       if (p.accessory === 'ribbon') px(hx + 5, hy + 1, 4, 2, c.ribbon || '#e8a9c0');
     }
@@ -1412,7 +1431,7 @@
     const bob = sitting ? 0 : n.moving ? Math.sin(t * 6 + n.x) * 1 : Math.sin(t * 1.5 + (n.x || 0)) * 0.4;
     R.drawPlayer({
       colors: Object.assign({ skinDark: '#e0bfa8' }, n.colors),
-      hair: n.hair, accessory: n.accessory, facing: n.facing || 'down',
+      hair: n.hair, accessory: n.accessory, extras: n.extras, facing: n.facing || 'down',
       moving: n.moving, walkPhase: t * 7, glow: n.colors && n.colors.glow,
       gender: n.gender, outfit: n.outfit,
     }, sx, sy + bob + (sitting ? 2.5 : 0), t);
@@ -1890,6 +1909,10 @@
     const dress = col.dress || '#5c7599';
     const accent = col.accent || '#eef3fb';
     const ribbon = col.ribbon || SAN.util.shade(dress, 0.25);
+    // ornament colours are read from the character's reference sheet, never hardcoded
+    const accC = col.accColor || SAN.util.mix(dress, '#ffffff', 0.55);
+    const accC2 = col.accColor2 || '#f0d98a';
+    const accDark = SAN.util.shade(accC, -0.28);
     const uid = 'g' + (p.id || 'pc') + Math.floor(Math.random() * 9999);
     const bg1 = SAN.util.mix(dress, '#f6efe6', 0.72);
     const bg2 = SAN.util.mix(dress, '#ffffff', 0.35);
@@ -1933,6 +1956,19 @@
       <circle cx="96" cy="112" r="1.7"/><circle cx="44" cy="18" r="1.2"/></g>` : '';
 
     /* ---- expressions: the same face, different feelings ---- */
+    /* ornament shapes, coloured from each character's reference palette */
+    const petal = (x, y, r) => `<g transform="translate(${x},${y})">${[0, 1, 2, 3, 4].map((i) => `<ellipse cx="${Math.cos(i * 1.256) * r}" cy="${Math.sin(i * 1.256) * r}" rx="${r * 0.86}" ry="${r * 0.68}" fill="${accC}" transform="rotate(${i * 72})"/>`).join('')}<circle r="${r * 0.44}" fill="${accC2}"/></g>`;
+    Object.assign(accSvg, {
+      flower: `<g>${col.accRibbon ? `<path d="M35 33 L25 25 L27 39 Z" fill="${ribbon}"/><path d="M35 33 L25 41 L27 27 Z" fill="${ribbon}"/>` : ''}${petal(36, 30, 6.2)}</g>`,
+      headband: `<g><path d="M29 33 C40 19 81 19 91 33" stroke="${accC}" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.95"/>${petal(33, 29, 4.4)}${petal(60, 19, 5)}${petal(87, 30, 4.2)}</g>`,
+      hat: `<g><ellipse cx="60" cy="27" rx="41" ry="9" fill="${accC}"/><path d="M33 27 C33 3 87 3 87 27Z" fill="${SAN.util.shade(accC, 0.1)}"/><path d="M33 25 C41 19 79 19 87 25" stroke="${ribbon}" stroke-width="4.5" fill="none"/></g>`,
+      glasses: `<g fill="none" stroke="${accDark}" stroke-width="1.6"><circle cx="47" cy="66" r="9"/><circle cx="75" cy="66" r="9"/><path d="M56 66 L66 66"/></g>`,
+      apron: `<g><path d="M42 108 L78 108 L82 140 L38 140Z" fill="${accent}"/><path d="M42 108 L78 108" stroke="${SAN.util.shade(accent, -0.14)}" stroke-width="2"/></g>`,
+      suspenders: `<g><path d="M45 108 L49 150" stroke="${accC}" stroke-width="4.5" fill="none"/><path d="M75 108 L71 150" stroke="${accC}" stroke-width="4.5" fill="none"/><circle cx="46" cy="120" r="2.4" fill="${accC2}"/><circle cx="74" cy="120" r="2.4" fill="${accC2}"/></g>`,
+      scarf: `<path d="M30 108 C40 118 80 118 90 108 L92 120 C78 130 42 130 28 120Z" fill="${ribbon}"/>`,
+      clip: `<g transform="translate(82,40)"><rect x="0" y="0" width="16" height="5" rx="2" fill="${accC}"/><circle cx="3" cy="2.5" r="2" fill="${accC2}"/></g>`,
+    });
+
     const mood = o.mood || 'neutral';
     const lash = '#3b3148';
     const eye = (cx, rx, ry, ox, oy) => `
@@ -2035,11 +2071,12 @@
   <path d="M52 96 L52 112 C52 118 68 118 68 112 L68 96Z" fill="${SAN.util.shade(skin, -0.12)}"/>
   <path d="M60 28 C86 28 96 46 96 64 C96 88 82 104 60 104 C38 104 24 88 24 64 C24 46 34 28 60 28Z" fill="${skin}"/>
   <ellipse cx="60" cy="92" rx="20" ry="12" fill="${SAN.util.rgba(skin, 0.6)}"/>
+  <path d="M23 52 C23 26 40 12 60 12 C80 12 97 26 97 52 C93 41 87 34 79 31 C71 41 57 44 49 38 C42 33 38 29 35 27 C29 33 25 42 23 52Z" fill="${hairC}"/>
   ${faceParts}
   <path d="M57 76 C58 78 60 79 61 77" stroke="${SAN.util.shade(skin, -0.28)}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.6"/>
   ${bangs[hair] || bangs.long}
   ${hairShine}
-  ${accSvg[acc] || ''}
+  ${[acc].concat(p.extras || []).map((a) => accSvg[a] || '').join('')}
   ${glow ? `<circle cx="60" cy="60" r="52" fill="#ffffff" opacity="0.06"/>` : ''}
   ${sparkles}
       ${o.moodRing ? `<circle cx="60" cy="60" r="56" fill="none" stroke="${o.moodRing}" stroke-width="2" opacity="0.5"/>` : ''}

@@ -387,6 +387,75 @@
   Object.keys(PALETTE).forEach((id) => {
     if (N[id]) N[id].colors = Object.assign({}, N[id].colors, PALETTE[id]);
   });
+  /* =========================================================
+     REFERENCE-FAITHFUL APPEARANCE — single source of truth
+     Taken directly from the supplied reference sheets:
+       • "Main Character Reference" / "Anime Style Reference" → the player
+       • "NPC Lineup Reference" → the nine NPCs below
+     Hair style, ornaments and every colour here are read straight from
+     those images. Both the pixel sprite (drawPlayer / drawNPC) and the
+     anime SVG portrait (render.portrait) render from this one table, so
+     each character keeps the same identity in every view and expression.
+     Only change these values against an updated reference sheet.
+     ========================================================= */
+  const APPEARANCE = {
+    // silver-white layered hair, violet eyes, white-and-silver cloak, gold filigree
+    nyssa: {
+      hair: 'wavy', accessory: 'flower', extras: [], glow: true,
+      colors: { hair: '#ece9f6', skin: '#f7efe9', eye: '#bda6ea', dress: '#e8e4f3', accent: '#fffaf0', ribbon: '#cbb8e6', trim: '#d9b06a', accColor: '#ece3fb', accColor2: '#e0c070' },
+    },
+    // deep plum wavy hair, violet eyes, deep purple gown, gold floral ornament
+    liora: {
+      hair: 'wavy', accessory: 'flower', extras: [],
+      colors: { hair: '#4b3159', skin: '#f6e2d2', eye: '#ab8ed6', dress: '#4e3a63', accent: '#f4eef8', ribbon: '#c9a86a', trim: '#c9a86a', accColor: '#c9a86a', accColor2: '#8a6a3f' },
+    },
+    // pink wavy hair with white daisies, green eyes, white pinafore over green skirt
+    elowen: {
+      hair: 'wavy', accessory: 'flower', extras: [],
+      colors: { hair: '#f0b8c4', skin: '#f8e6da', eye: '#7fae86', dress: '#94b487', accent: '#faf6ea', ribbon: '#e8a9b8', trim: '#7d9a72', accColor: '#fffdf8', accColor2: '#f0d98a' },
+    },
+    // near-black short hair, amber eyes, charcoal-navy coat over a white shirt
+    rowan: {
+      hair: 'short', accessory: 'none', extras: [],
+      colors: { hair: '#2e2620', skin: '#f0d6bc', eye: '#c68a4a', dress: '#3a4054', accent: '#efe7d8', ribbon: '#8a6d52', trim: '#c9a86a', accColor: '#8a6d52', accColor2: '#c9a86a' },
+    },
+    // brown wavy hair with a peach flower headband, amber eyes, rose blouse + white apron
+    mira: {
+      hair: 'wavy', accessory: 'apron', extras: ['headband'],
+      colors: { hair: '#8a5a3c', skin: '#f7ddc7', eye: '#cf9a55', dress: '#e3b3b8', accent: '#fdf6ec', ribbon: '#e8c9a0', trim: '#c98f7a', accColor: '#f6d0c4', accColor2: '#fbeecb' },
+    },
+    // golden wavy hair, green eyes, cream floral dress, large white flower headdress
+    celeste: {
+      hair: 'wavy', accessory: 'flower', extras: [],
+      colors: { hair: '#e9d095', skin: '#f8e4d0', eye: '#9dbb8f', dress: '#efe7d2', accent: '#fbf7ee', ribbon: '#e8d9a8', trim: '#c9b58a', accColor: '#fffdf6', accColor2: '#f0d98a' },
+    },
+    // silver-lavender tousled hair, round glasses, dark navy coat, purple accents
+    theo: {
+      hair: 'short', accessory: 'glasses', extras: ['scarf'],
+      colors: { hair: '#c3c9dc', skin: '#f4e4d8', eye: '#93a8cc', dress: '#3f4459', accent: '#dfe3ea', ribbon: '#6b5f8a', trim: '#8a7db0', accColor: '#b9bec9', accColor2: '#6b5f8a' },
+    },
+    // deep navy long hair with a blue flower, glasses, navy Victorian dress, white lace
+    aria: {
+      hair: 'long', accessory: 'glasses', extras: ['flower'],
+      colors: { hair: '#2f3a56', skin: '#f5e2d4', eye: '#9b7fc4', dress: '#3e4a75', accent: '#f3efe2', ribbon: '#b9a6d8', trim: '#cfd8f0', accColor: '#5a6ea8', accColor2: '#cfd8f0' },
+    },
+    // ginger-red short curls, brown eyes, straw hat, white shirt with brown suspenders
+    finn: {
+      hair: 'short', accessory: 'hat', extras: ['suspenders'],
+      colors: { hair: '#b05c3e', skin: '#eccfb0', eye: '#9b6b46', dress: '#8a6a4a', accent: '#f6f1e4', ribbon: '#c2a06a', trim: '#8a6a4a', accColor: '#d9bd8a', accColor2: '#c2a06a' },
+    },
+  };
+  Object.keys(APPEARANCE).forEach((id) => {
+    const a = APPEARANCE[id];
+    const n = N[id];
+    if (!n) return;
+    n.hair = a.hair;
+    n.accessory = a.accessory;
+    n.extras = a.extras || [];
+    if (a.glow !== undefined) n.glow = a.glow;
+    n.colors = Object.assign({}, n.colors, a.colors);
+  });
+
   // distinct silhouettes: the three men wear tailored tunics/coats
   ['rowan', 'theo', 'finn'].forEach((id) => {
     if (!N[id]) return;
