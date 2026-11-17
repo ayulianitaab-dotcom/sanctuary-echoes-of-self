@@ -210,7 +210,7 @@
     if (portraitEl) {
       const who = page.speaker === 'player' ? 'player' : page.speaker;
       const mood = SAN.render.moodFor(page.text);
-      portraitEl.innerHTML = sp.narr ? '' : SAN.render.portrait(who, { mood });
+      portraitEl.innerHTML = sp.narr ? '' : SAN.render.portraitImg(who, { mood });
       portraitEl.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.7) : '';
       portraitEl.classList.remove('expr-in');
       void portraitEl.offsetWidth;

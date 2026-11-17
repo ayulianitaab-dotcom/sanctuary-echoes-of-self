@@ -2083,6 +2083,58 @@
 </svg>`;
   };
 
+  /* =========================================================
+     PORTRAITS (illustrated assets)
+     The game ships hand-illustrated anime portraits cut from the
+     reference sheets in assets/portraits/<id>/<mood>.png. The SVG
+     above is only the fallback when an illustration is missing.
+     ========================================================= */
+  R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry'];
+  // dialogue returns 'thoughtful'; the sheets label that expression 'thinking'
+  const ART_ALIAS = { thoughtful: 'thinking' };
+
+  R.portraitArtFor = function (who) {
+    return who === 'player' ? R.PLAYER_MOODS.slice() : ['neutral'];
+  };
+
+  R.portraitSrc = function (who, mood) {
+    const id = who === 'player' ? 'player' : who;
+    const list = R.portraitArtFor(id);
+    let m = ART_ALIAS[mood] || mood || 'neutral';
+    if (list.indexOf(m) < 0) m = 'neutral';
+    return 'assets/portraits/' + id + '/' + m + '.png';
+  };
+
+  R.portraitImg = function (who, opts) {
+    const o = opts || {};
+    const id = who === 'player' ? 'player' : who;
+    if (id !== 'player' && !SAN.data.npcs[id]) return '';
+    const mood = ART_ALIAS[o.mood] || o.mood || 'neutral';
+    const cls = 'portrait-img' + (o.className ? ' ' + o.className : '');
+    return `<img class="${cls}" src="${R.portraitSrc(id, mood)}" alt="" draggable="false"` +
+      ` data-who="${id}" data-mood="${mood}">`;
+  };
+
+  // if an illustration is ever missing, drop back to the SVG portrait
+  R.swapToSvgPortrait = function (img) {
+    const who = img.getAttribute('data-who') || 'player';
+    const mood = img.getAttribute('data-mood') || 'neutral';
+    const box = document.createElement('div');
+    box.className = 'portrait-fallback';
+    box.innerHTML = R.portrait(who, { mood });
+    img.replaceWith(box);
+  };
+
+  if (typeof document !== 'undefined' && !R._portraitFallbackBound) {
+    R._portraitFallbackBound = true;
+    document.addEventListener('error', (e) => {
+      const t = e.target;
+      if (t && t.tagName === 'IMG' && t.classList && t.classList.contains('portrait-img')) {
+        R.swapToSvgPortrait(t);
+      }
+    }, true);
+  }
+
   /* text → expression: lets dialogue portraits react to what is being said */
   R.moodFor = function (text) {
     const t = String(text || '').toLowerCase();

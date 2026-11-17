@@ -543,7 +543,7 @@
       const card = document.createElement('button');
       card.className = 'rel-card';
       card.innerHTML = `
-        <div class="rel-portrait">${SAN.render.portrait(id)}</div>
+        <div class="rel-portrait">${SAN.render.portraitImg(id)}</div>
         <div class="rel-info">
           <div class="rel-name">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}</div>
@@ -570,7 +570,7 @@
     const next = Object.keys(milestones).map(Number).filter((n) => f.pts < n).sort((a, b) => a - b)[0];
     const d = UI.panel('reldetail', npc.name, `
       <div class="rel-detail-head">
-        <div class="rel-detail-portrait">${SAN.render.portrait(id)}</div>
+        <div class="rel-detail-portrait">${SAN.render.portraitImg(id)}</div>
         <div class="rel-detail-text">
           <div class="rel-name big">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}${npc.age ? ' · ' + npc.age : ''}</div>
