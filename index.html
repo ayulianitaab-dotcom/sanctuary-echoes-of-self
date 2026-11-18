@@ -1242,6 +1242,7 @@ body.reduce-motion .ts-windmill .blades { animation: none !important; }
 .creator-portrait svg { width: 100%; height: 100%; display: block; }
 .creator-portrait img { width: 100%; height: 100%; display: block; object-fit: contain; object-position: 50% 50%; }
 .creator-name-display { margin-top: 8px; font-size: 17px; color: #5b4470; letter-spacing: .5px; }
+.creator-identity { margin-top: 3px; font-size: 12px; color: #7a6288; letter-spacing: .4px; line-height: 1.5; }
 .creator-options { flex: 1 1 380px; min-width: 260px; }
 .creator-options .field-label { margin-top: 11px; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -7874,41 +7875,8 @@ window.SAN = window.SAN || {};
   const St = (SAN.state = {});
   St.S = null;
 
-  St.HAIRSTYLES = [
-    { id: 'long', name: 'Long & Flowing' },
-    { id: 'wavy', name: 'Soft Waves' },
-    { id: 'braid', name: 'Side Braid' },
-    { id: 'bob', name: 'Gentle Bob' },
-    { id: 'bun', name: 'Loose Bun' },
-    { id: 'ponytail', name: 'Low Ponytail' },
-    { id: 'short', name: 'Short & Tidy' },
-  ];
-  St.HAIRS = [
-    { id: 'ash', name: 'Ash Blonde', hex: '#dcc9a8' },
-    { id: 'honey', name: 'Honey', hex: '#c9a06a' },
-    { id: 'auburn', name: 'Auburn', hex: '#9a5a44' },
-    { id: 'raven', name: 'Raven', hex: '#3a3448' },
-    { id: 'silver', name: 'Silver', hex: '#dfe2ea' },
-    { id: 'lilac', name: 'Lilac', hex: '#b9a6d8' },
-    { id: 'rose', name: 'Dusty Rose', hex: '#d8a0a8' },
-    { id: 'teal', name: 'Deep Teal', hex: '#6f9a98' },
-  ];
-  St.SKINS = [
-    { id: 'porcelain', name: 'Porcelain', hex: '#f7e3d4' },
-    { id: 'warm', name: 'Warm Ivory', hex: '#f0d0b4' },
-    { id: 'honey', name: 'Honey', hex: '#d9ab84' },
-    { id: 'umber', name: 'Umber', hex: '#b8845c' },
-    { id: 'deep', name: 'Deep Bronze', hex: '#8a5e3e' },
-  ];
-  St.EYES = [
-    { id: 'lavender', name: 'Lavender', hex: '#a58fd0' },
-    { id: 'blue', name: 'Cornflower', hex: '#7fa8d9' },
-    { id: 'green', name: 'Sage Green', hex: '#7fa87a' },
-    { id: 'amber', name: 'Amber', hex: '#c9964a' },
-    { id: 'grey', name: 'Storm Grey', hex: '#9a9aa8' },
-    { id: 'brown', name: 'Warm Brown', hex: '#8a6a4a' },
-    { id: 'rose', name: 'Rosewood', hex: '#c98a9a' },
-  ];
+  /* the official portrait is fixed, so the outfit table only feeds the small
+     code-drawn world sprite, not a player-facing choice */
   St.OUTFITS = [
     { id: 'lavender_dress', name: 'Lavender Victorian Dress', dress: '#b8a6d4', accent: '#f7efe2', trim: '#8f7bb0' },
     { id: 'cream_dress', name: 'Cream Tea Dress', dress: '#efe4d4', accent: '#d9c8ae', trim: '#c0ad92' },
@@ -7917,17 +7885,6 @@ window.SAN = window.SAN || {};
     { id: 'midnight_dress', name: 'Midnight Blue Gown', dress: '#6f7ba8', accent: '#e8ecf8', trim: '#4f5b88' },
     { id: 'traveler_tunic', name: 'Traveler\'s Tunic', dress: '#8a7a5a', accent: '#d8c8a8', trim: '#6a5a40' },
     { id: 'sailor_blouse', name: 'Sailor Blouse', dress: '#8fb3c9', accent: '#f6f4ee', trim: '#6f93a9' },
-  ];
-  St.ACCESSORIES = [
-    { id: 'flower', name: 'Flower Pin' },
-    { id: 'ribbon', name: 'Silk Ribbon' },
-    { id: 'clip', name: 'Pearl Clip' },
-    { id: 'hat', name: 'Sun Hat' },
-    { id: 'glasses', name: 'Reading Glasses' },
-    { id: 'scarf', name: 'Soft Scarf' },
-    { id: 'cap', name: 'Fisherman\'s Cap' },
-    { id: 'leaf', name: 'Leaf Sprig' },
-    { id: 'none', name: 'None' },
   ];
   St.CAT_COLORS = [
     { id: 'cream', name: 'Cream', hex: '#f0dcc0' },
@@ -7939,10 +7896,81 @@ window.SAN = window.SAN || {};
     { id: 'calico', name: 'Calico', hex: '#e8d4b8' },
   ];
 
+  /* The official portrait is fixed artwork, so character creation asks who the
+     player is instead of offering looks that would no longer change the art. */
+  St.PRONOUNS = [
+    { id: 'she', name: 'she / her', subject: 'she', object: 'her', possessive: 'her' },
+    { id: 'he', name: 'he / him', subject: 'he', object: 'him', possessive: 'his' },
+    { id: 'they', name: 'they / them', subject: 'they', object: 'them', possessive: 'their' },
+  ];
+  St.BACKGROUNDS = [
+    {
+      id: 'tide', name: 'Tidewatcher',
+      blurb: 'You read the weather before you read a room.',
+      carries: { sea_glass: 2 },
+      intro: 'You kept a pocket of sea glass the whole way here. It is not worth much. It is worth carrying.',
+    },
+    {
+      id: 'garden', name: 'Gardener',
+      blurb: 'You have always trusted things that grow slowly.',
+      carries: { seed_starflower: 2, seed_lavender: 2 },
+      intro: 'There are seeds in your bag, wrapped in paper. You have not decided where they will go yet.',
+    },
+    {
+      id: 'archive', name: 'Archivist',
+      blurb: 'You keep the things other people forget to keep.',
+      carries: { old_photo: 1, memory_shard: 1 },
+      intro: 'You brought one photograph and one shard of something bright. You are not sure which one you came for.',
+    },
+  ];
+  St.TEMPERAMENTS = [
+    {
+      id: 'gentle', name: 'Gentle',
+      blurb: 'You meet the day softly. +15 maximum energy.',
+      maxEnergy: 15, carries: {},
+    },
+    {
+      id: 'curious', name: 'Curious',
+      blurb: 'You arrive with questions — and a moon cookie for the road.',
+      carries: { moon_cookie: 1 },
+    },
+    {
+      id: 'steady', name: 'Steady',
+      blurb: 'You came prepared. +80 coins.',
+      money: 80, carries: {},
+    },
+  ];
+  St.pronoun = function (id) {
+    return St.PRONOUNS.find((p) => p.id === id) || St.PRONOUNS[0];
+  };
+  St.background = function (id) {
+    return St.BACKGROUNDS.find((b) => b.id === id) || St.BACKGROUNDS[0];
+  };
+  St.temperament = function (id) {
+    return St.TEMPERAMENTS.find((t) => t.id === id) || St.TEMPERAMENTS[0];
+  };
+  /* everything the background and temperament put in the satchel */
+  St.carriedItems = function (player) {
+    const totals = {};
+    const add = (gift) => Object.keys(gift || {}).forEach((id) => {
+      totals[id] = (totals[id] || 0) + gift[id];
+    });
+    add(St.background(player && player.background).carries);
+    add(St.temperament(player && player.temperament).carries);
+    return Object.keys(totals).map((id) => ({ id, count: totals[id] }));
+  };
+  St.identityLine = function (player) {
+    const p = player || {};
+    return [St.pronoun(p.pronoun).name, St.background(p.background).name, St.temperament(p.temperament).name].join(' · ');
+  };
+
   St.defaultCustom = function () {
     return {
       name: 'Elara',
       gender: 'feminine',
+      pronoun: 'she',
+      background: 'tide',
+      temperament: 'gentle',
       hair: 'wavy',
       hairColor: '#dcc9a8',
       eyeColor: '#a58fd0',
@@ -7975,6 +8003,12 @@ window.SAN = window.SAN || {};
     const custom = Object.assign(St.defaultCustom(), (opts && opts.player) || {});
     const catOpts = Object.assign({ name: 'Mochi', color: 'cream' }, (opts && opts.cat) || {});
     const catColor = St.CAT_COLORS.find((c) => c.id === catOpts.color) || St.CAT_COLORS[0];
+    const background = St.background(custom.background);
+    const temperament = St.temperament(custom.temperament);
+    const inventory = { camera: 1, seed_lavender: 4, seed_marigold: 2, fiber: 2, bread: 1, daisy: 1 };
+    St.carriedItems({ background: background.id, temperament: temperament.id }).forEach((g) => {
+      inventory[g.id] = (inventory[g.id] || 0) + g.count;
+    });
 
     const defaultSettings = {
       musicVol: 0.5, sfxVol: 0.7, ambVol: 0.5, textSpeed: 1,
@@ -7993,6 +8027,9 @@ window.SAN = window.SAN || {};
       player: {
         name: custom.name,
         gender: custom.gender,
+        pronoun: St.pronoun(custom.pronoun).id,
+        background: background.id,
+        temperament: temperament.id,
         hair: custom.hair,
         hairColor: custom.hairColor,
         eyeColor: custom.eyeColor,
@@ -8014,10 +8051,10 @@ window.SAN = window.SAN || {};
         x: 8, y: 9, area: 'home',
       },
       time: { day: 1, season: 0, year: 1, minutes: 8 * 60, weather: 'sunny', forecast: 'sunny', festivalToday: null },
-      money: 320,
-      energy: 100,
-      maxEnergy: 100,
-      inventory: { camera: 1, seed_lavender: 4, seed_marigold: 2, fiber: 2, bread: 1, daisy: 1 },
+      money: 320 + (temperament.money || 0),
+      energy: 100 + (temperament.maxEnergy || 0),
+      maxEnergy: 100 + (temperament.maxEnergy || 0),
+      inventory,
       farm: { plots: {} },
       levels: {
         farming: { lvl: 1, xp: 0 },
@@ -8075,6 +8112,10 @@ window.SAN = window.SAN || {};
     const merged = Object.assign({}, base, snap);
     // deep-ish repairs
     merged.player = Object.assign({}, base.player, snap.player || {});
+    // saves from before identity existed fall back to the defaults
+    merged.player.pronoun = St.pronoun(merged.player.pronoun).id;
+    merged.player.background = St.background(merged.player.background).id;
+    merged.player.temperament = St.temperament(merged.player.temperament).id;
     merged.player.colors = Object.assign({}, St.playerColors(merged.player), (snap.player && snap.player.colors) || {});
     merged.time = Object.assign({}, base.time, snap.time || {});
     merged.levels = Object.assign({}, base.levels, snap.levels || {});
@@ -13437,32 +13478,31 @@ window.SAN = window.SAN || {};
      ========================================================= */
   P.customize = function () {
     const p = S().player;
+    // saves made before identity existed fall back to the defaults
+    p.pronoun = SAN.state.pronoun(p.pronoun).id;
+    p.background = SAN.state.background(p.background).id;
+    p.temperament = SAN.state.temperament(p.temperament).id;
+    const bg = SAN.state.background(p.background);
+    const temp = SAN.state.temperament(p.temperament);
     const el = UI.panel('customize', 'Wardrobe', `
       <div class="creator-body">
         <div class="creator-preview">
           <div class="creator-portrait" id="wd-portrait"></div>
           <div class="creator-name-display" id="wd-name">${U.esc(p.name)}</div>
+          <div class="creator-identity" id="wd-identity">${U.esc(SAN.state.identityLine(p))}</div>
         </div>
         <div class="creator-options">
           <label class="field-label">Name</label>
           <input class="text-input" id="wd-input-name" maxlength="16" value="${U.esc(p.name)}">
-          <label class="field-label">Presentation</label>
-          <div class="chip-row" id="wd-gender"></div>
-          <label class="field-label">Hair</label>
-          <div class="chip-row" id="wd-hair"></div>
-          <label class="field-label">Hair colour</label>
-          <div class="swatch-row" id="wd-haircolor"></div>
-          <label class="field-label">Eyes</label>
-          <div class="swatch-row" id="wd-eyes"></div>
-          <label class="field-label">Skin</label>
-          <div class="swatch-row" id="wd-skin"></div>
-          <label class="field-label">Outfit</label>
-          <div class="chip-row" id="wd-outfit"></div>
-          <label class="field-label">Accessory</label>
-          <div class="chip-row" id="wd-acc"></div>
+          <label class="field-label">Pronouns</label>
+          <div class="chip-row" id="wd-pronoun"></div>
+          <label class="field-label">What you carried here</label>
+          <p class="fineprint"><b>${U.esc(bg.name)}</b> — ${U.esc(bg.blurb)} It came with you, and it is part of your story now.</p>
+          <label class="field-label">How you meet the day</label>
+          <p class="fineprint"><b>${U.esc(temp.name)}</b> — ${U.esc(temp.blurb)}</p>
+          <p class="fineprint">The official portrait, hair and outfit are fixed artwork, so the wardrobe keeps how the village knows you — your name and pronouns — up to date instead of redrawing her.</p>
         </div>
-      </div>
-      <p class="fineprint">Your portrait and sprite update straight away. Nobody in the village will comment on the change, because that is how good villages work.</p>`,
+      </div>`,
       { wide: true });
 
     const portrait = el.querySelector('#wd-portrait');
@@ -13471,41 +13511,25 @@ window.SAN = window.SAN || {};
       portrait.innerHTML = SAN.render.fullBodyImg();
       el.querySelector('#wd-name').textContent = p.name;
       el.querySelector('#wd-input-name').value = p.name;
-      SAN.save.autosave();
+      el.querySelector('#wd-identity').textContent = SAN.state.identityLine(p);
+      SAN.save.write(SAN.state.S.slot, { silent: true });
     }
-    function chips(sel, list, key) {
-      const box = el.querySelector(sel);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'chip' + (p[key] === item.id ? ' active' : '');
-        b.textContent = item.name;
-        b.addEventListener('click', () => { p[key] = item.id; chips(sel, list, key); apply(); });
-        box.appendChild(b);
+    const box = el.querySelector('#wd-pronoun');
+    SAN.state.PRONOUNS.forEach((item) => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (p.pronoun === item.id ? ' active' : '');
+      b.textContent = item.name;
+      b.addEventListener('click', () => {
+        p.pronoun = item.id;
+        box.querySelectorAll('.chip').forEach((c) => c.classList.toggle('active', c === b));
+        apply();
       });
-    }
-    function swatches(sel, list, key) {
-      const box = el.querySelector(sel);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'swatch' + (p[key] === item.hex ? ' active' : '');
-        b.style.background = item.hex;
-        b.title = item.name;
-        b.addEventListener('click', () => { p[key] = item.hex; swatches(sel, list, key); apply(); });
-        box.appendChild(b);
-      });
-    }
-    chips('#wd-gender', [{ id: 'feminine', name: 'Feminine' }, { id: 'masculine', name: 'Masculine' }, { id: 'neutral', name: 'Androgynous' }], 'gender');
-    chips('#wd-hair', SAN.state.HAIRSTYLES, 'hair');
-    swatches('#wd-haircolor', SAN.state.HAIRS, 'hairColor');
-    swatches('#wd-eyes', SAN.state.EYES, 'eyeColor');
-    swatches('#wd-skin', SAN.state.SKINS, 'skinColor');
-    chips('#wd-outfit', SAN.state.OUTFITS, 'outfit');
-    chips('#wd-acc', SAN.state.ACCESSORIES, 'accessory');
+      box.appendChild(b);
+    });
     el.querySelector('#wd-input-name').addEventListener('input', (e) => {
       p.name = (e.target.value || 'Elara').slice(0, 16);
       el.querySelector('#wd-name').textContent = p.name;
+      SAN.save.write(SAN.state.S.slot, { silent: true });
     });
     apply();
   };
@@ -13713,30 +13737,26 @@ window.SAN = window.SAN || {};
     wrap.innerHTML = `
       <div class="creator-head">
         <h2>Who are you, when no one needs anything from you?</h2>
-        <p class="fineprint">You can change all of this later at the wardrobe in your cottage.</p>
+        <p class="fineprint">Your name and pronouns can change later at the wardrobe. What you carried and how you meet the day stay with you.</p>
       </div>
       <div class="creator-body">
         <div class="creator-preview">
           <div class="creator-portrait" id="creator-portrait"></div>
           <div class="creator-name-display" id="creator-name-display">Elara</div>
+          <div class="creator-identity" id="creator-identity"></div>
         </div>
         <div class="creator-options">
           <label class="field-label">Name</label>
           <input class="text-input" id="cr-name" maxlength="16" value="${U.esc(custom.name)}">
-          <label class="field-label">Presentation</label>
-          <div class="chip-row" id="cr-gender"></div>
-          <label class="field-label">Hair</label>
-          <div class="chip-row" id="cr-hairstyle"></div>
-          <label class="field-label">Hair colour</label>
-          <div class="swatch-row" id="cr-haircolor"></div>
-          <label class="field-label">Eyes</label>
-          <div class="swatch-row" id="cr-eyes"></div>
-          <label class="field-label">Skin</label>
-          <div class="swatch-row" id="cr-skin"></div>
-          <label class="field-label">Outfit</label>
-          <div class="chip-row" id="cr-outfit"></div>
-          <label class="field-label">Accessory</label>
-          <div class="chip-row" id="cr-acc"></div>
+          <label class="field-label">Pronouns</label>
+          <div class="chip-row" id="cr-pronoun"></div>
+          <label class="field-label">What you carried here</label>
+          <div class="chip-row" id="cr-background"></div>
+          <p class="fineprint" id="cr-background-note"></p>
+          <label class="field-label">How you meet the day</label>
+          <div class="chip-row" id="cr-temperament"></div>
+          <p class="fineprint" id="cr-temperament-note"></p>
+          <p class="fineprint">The portrait is the official artwork, so it stays exactly as drawn. Your name and pronouns are used in the village, and what you carried starts in your satchel.</p>
         </div>
       </div>
       <div class="creator-actions">
@@ -13747,11 +13767,25 @@ window.SAN = window.SAN || {};
     el.appendChild(wrap);
     const portrait = wrap.querySelector('#creator-portrait');
     const nameDisplay = wrap.querySelector('#creator-name-display');
+    const identityLine = wrap.querySelector('#creator-identity');
+
+    function carriedLabel(gift) {
+      const parts = Object.keys(gift || {}).map((id) => {
+        const it = SAN.data.item(id);
+        return (it ? it.name : id) + (gift[id] > 1 ? ' ×' + gift[id] : '');
+      });
+      return parts.length ? parts.join(', ') : 'nothing extra';
+    }
 
     function paint() {
-      const full = Object.assign({}, custom, { colors: SAN.state.playerColors(custom) });
+      const pr = SAN.state.pronoun(custom.pronoun);
+      const bg = SAN.state.background(custom.background);
+      const temp = SAN.state.temperament(custom.temperament);
       portrait.innerHTML = SAN.render.fullBodyImg();
       nameDisplay.textContent = custom.name || 'Elara';
+      identityLine.textContent = pr.name + ' · ' + bg.name + ' · ' + temp.name;
+      wrap.querySelector('#cr-background-note').textContent = bg.blurb + ' You carry ' + carriedLabel(bg.carries) + '.';
+      wrap.querySelector('#cr-temperament-note').textContent = temp.blurb;
     }
     function chips(containerId, list, key, labelKey) {
       const box = wrap.querySelector(containerId);
@@ -13764,40 +13798,18 @@ window.SAN = window.SAN || {};
         box.appendChild(b);
       });
     }
-    function swatches(containerId, list, key) {
-      const box = wrap.querySelector(containerId);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'swatch' + (custom[key] === item.hex ? ' active' : '');
-        b.style.background = item.hex;
-        b.title = item.name;
-        b.addEventListener('click', () => { custom[key] = item.hex; swatches(containerId, list, key); paint(); });
-        box.appendChild(b);
-      });
-    }
-    chips('#cr-gender', [{ id: 'feminine', name: 'Feminine' }, { id: 'masculine', name: 'Masculine' }, { id: 'neutral', name: 'Androgynous' }], 'gender');
-    chips('#cr-hairstyle', SAN.state.HAIRSTYLES, 'hair');
-    swatches('#cr-haircolor', SAN.state.HAIRS, 'hairColor');
-    swatches('#cr-eyes', SAN.state.EYES, 'eyeColor');
-    swatches('#cr-skin', SAN.state.SKINS, 'skinColor');
-    chips('#cr-outfit', SAN.state.OUTFITS, 'outfit');
-    chips('#cr-acc', SAN.state.ACCESSORIES, 'accessory');
+    chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
+    chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
+    chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
 
     wrap.querySelector('#cr-name').addEventListener('input', (e) => { custom.name = e.target.value; nameDisplay.textContent = custom.name || 'Elara'; });
     wrap.querySelector('#cr-random').addEventListener('click', () => {
-      custom.hair = U.pick(SAN.state.HAIRSTYLES).id;
-      custom.hairColor = U.pick(SAN.state.HAIRS).hex;
-      custom.eyeColor = U.pick(SAN.state.EYES).hex;
-      custom.skinColor = U.pick(SAN.state.SKINS).hex;
-      custom.outfit = U.pick(SAN.state.OUTFITS).id;
-      custom.accessory = U.pick(SAN.state.ACCESSORIES).id;
-      chips('#cr-hairstyle', SAN.state.HAIRSTYLES, 'hair');
-      swatches('#cr-haircolor', SAN.state.HAIRS, 'hairColor');
-      swatches('#cr-eyes', SAN.state.EYES, 'eyeColor');
-      swatches('#cr-skin', SAN.state.SKINS, 'skinColor');
-      chips('#cr-outfit', SAN.state.OUTFITS, 'outfit');
-      chips('#cr-acc', SAN.state.ACCESSORIES, 'accessory');
+      custom.pronoun = U.pick(SAN.state.PRONOUNS).id;
+      custom.background = U.pick(SAN.state.BACKGROUNDS).id;
+      custom.temperament = U.pick(SAN.state.TEMPERAMENTS).id;
+      chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
+      chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
+      chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
       paint();
     });
     wrap.querySelector('#cr-back').addEventListener('click', () => { wrap.remove(); el.classList.remove('title-subpanel'); SC.showTitle(); });
@@ -13813,6 +13825,14 @@ window.SAN = window.SAN || {};
   /* ---------------- new game / intro ---------------- */
   SC.beginGame = function (custom) {
     const S_ = SAN.state.newGame({ player: custom, cat: { name: 'Mochi', color: 'cream', adopted: false }, slot: SC.pickFreeSlot() });
+    const bg = SAN.state.background(custom.background);
+    const pr = SAN.state.pronoun(custom.pronoun);
+    const carried = SAN.state.carriedItems(custom).map((g) => {
+      const it = SAN.data.item(g.id);
+      return (it ? it.name : g.id) + (g.count > 1 ? ' ×' + g.count : '');
+    }).join(', ');
+    const ledger = 'The village ledger writes you down as ' + (custom.name || 'Elara') + ' — ' + pr.name + '.' +
+      (carried ? ' In your satchel: ' + carried + '.' : '');
     S_.started = true;
     SAN.ui.titleActive = true;
     document.getElementById('title-screen').classList.add('hidden');
@@ -13830,6 +13850,8 @@ window.SAN = window.SAN || {};
       setTimeout(() => {
         SAN.ui.dialogue({
           pages: [
+            { speaker: 'narrator', text: bg.intro },
+            { speaker: 'narrator', text: ledger },
             { speaker: 'narrator', text: 'Your cottage smells of dust and rain and something older: possibility.' },
             { speaker: 'narrator', text: 'There is a key on the table with your name on it. There is a notebook on the desk. There is a village outside.' },
             { speaker: 'narrator', text: 'Nothing here is urgent. Use WASD or the arrow keys to move. Press E to interact. The village can wait.' },

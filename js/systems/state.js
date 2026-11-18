@@ -3,41 +3,8 @@
   const St = (SAN.state = {});
   St.S = null;
 
-  St.HAIRSTYLES = [
-    { id: 'long', name: 'Long & Flowing' },
-    { id: 'wavy', name: 'Soft Waves' },
-    { id: 'braid', name: 'Side Braid' },
-    { id: 'bob', name: 'Gentle Bob' },
-    { id: 'bun', name: 'Loose Bun' },
-    { id: 'ponytail', name: 'Low Ponytail' },
-    { id: 'short', name: 'Short & Tidy' },
-  ];
-  St.HAIRS = [
-    { id: 'ash', name: 'Ash Blonde', hex: '#dcc9a8' },
-    { id: 'honey', name: 'Honey', hex: '#c9a06a' },
-    { id: 'auburn', name: 'Auburn', hex: '#9a5a44' },
-    { id: 'raven', name: 'Raven', hex: '#3a3448' },
-    { id: 'silver', name: 'Silver', hex: '#dfe2ea' },
-    { id: 'lilac', name: 'Lilac', hex: '#b9a6d8' },
-    { id: 'rose', name: 'Dusty Rose', hex: '#d8a0a8' },
-    { id: 'teal', name: 'Deep Teal', hex: '#6f9a98' },
-  ];
-  St.SKINS = [
-    { id: 'porcelain', name: 'Porcelain', hex: '#f7e3d4' },
-    { id: 'warm', name: 'Warm Ivory', hex: '#f0d0b4' },
-    { id: 'honey', name: 'Honey', hex: '#d9ab84' },
-    { id: 'umber', name: 'Umber', hex: '#b8845c' },
-    { id: 'deep', name: 'Deep Bronze', hex: '#8a5e3e' },
-  ];
-  St.EYES = [
-    { id: 'lavender', name: 'Lavender', hex: '#a58fd0' },
-    { id: 'blue', name: 'Cornflower', hex: '#7fa8d9' },
-    { id: 'green', name: 'Sage Green', hex: '#7fa87a' },
-    { id: 'amber', name: 'Amber', hex: '#c9964a' },
-    { id: 'grey', name: 'Storm Grey', hex: '#9a9aa8' },
-    { id: 'brown', name: 'Warm Brown', hex: '#8a6a4a' },
-    { id: 'rose', name: 'Rosewood', hex: '#c98a9a' },
-  ];
+  /* the official portrait is fixed, so the outfit table only feeds the small
+     code-drawn world sprite, not a player-facing choice */
   St.OUTFITS = [
     { id: 'lavender_dress', name: 'Lavender Victorian Dress', dress: '#b8a6d4', accent: '#f7efe2', trim: '#8f7bb0' },
     { id: 'cream_dress', name: 'Cream Tea Dress', dress: '#efe4d4', accent: '#d9c8ae', trim: '#c0ad92' },
@@ -46,17 +13,6 @@
     { id: 'midnight_dress', name: 'Midnight Blue Gown', dress: '#6f7ba8', accent: '#e8ecf8', trim: '#4f5b88' },
     { id: 'traveler_tunic', name: 'Traveler\'s Tunic', dress: '#8a7a5a', accent: '#d8c8a8', trim: '#6a5a40' },
     { id: 'sailor_blouse', name: 'Sailor Blouse', dress: '#8fb3c9', accent: '#f6f4ee', trim: '#6f93a9' },
-  ];
-  St.ACCESSORIES = [
-    { id: 'flower', name: 'Flower Pin' },
-    { id: 'ribbon', name: 'Silk Ribbon' },
-    { id: 'clip', name: 'Pearl Clip' },
-    { id: 'hat', name: 'Sun Hat' },
-    { id: 'glasses', name: 'Reading Glasses' },
-    { id: 'scarf', name: 'Soft Scarf' },
-    { id: 'cap', name: 'Fisherman\'s Cap' },
-    { id: 'leaf', name: 'Leaf Sprig' },
-    { id: 'none', name: 'None' },
   ];
   St.CAT_COLORS = [
     { id: 'cream', name: 'Cream', hex: '#f0dcc0' },
@@ -68,10 +24,81 @@
     { id: 'calico', name: 'Calico', hex: '#e8d4b8' },
   ];
 
+  /* The official portrait is fixed artwork, so character creation asks who the
+     player is instead of offering looks that would no longer change the art. */
+  St.PRONOUNS = [
+    { id: 'she', name: 'she / her', subject: 'she', object: 'her', possessive: 'her' },
+    { id: 'he', name: 'he / him', subject: 'he', object: 'him', possessive: 'his' },
+    { id: 'they', name: 'they / them', subject: 'they', object: 'them', possessive: 'their' },
+  ];
+  St.BACKGROUNDS = [
+    {
+      id: 'tide', name: 'Tidewatcher',
+      blurb: 'You read the weather before you read a room.',
+      carries: { sea_glass: 2 },
+      intro: 'You kept a pocket of sea glass the whole way here. It is not worth much. It is worth carrying.',
+    },
+    {
+      id: 'garden', name: 'Gardener',
+      blurb: 'You have always trusted things that grow slowly.',
+      carries: { seed_starflower: 2, seed_lavender: 2 },
+      intro: 'There are seeds in your bag, wrapped in paper. You have not decided where they will go yet.',
+    },
+    {
+      id: 'archive', name: 'Archivist',
+      blurb: 'You keep the things other people forget to keep.',
+      carries: { old_photo: 1, memory_shard: 1 },
+      intro: 'You brought one photograph and one shard of something bright. You are not sure which one you came for.',
+    },
+  ];
+  St.TEMPERAMENTS = [
+    {
+      id: 'gentle', name: 'Gentle',
+      blurb: 'You meet the day softly. +15 maximum energy.',
+      maxEnergy: 15, carries: {},
+    },
+    {
+      id: 'curious', name: 'Curious',
+      blurb: 'You arrive with questions — and a moon cookie for the road.',
+      carries: { moon_cookie: 1 },
+    },
+    {
+      id: 'steady', name: 'Steady',
+      blurb: 'You came prepared. +80 coins.',
+      money: 80, carries: {},
+    },
+  ];
+  St.pronoun = function (id) {
+    return St.PRONOUNS.find((p) => p.id === id) || St.PRONOUNS[0];
+  };
+  St.background = function (id) {
+    return St.BACKGROUNDS.find((b) => b.id === id) || St.BACKGROUNDS[0];
+  };
+  St.temperament = function (id) {
+    return St.TEMPERAMENTS.find((t) => t.id === id) || St.TEMPERAMENTS[0];
+  };
+  /* everything the background and temperament put in the satchel */
+  St.carriedItems = function (player) {
+    const totals = {};
+    const add = (gift) => Object.keys(gift || {}).forEach((id) => {
+      totals[id] = (totals[id] || 0) + gift[id];
+    });
+    add(St.background(player && player.background).carries);
+    add(St.temperament(player && player.temperament).carries);
+    return Object.keys(totals).map((id) => ({ id, count: totals[id] }));
+  };
+  St.identityLine = function (player) {
+    const p = player || {};
+    return [St.pronoun(p.pronoun).name, St.background(p.background).name, St.temperament(p.temperament).name].join(' · ');
+  };
+
   St.defaultCustom = function () {
     return {
       name: 'Elara',
       gender: 'feminine',
+      pronoun: 'she',
+      background: 'tide',
+      temperament: 'gentle',
       hair: 'wavy',
       hairColor: '#dcc9a8',
       eyeColor: '#a58fd0',
@@ -104,6 +131,12 @@
     const custom = Object.assign(St.defaultCustom(), (opts && opts.player) || {});
     const catOpts = Object.assign({ name: 'Mochi', color: 'cream' }, (opts && opts.cat) || {});
     const catColor = St.CAT_COLORS.find((c) => c.id === catOpts.color) || St.CAT_COLORS[0];
+    const background = St.background(custom.background);
+    const temperament = St.temperament(custom.temperament);
+    const inventory = { camera: 1, seed_lavender: 4, seed_marigold: 2, fiber: 2, bread: 1, daisy: 1 };
+    St.carriedItems({ background: background.id, temperament: temperament.id }).forEach((g) => {
+      inventory[g.id] = (inventory[g.id] || 0) + g.count;
+    });
 
     const defaultSettings = {
       musicVol: 0.5, sfxVol: 0.7, ambVol: 0.5, textSpeed: 1,
@@ -122,6 +155,9 @@
       player: {
         name: custom.name,
         gender: custom.gender,
+        pronoun: St.pronoun(custom.pronoun).id,
+        background: background.id,
+        temperament: temperament.id,
         hair: custom.hair,
         hairColor: custom.hairColor,
         eyeColor: custom.eyeColor,
@@ -143,10 +179,10 @@
         x: 8, y: 9, area: 'home',
       },
       time: { day: 1, season: 0, year: 1, minutes: 8 * 60, weather: 'sunny', forecast: 'sunny', festivalToday: null },
-      money: 320,
-      energy: 100,
-      maxEnergy: 100,
-      inventory: { camera: 1, seed_lavender: 4, seed_marigold: 2, fiber: 2, bread: 1, daisy: 1 },
+      money: 320 + (temperament.money || 0),
+      energy: 100 + (temperament.maxEnergy || 0),
+      maxEnergy: 100 + (temperament.maxEnergy || 0),
+      inventory,
       farm: { plots: {} },
       levels: {
         farming: { lvl: 1, xp: 0 },
@@ -204,6 +240,10 @@
     const merged = Object.assign({}, base, snap);
     // deep-ish repairs
     merged.player = Object.assign({}, base.player, snap.player || {});
+    // saves from before identity existed fall back to the defaults
+    merged.player.pronoun = St.pronoun(merged.player.pronoun).id;
+    merged.player.background = St.background(merged.player.background).id;
+    merged.player.temperament = St.temperament(merged.player.temperament).id;
     merged.player.colors = Object.assign({}, St.playerColors(merged.player), (snap.player && snap.player.colors) || {});
     merged.time = Object.assign({}, base.time, snap.time || {});
     merged.levels = Object.assign({}, base.levels, snap.levels || {});

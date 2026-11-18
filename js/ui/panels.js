@@ -1389,32 +1389,31 @@
      ========================================================= */
   P.customize = function () {
     const p = S().player;
+    // saves made before identity existed fall back to the defaults
+    p.pronoun = SAN.state.pronoun(p.pronoun).id;
+    p.background = SAN.state.background(p.background).id;
+    p.temperament = SAN.state.temperament(p.temperament).id;
+    const bg = SAN.state.background(p.background);
+    const temp = SAN.state.temperament(p.temperament);
     const el = UI.panel('customize', 'Wardrobe', `
       <div class="creator-body">
         <div class="creator-preview">
           <div class="creator-portrait" id="wd-portrait"></div>
           <div class="creator-name-display" id="wd-name">${U.esc(p.name)}</div>
+          <div class="creator-identity" id="wd-identity">${U.esc(SAN.state.identityLine(p))}</div>
         </div>
         <div class="creator-options">
           <label class="field-label">Name</label>
           <input class="text-input" id="wd-input-name" maxlength="16" value="${U.esc(p.name)}">
-          <label class="field-label">Presentation</label>
-          <div class="chip-row" id="wd-gender"></div>
-          <label class="field-label">Hair</label>
-          <div class="chip-row" id="wd-hair"></div>
-          <label class="field-label">Hair colour</label>
-          <div class="swatch-row" id="wd-haircolor"></div>
-          <label class="field-label">Eyes</label>
-          <div class="swatch-row" id="wd-eyes"></div>
-          <label class="field-label">Skin</label>
-          <div class="swatch-row" id="wd-skin"></div>
-          <label class="field-label">Outfit</label>
-          <div class="chip-row" id="wd-outfit"></div>
-          <label class="field-label">Accessory</label>
-          <div class="chip-row" id="wd-acc"></div>
+          <label class="field-label">Pronouns</label>
+          <div class="chip-row" id="wd-pronoun"></div>
+          <label class="field-label">What you carried here</label>
+          <p class="fineprint"><b>${U.esc(bg.name)}</b> — ${U.esc(bg.blurb)} It came with you, and it is part of your story now.</p>
+          <label class="field-label">How you meet the day</label>
+          <p class="fineprint"><b>${U.esc(temp.name)}</b> — ${U.esc(temp.blurb)}</p>
+          <p class="fineprint">The official portrait, hair and outfit are fixed artwork, so the wardrobe keeps how the village knows you — your name and pronouns — up to date instead of redrawing her.</p>
         </div>
-      </div>
-      <p class="fineprint">Your portrait and sprite update straight away. Nobody in the village will comment on the change, because that is how good villages work.</p>`,
+      </div>`,
       { wide: true });
 
     const portrait = el.querySelector('#wd-portrait');
@@ -1423,41 +1422,25 @@
       portrait.innerHTML = SAN.render.fullBodyImg();
       el.querySelector('#wd-name').textContent = p.name;
       el.querySelector('#wd-input-name').value = p.name;
-      SAN.save.autosave();
+      el.querySelector('#wd-identity').textContent = SAN.state.identityLine(p);
+      SAN.save.write(SAN.state.S.slot, { silent: true });
     }
-    function chips(sel, list, key) {
-      const box = el.querySelector(sel);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'chip' + (p[key] === item.id ? ' active' : '');
-        b.textContent = item.name;
-        b.addEventListener('click', () => { p[key] = item.id; chips(sel, list, key); apply(); });
-        box.appendChild(b);
+    const box = el.querySelector('#wd-pronoun');
+    SAN.state.PRONOUNS.forEach((item) => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (p.pronoun === item.id ? ' active' : '');
+      b.textContent = item.name;
+      b.addEventListener('click', () => {
+        p.pronoun = item.id;
+        box.querySelectorAll('.chip').forEach((c) => c.classList.toggle('active', c === b));
+        apply();
       });
-    }
-    function swatches(sel, list, key) {
-      const box = el.querySelector(sel);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'swatch' + (p[key] === item.hex ? ' active' : '');
-        b.style.background = item.hex;
-        b.title = item.name;
-        b.addEventListener('click', () => { p[key] = item.hex; swatches(sel, list, key); apply(); });
-        box.appendChild(b);
-      });
-    }
-    chips('#wd-gender', [{ id: 'feminine', name: 'Feminine' }, { id: 'masculine', name: 'Masculine' }, { id: 'neutral', name: 'Androgynous' }], 'gender');
-    chips('#wd-hair', SAN.state.HAIRSTYLES, 'hair');
-    swatches('#wd-haircolor', SAN.state.HAIRS, 'hairColor');
-    swatches('#wd-eyes', SAN.state.EYES, 'eyeColor');
-    swatches('#wd-skin', SAN.state.SKINS, 'skinColor');
-    chips('#wd-outfit', SAN.state.OUTFITS, 'outfit');
-    chips('#wd-acc', SAN.state.ACCESSORIES, 'accessory');
+      box.appendChild(b);
+    });
     el.querySelector('#wd-input-name').addEventListener('input', (e) => {
       p.name = (e.target.value || 'Elara').slice(0, 16);
       el.querySelector('#wd-name').textContent = p.name;
+      SAN.save.write(SAN.state.S.slot, { silent: true });
     });
     apply();
   };

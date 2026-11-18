@@ -190,30 +190,26 @@
     wrap.innerHTML = `
       <div class="creator-head">
         <h2>Who are you, when no one needs anything from you?</h2>
-        <p class="fineprint">You can change all of this later at the wardrobe in your cottage.</p>
+        <p class="fineprint">Your name and pronouns can change later at the wardrobe. What you carried and how you meet the day stay with you.</p>
       </div>
       <div class="creator-body">
         <div class="creator-preview">
           <div class="creator-portrait" id="creator-portrait"></div>
           <div class="creator-name-display" id="creator-name-display">Elara</div>
+          <div class="creator-identity" id="creator-identity"></div>
         </div>
         <div class="creator-options">
           <label class="field-label">Name</label>
           <input class="text-input" id="cr-name" maxlength="16" value="${U.esc(custom.name)}">
-          <label class="field-label">Presentation</label>
-          <div class="chip-row" id="cr-gender"></div>
-          <label class="field-label">Hair</label>
-          <div class="chip-row" id="cr-hairstyle"></div>
-          <label class="field-label">Hair colour</label>
-          <div class="swatch-row" id="cr-haircolor"></div>
-          <label class="field-label">Eyes</label>
-          <div class="swatch-row" id="cr-eyes"></div>
-          <label class="field-label">Skin</label>
-          <div class="swatch-row" id="cr-skin"></div>
-          <label class="field-label">Outfit</label>
-          <div class="chip-row" id="cr-outfit"></div>
-          <label class="field-label">Accessory</label>
-          <div class="chip-row" id="cr-acc"></div>
+          <label class="field-label">Pronouns</label>
+          <div class="chip-row" id="cr-pronoun"></div>
+          <label class="field-label">What you carried here</label>
+          <div class="chip-row" id="cr-background"></div>
+          <p class="fineprint" id="cr-background-note"></p>
+          <label class="field-label">How you meet the day</label>
+          <div class="chip-row" id="cr-temperament"></div>
+          <p class="fineprint" id="cr-temperament-note"></p>
+          <p class="fineprint">The portrait is the official artwork, so it stays exactly as drawn. Your name and pronouns are used in the village, and what you carried starts in your satchel.</p>
         </div>
       </div>
       <div class="creator-actions">
@@ -224,11 +220,25 @@
     el.appendChild(wrap);
     const portrait = wrap.querySelector('#creator-portrait');
     const nameDisplay = wrap.querySelector('#creator-name-display');
+    const identityLine = wrap.querySelector('#creator-identity');
+
+    function carriedLabel(gift) {
+      const parts = Object.keys(gift || {}).map((id) => {
+        const it = SAN.data.item(id);
+        return (it ? it.name : id) + (gift[id] > 1 ? ' ×' + gift[id] : '');
+      });
+      return parts.length ? parts.join(', ') : 'nothing extra';
+    }
 
     function paint() {
-      const full = Object.assign({}, custom, { colors: SAN.state.playerColors(custom) });
+      const pr = SAN.state.pronoun(custom.pronoun);
+      const bg = SAN.state.background(custom.background);
+      const temp = SAN.state.temperament(custom.temperament);
       portrait.innerHTML = SAN.render.fullBodyImg();
       nameDisplay.textContent = custom.name || 'Elara';
+      identityLine.textContent = pr.name + ' · ' + bg.name + ' · ' + temp.name;
+      wrap.querySelector('#cr-background-note').textContent = bg.blurb + ' You carry ' + carriedLabel(bg.carries) + '.';
+      wrap.querySelector('#cr-temperament-note').textContent = temp.blurb;
     }
     function chips(containerId, list, key, labelKey) {
       const box = wrap.querySelector(containerId);
@@ -241,40 +251,18 @@
         box.appendChild(b);
       });
     }
-    function swatches(containerId, list, key) {
-      const box = wrap.querySelector(containerId);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'swatch' + (custom[key] === item.hex ? ' active' : '');
-        b.style.background = item.hex;
-        b.title = item.name;
-        b.addEventListener('click', () => { custom[key] = item.hex; swatches(containerId, list, key); paint(); });
-        box.appendChild(b);
-      });
-    }
-    chips('#cr-gender', [{ id: 'feminine', name: 'Feminine' }, { id: 'masculine', name: 'Masculine' }, { id: 'neutral', name: 'Androgynous' }], 'gender');
-    chips('#cr-hairstyle', SAN.state.HAIRSTYLES, 'hair');
-    swatches('#cr-haircolor', SAN.state.HAIRS, 'hairColor');
-    swatches('#cr-eyes', SAN.state.EYES, 'eyeColor');
-    swatches('#cr-skin', SAN.state.SKINS, 'skinColor');
-    chips('#cr-outfit', SAN.state.OUTFITS, 'outfit');
-    chips('#cr-acc', SAN.state.ACCESSORIES, 'accessory');
+    chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
+    chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
+    chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
 
     wrap.querySelector('#cr-name').addEventListener('input', (e) => { custom.name = e.target.value; nameDisplay.textContent = custom.name || 'Elara'; });
     wrap.querySelector('#cr-random').addEventListener('click', () => {
-      custom.hair = U.pick(SAN.state.HAIRSTYLES).id;
-      custom.hairColor = U.pick(SAN.state.HAIRS).hex;
-      custom.eyeColor = U.pick(SAN.state.EYES).hex;
-      custom.skinColor = U.pick(SAN.state.SKINS).hex;
-      custom.outfit = U.pick(SAN.state.OUTFITS).id;
-      custom.accessory = U.pick(SAN.state.ACCESSORIES).id;
-      chips('#cr-hairstyle', SAN.state.HAIRSTYLES, 'hair');
-      swatches('#cr-haircolor', SAN.state.HAIRS, 'hairColor');
-      swatches('#cr-eyes', SAN.state.EYES, 'eyeColor');
-      swatches('#cr-skin', SAN.state.SKINS, 'skinColor');
-      chips('#cr-outfit', SAN.state.OUTFITS, 'outfit');
-      chips('#cr-acc', SAN.state.ACCESSORIES, 'accessory');
+      custom.pronoun = U.pick(SAN.state.PRONOUNS).id;
+      custom.background = U.pick(SAN.state.BACKGROUNDS).id;
+      custom.temperament = U.pick(SAN.state.TEMPERAMENTS).id;
+      chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
+      chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
+      chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
       paint();
     });
     wrap.querySelector('#cr-back').addEventListener('click', () => { wrap.remove(); el.classList.remove('title-subpanel'); SC.showTitle(); });
@@ -290,6 +278,14 @@
   /* ---------------- new game / intro ---------------- */
   SC.beginGame = function (custom) {
     const S_ = SAN.state.newGame({ player: custom, cat: { name: 'Mochi', color: 'cream', adopted: false }, slot: SC.pickFreeSlot() });
+    const bg = SAN.state.background(custom.background);
+    const pr = SAN.state.pronoun(custom.pronoun);
+    const carried = SAN.state.carriedItems(custom).map((g) => {
+      const it = SAN.data.item(g.id);
+      return (it ? it.name : g.id) + (g.count > 1 ? ' ×' + g.count : '');
+    }).join(', ');
+    const ledger = 'The village ledger writes you down as ' + (custom.name || 'Elara') + ' — ' + pr.name + '.' +
+      (carried ? ' In your satchel: ' + carried + '.' : '');
     S_.started = true;
     SAN.ui.titleActive = true;
     document.getElementById('title-screen').classList.add('hidden');
@@ -307,6 +303,8 @@
       setTimeout(() => {
         SAN.ui.dialogue({
           pages: [
+            { speaker: 'narrator', text: bg.intro },
+            { speaker: 'narrator', text: ledger },
             { speaker: 'narrator', text: 'Your cottage smells of dust and rain and something older: possibility.' },
             { speaker: 'narrator', text: 'There is a key on the table with your name on it. There is a notebook on the desk. There is a village outside.' },
             { speaker: 'narrator', text: 'Nothing here is urgent. Use WASD or the arrow keys to move. Press E to interact. The village can wait.' },
