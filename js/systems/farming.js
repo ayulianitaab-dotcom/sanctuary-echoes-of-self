@@ -105,9 +105,10 @@
       const areaId = key.split(':')[0];
       if (!crop) return;
       const inSeason = F.canGrowIn(st.crop, areaId, S.time.season);
-      if (st.watered && inSeason && st.stage < crop.days) st.stage += 1;
+      const grew = !!(st.watered && inSeason && st.stage < crop.days);
+      if (grew) st.stage += 1;
       st.watered = false;
-      st.justGrew = !!st.watered;
+      st.justGrew = grew;
     });
   };
 

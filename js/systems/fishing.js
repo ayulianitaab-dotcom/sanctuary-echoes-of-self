@@ -115,7 +115,7 @@
     SAN.audio.sfx('water');
     SAN.audio.ambient('waves');
     F.updateUI();
-    if (SAN.state.S.player.energy <= 0) {
+    if (SAN.state.S.energy <= 0) {
       SAN.ui.toast('You are exhausted. Fishing would just be staring at water.', 'warn');
     }
   };

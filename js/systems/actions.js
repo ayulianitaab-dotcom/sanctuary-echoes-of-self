@@ -43,7 +43,7 @@
 
   A.fish = function () {
     const S_ = S();
-    if (S_.player.energy <= 0) { SAN.ui.toast('You are too tired to hold a rod steady.', 'warn'); return; }
+    if (S_.energy <= 0) { SAN.ui.toast('You are too tired to hold a rod steady.', 'warn'); return; }
     SAN.fishing.start();
   };
 

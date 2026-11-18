@@ -7301,7 +7301,7 @@ window.SAN = window.SAN || {};
     const a = W.area;
     if (!a) return;
     let speed = running ? 108 : 62;
-    if (S.player.energy <= 0) speed *= 0.65;
+    if (S.energy <= 0) speed *= 0.65;
     const p = W.player;
     const len = Math.hypot(dx, dy);
     if (len < 0.01) { p.moving = false; return; }
@@ -7325,7 +7325,7 @@ window.SAN = window.SAN || {};
       if (ch === 'w' || ch === '=' || ch === 'o' || ch === 's') SAN.audio.sfx('step');
       else SAN.audio.sfx('grass');
       SAN.cat && SAN.cat.onPlayerWalk && SAN.cat.onPlayerWalk();
-      if (S.player.energy > 0 && running) S.player.energy = Math.max(0, S.player.energy - dt * 0.35);
+      if (S.energy > 0 && running) S.energy = Math.max(0, S.energy - dt * 0.35);
     }
     W.updateCamera(dt);
     W.checkExits();
@@ -8185,9 +8185,10 @@ window.SAN = window.SAN || {};
       const areaId = key.split(':')[0];
       if (!crop) return;
       const inSeason = F.canGrowIn(st.crop, areaId, S.time.season);
-      if (st.watered && inSeason && st.stage < crop.days) st.stage += 1;
+      const grew = !!(st.watered && inSeason && st.stage < crop.days);
+      if (grew) st.stage += 1;
       st.watered = false;
-      st.justGrew = !!st.watered;
+      st.justGrew = grew;
     });
   };
 
@@ -8329,7 +8330,7 @@ window.SAN = window.SAN || {};
     SAN.audio.sfx('water');
     SAN.audio.ambient('waves');
     F.updateUI();
-    if (SAN.state.S.player.energy <= 0) {
+    if (SAN.state.S.energy <= 0) {
       SAN.ui.toast('You are exhausted. Fishing would just be staring at water.', 'warn');
     }
   };
@@ -10073,7 +10074,7 @@ window.SAN = window.SAN || {};
 
   A.fish = function () {
     const S_ = S();
-    if (S_.player.energy <= 0) { SAN.ui.toast('You are too tired to hold a rod steady.', 'warn'); return; }
+    if (S_.energy <= 0) { SAN.ui.toast('You are too tired to hold a rod steady.', 'warn'); return; }
     SAN.fishing.start();
   };
 

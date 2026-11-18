@@ -195,7 +195,7 @@
     const a = W.area;
     if (!a) return;
     let speed = running ? 108 : 62;
-    if (S.player.energy <= 0) speed *= 0.65;
+    if (S.energy <= 0) speed *= 0.65;
     const p = W.player;
     const len = Math.hypot(dx, dy);
     if (len < 0.01) { p.moving = false; return; }
@@ -219,7 +219,7 @@
       if (ch === 'w' || ch === '=' || ch === 'o' || ch === 's') SAN.audio.sfx('step');
       else SAN.audio.sfx('grass');
       SAN.cat && SAN.cat.onPlayerWalk && SAN.cat.onPlayerWalk();
-      if (S.player.energy > 0 && running) S.player.energy = Math.max(0, S.player.energy - dt * 0.35);
+      if (S.energy > 0 && running) S.energy = Math.max(0, S.energy - dt * 0.35);
     }
     W.updateCamera(dt);
     W.checkExits();
