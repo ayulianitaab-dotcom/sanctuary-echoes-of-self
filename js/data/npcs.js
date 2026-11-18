@@ -359,6 +359,15 @@
 
   D.npcOrder = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
 
+  /* Official NPC Lineup Reference portraits (tools/build-npc-assets.php).
+     The lineup supplies one neutral bust per character, so that is the only
+     expression on disk. Dialogue may ask for any of the eight moods;
+     render.portraitArtFor() falls back to 'neutral' for the rest instead of
+     inventing a face. Add a mood here once its artwork exists. */
+  D.npcOrder.forEach((id) => {
+    if (N[id]) N[id].expressions = ['neutral'];
+  });
+
   D.FRIEND_TIERS = [
     { min: 0, name: 'Stranger' },
     { min: 21, name: 'Acquaintance' },

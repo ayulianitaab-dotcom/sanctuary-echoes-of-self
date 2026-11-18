@@ -8,6 +8,8 @@
  *
  *   php tools/build-main-assets.php
  */
+require_once __DIR__ . '/lib/image-pipeline.php';
+
 $root = dirname(__DIR__);
 $sheetPath = $root . '/assets/characters/main/source-reference.webp';
 $outDir = $root . '/assets/characters/main';
@@ -22,75 +24,6 @@ if (!$sheet) {
 imagealphablending($sheet, false);
 $W = imagesx($sheet);
 $H = imagesy($sheet);
-
-function alphaAt($im, $x, $y)
-{
-    return (imagecolorat($im, $x, $y) >> 24) & 127;
-}
-
-/** Tight bbox of pixels with alpha below $maxAlpha inside a region. */
-function contentBox($im, $x0, $y0, $x1, $y1, $maxAlpha = 100)
-{
-    $minX = PHP_INT_MAX;
-    $minY = PHP_INT_MAX;
-    $maxX = -1;
-    $maxY = -1;
-    $x1 = min($x1, imagesx($im) - 1);
-    $y1 = min($y1, imagesy($im) - 1);
-    for ($y = max(0, $y0); $y <= $y1; $y++) {
-        for ($x = max(0, $x0); $x <= $x1; $x++) {
-            if (alphaAt($im, $x, $y) < $maxAlpha) {
-                if ($x < $minX) $minX = $x;
-                if ($x > $maxX) $maxX = $x;
-                if ($y < $minY) $minY = $y;
-                if ($y > $maxY) $maxY = $y;
-            }
-        }
-    }
-    if ($maxX < 0) return null;
-    return [$minX, $minY, $maxX, $maxY];
-}
-
-/** Crop the source and leave $pad transparent pixels around the artwork. */
-function cropTrimmed($im, $box, $pad)
-{
-    list($x0, $y0, $x1, $y1) = $box;
-    $w = $x1 - $x0 + 1;
-    $h = $y1 - $y0 + 1;
-    $dst = imagecreatetruecolor($w + $pad * 2, $h + $pad * 2);
-    imagealphablending($dst, false);
-    imagesavealpha($dst, true);
-    $clear = imagecolorallocatealpha($dst, 0, 0, 0, 127);
-    imagefill($dst, 0, 0, $clear);
-    imagecopy($dst, $im, $pad, $pad, $x0, $y0, $w, $h);
-    return $dst;
-}
-
-function resizeTo($src, $targetW, $targetH)
-{
-    $dst = imagecreatetruecolor($targetW, $targetH);
-    imagealphablending($dst, false);
-    imagesavealpha($dst, true);
-    imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 0, 0, 0, 127));
-    imagecopyresampled($dst, $src, 0, 0, 0, 0, $targetW, $targetH, imagesx($src), imagesy($src));
-    return $dst;
-}
-
-/** Fit artwork into a transparent canvas of the given size without cropping. */
-function fitContain($src, $canvasW, $canvasH, $margin)
-{
-    $sw = imagesx($src);
-    $sh = imagesy($src);
-    $scale = min(($canvasW - $margin * 2) / $sw, ($canvasH - $margin * 2) / $sh);
-    $w = (int)round($sw * $scale);
-    $h = (int)round($sh * $scale);
-    $dst = imagecreatetruecolor($canvasW, $canvasH);
-    imagealphablending($dst, false);
-    imagesavealpha($dst, true);
-    imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 0, 0, 0, 127));
-    imagecopyresampled($dst, $src, (int)(($canvasW - $w) / 2), (int)(($canvasH - $h) / 2), 0, 0, $w, $h, $sw, $sh);
-    return $dst;
-}
 
 if (!is_dir($exprDir)) mkdir($exprDir, 0777, true);
 if (!is_dir($debugDir)) mkdir($debugDir, 0777, true);

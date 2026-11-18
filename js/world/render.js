@@ -2170,8 +2170,10 @@
   /* =========================================================
      PORTRAITS (illustrated assets)
      The game ships hand-illustrated anime portraits cut from the
-     reference sheets in assets/portraits/<id>/<mood>.png. The SVG
-     above is only the fallback when an illustration is missing.
+     reference sheets in assets/portraits/<id>/<mood>.png. The NPC lineup
+     yields one official neutral portrait per character, so every other mood
+     resolves to that same face rather than an invented one. The SVG above is
+     only the fallback when an illustration is missing.
      ========================================================= */
   R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry', 'thanking'];
   R.MOODS = R.PLAYER_MOODS.slice();
