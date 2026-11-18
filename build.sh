@@ -55,14 +55,22 @@ PORTRAITS_JS=$(mktemp)
   echo 'window.SAN_ASSET_PORTRAITS={'
   sep=''
   count=0
-  while IFS= read -r png; do
-    rel=${png#assets/portraits/}
+  while IFS= read -r art; do
+    rel=${art#assets/portraits/}
     id=${rel%%/*}
-    mood=$(basename "$png" .png)
-    printf '%s"%s/%s":"data:image/png;base64,%s"' "$sep" "$id" "$mood" "$(base64 -w 0 "$png")"
+    base=$(basename "$art")
+    mood=${base%.*}
+    ext=${base##*.}
+    case "$ext" in
+      webp) mime=image/webp ;;
+      png)  mime=image/png ;;
+      jpg|jpeg) mime=image/jpeg ;;
+      *) echo "ERROR: unsupported portrait format: $art" >&2; exit 1 ;;
+    esac
+    printf '%s"%s/%s":"data:%s;base64,%s"' "$sep" "$id" "$mood" "$mime" "$(base64 -w 0 "$art")"
     sep=$',\n'
     count=$((count + 1))
-  done < <(find assets/portraits -type f -name '*.png' | LC_ALL=C sort)
+  done < <(find assets/portraits -type f \( -name '*.webp' -o -name '*.png' \) | LC_ALL=C sort)
   echo
   echo '};'
   echo '</script>'

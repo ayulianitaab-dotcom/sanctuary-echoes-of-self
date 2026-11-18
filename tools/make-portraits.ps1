@@ -3,7 +3,8 @@
 # The only anime illustrations available for this project are the three
 # reference sheets supplied by the author, so the individual character
 # portraits are cropped from those sheets instead of being redrawn.
-# Requires Windows PowerShell (uses the WIC WebP decoder, no external tools).
+# Requires Windows PowerShell (uses the WIC WebP decoder) plus the libwebp CLI
+# (`cwebp`) to write the shipped lossless WebP portraits.
 #
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools/make-portraits.ps1
 #
@@ -11,7 +12,8 @@
 
 param(
   [string]$OutDir = "assets/portraits",
-  [string]$ContactPath = ".tmp-crops/contact.png"
+  [string]$ContactPath = ".tmp-crops/contact.png",
+  [string]$Cwebp = "cwebp"
 )
 
 $ErrorActionPreference = "Stop"
@@ -85,8 +87,15 @@ foreach ($key in $sheets.Keys) { $frames[$key] = Get-Frame $sheets[$key] }
 
 $made = @()
 foreach ($c in $crops) {
-  $dst = Join-Path (Join-Path $OutDir $c.id) ($c.mood + ".png")
-  $made += Save-Crop $frames[$c.sheet] $c.x $c.y $c.w $c.h (Join-Path $root $dst)
+  # crop to a PNG intermediate, then ship it as lossless WebP: same pixels,
+  # roughly 30% fewer bytes, which keeps the inlined index.html small
+  $png = Join-Path $root (Join-Path ".tmp-crops/portrait-png" (Join-Path $c.id ($c.mood + ".png")))
+  $made += Save-Crop $frames[$c.sheet] $c.x $c.y $c.w $c.h $png
+  $webp = Join-Path $root (Join-Path $OutDir (Join-Path $c.id ($c.mood + ".webp")))
+  $webpDir = Split-Path -Parent $webp
+  if (-not (Test-Path $webpDir)) { New-Item -ItemType Directory -Path $webpDir -Force | Out-Null }
+  & $Cwebp -quiet -lossless -z 9 $png -o $webp
+  if ($LASTEXITCODE -ne 0) { throw "cwebp failed for $webp" }
 }
 
 Write-Output ("cropped " + $made.Count + " portraits")
