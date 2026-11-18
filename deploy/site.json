@@ -9,6 +9,7 @@
   "production": {
     "url": "https://sanctuary-echoes-of-self-aru6jp.freebuff.page",
     "environmentId": "ebf3f2eb-fa94-4fbf-8158-d93827c3c397",
-    "deployed": false
+    "deployed": true,
+    "published": true
   }
 }
