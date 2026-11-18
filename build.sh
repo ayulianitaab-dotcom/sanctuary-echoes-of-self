@@ -49,42 +49,23 @@ for f in "${FILES[@]}"; do
   fi
 done
 
-# portraits: inlined as data URIs so index.html stays self-contained and the
-# illustrations still show when the file is opened without a local server
-PORTRAITS_JS=$(mktemp)
-{
-  echo '<script>'
-  echo 'window.SAN_ASSET_PORTRAITS={'
-  sep=''
-  count=0
-  while IFS= read -r art; do
-    rel=${art#assets/portraits/}
-    id=${rel%%/*}
-    base=$(basename "$art")
-    mood=${base%.*}
-    ext=${base##*.}
-    case "$ext" in
-      webp) mime=image/webp ;;
-      png)  mime=image/png ;;
-      jpg|jpeg) mime=image/jpeg ;;
-      *) echo "ERROR: unsupported portrait format: $art" >&2; exit 1 ;;
-    esac
-    printf '%s"%s/%s":"data:%s;base64,%s"' "$sep" "$id" "$mood" "$mime" "$(base64 -w 0 "$art")"
-    sep=$',\n'
-    count=$((count + 1))
-  done < <(find assets/portraits -type f \( -name '*.webp' -o -name '*.png' \) | LC_ALL=C sort)
-  echo
-  echo '};'
-  echo '</script>'
-  if [ "$count" -eq 0 ]; then
-    echo "ERROR: no portrait illustrations found in assets/portraits" >&2
-    exit 1
-  fi
-  echo "Embedded $count portrait illustrations" >&2
-} > "$PORTRAITS_JS"
+# portraits: the uploaded artwork for the nine NPCs is 27 MB of PNGs, so it is
+# served as real files next to index.html (relative paths work both over http
+# and when index.html is opened straight from disk) instead of being base64
+# inlined, which would triple it and make the page unloadable.
+if [ ! -f assets/portraits/nyssa/fullbody.png ]; then
+  echo "ERROR: no portrait artwork found in assets/portraits" >&2
+  exit 1
+fi
+PORTRAIT_COUNT=$(find assets/portraits -type f -name '*.png' | wc -l)
+if [ "$PORTRAIT_COUNT" -lt 90 ]; then
+  echo "ERROR: expected 90 portrait files, found $PORTRAIT_COUNT" >&2
+  exit 1
+fi
+echo "Serving $PORTRAIT_COUNT portrait illustrations from assets/portraits" >&2
 
-# main character: the reference-derived full body and expressions, inlined the
-# same way so the single-file build shows the official artwork
+# main character: the reference-derived full body and expressions, inlined
+# (2.5 MB) so the official artwork is always present
 MAIN_JS=$(mktemp)
 {
   echo '<script>'
@@ -107,7 +88,7 @@ MAIN_JS=$(mktemp)
 } > "$MAIN_JS"
 
 TMP=$(mktemp)
-trap 'rm -f "$TMP" "$PORTRAITS_JS" "$MAIN_JS"' EXIT
+trap 'rm -f "$TMP" "$MAIN_JS"' EXIT
 
 awk '
 /<!-- CSS_HERE -->/ {
@@ -122,7 +103,6 @@ awk '
 
 {
   cat "$TMP" | sed '/<!-- JS_HERE -->/q' | sed '$d'
-  cat "$PORTRAITS_JS"
   cat "$MAIN_JS"
   for f in "${FILES[@]}"; do
     echo "<script>"
@@ -138,4 +118,8 @@ echo "Built index.html ($(wc -c < index.html) bytes)"
 # deploy/ holds the Worker + static assets used when publishing to the web
 mkdir -p deploy/public
 cp index.html deploy/public/index.html
-echo "Staged deploy/public/index.html"
+rm -rf deploy/public/assets/portraits deploy/public/assets/characters
+mkdir -p deploy/public/assets
+cp -R assets/portraits deploy/public/assets/portraits
+cp -R assets/characters deploy/public/assets/characters
+echo "Staged deploy/public/index.html + assets"

@@ -359,13 +359,41 @@
 
   D.npcOrder = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
 
-  /* Official NPC Lineup Reference portraits (tools/build-npc-assets.php).
-     The lineup supplies one neutral bust per character, so that is the only
-     expression on disk. Dialogue may ask for any of the eight moods;
-     render.portraitArtFor() falls back to 'neutral' for the rest instead of
-     inventing a face. Add a mood here once its artwork exists. */
+  /* =========================================================
+     OFFICIAL CHARACTER ARTWORK — one registry per character
+     Every character ships the same ten files in
+     assets/portraits/<id>/: a full body plus nine expressions.
+     Paths are always built from that character's own id, so an NPC can
+     never show another NPC's face. render.portraitArtFor() reads this
+     registry, and any mood a character does not ship falls back to
+     neutral instead of inventing an expression.
+     ========================================================= */
+  const NPC_ART_FILES = {
+    neutral: 'neutral.png',
+    happy: 'happy.png',
+    sad: 'sad.png',
+    smile: 'smile.png',
+    serious: 'serious.png',
+    thinking: 'thinking.png',
+    concerned: 'concerned.png',
+    gentle: 'gentle.png',
+    // the uploads spell this "suprise.png"; stored under its correct name
+    surprised: 'surprised.png',
+  };
+
+  D.npcArt = function (id) {
+    const expressions = {};
+    Object.keys(NPC_ART_FILES).forEach((mood) => {
+      expressions[mood] = 'assets/portraits/' + id + '/' + NPC_ART_FILES[mood];
+    });
+    return { fullBody: 'assets/portraits/' + id + '/fullbody.png', expressions };
+  };
+
   D.npcOrder.forEach((id) => {
-    if (N[id]) N[id].expressions = ['neutral'];
+    if (!N[id]) return;
+    N[id].art = D.npcArt(id);
+    N[id].fullBody = N[id].art.fullBody;
+    N[id].expressions = Object.keys(N[id].art.expressions);
   });
 
   D.FRIEND_TIERS = [

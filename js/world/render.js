@@ -2169,17 +2169,30 @@
 
   /* =========================================================
      PORTRAITS (illustrated assets)
-     The game ships hand-illustrated anime portraits cut from the
-     reference sheets in assets/portraits/<id>/<mood>.png. The NPC lineup
-     yields one official neutral portrait per character, so every other mood
-     resolves to that same face rather than an invented one. The SVG above is
-     only the fallback when an illustration is missing.
+     The game ships hand-illustrated anime portraits from
+     assets/portraits/<id>/<mood>.png — a full body plus nine expressions per
+     character, listed in each NPC's own `art` registry (js/data/npcs.js).
+     A mood the character does not ship resolves to its neutral face rather
+     than an invented one. The SVG above is only the fallback when an
+     illustration is missing.
      ========================================================= */
   R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry', 'thanking'];
-  R.MOODS = R.PLAYER_MOODS.slice();
+  // the expression sheets uploaded for the nine NPCs
+  R.NPC_MOODS = ['neutral', 'happy', 'sad', 'smile', 'serious', 'thinking', 'concerned', 'gentle', 'surprised'];
+  // a mood is valid when either the player or an NPC ships it
+  R.MOODS = R.PLAYER_MOODS.concat(R.NPC_MOODS.filter((m) => R.PLAYER_MOODS.indexOf(m) < 0));
   // dialogue returns 'thoughtful'; the sheets label that expression 'thinking'
   const ART_ALIAS = {
     thoughtful: 'thinking',
+    // the uploads spell this "suprise"
+    suprise: 'surprised',
+    surprize: 'surprised',
+    surprised_face: 'surprised',
+    smiling: 'smile',
+    content: 'smile',
+    calm: 'gentle',
+    tender: 'gentle',
+    stern: 'serious',
     thankful: 'thanking',
     grateful: 'thanking',
     relieved: 'thanking',
@@ -2221,11 +2234,31 @@
     return R.resolveMood(R.CONTEXT_MOODS[kind] || 'neutral');
   };
 
-  // an NPC ships only the expressions declared in its data; the rest fall back
+  // an NPC ships only the expressions declared in its registry; the rest fall back
   R.portraitArtFor = function (who) {
     if (who === 'player') return R.PLAYER_MOODS.slice();
     const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    if (npc && npc.art && npc.art.expressions) return Object.keys(npc.art.expressions);
     return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
+  };
+
+  // the illustrated full body registered for an NPC
+  R.npcFullBodySrc = function (who) {
+    const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
+    if (bundled && bundled[who + '/fullbody']) return bundled[who + '/fullbody'];
+    if (npc && npc.fullBody) return npc.fullBody;
+    if (!npc) return '';
+    return 'assets/portraits/' + who + '/fullbody.png';
+  };
+
+  R.npcFullBodyImg = function (who, opts) {
+    const src = R.npcFullBodySrc(who);
+    if (!src) return '';
+    const o = opts || {};
+    const cls = 'portrait-img fullbody-img' + (o.className ? ' ' + o.className : '');
+    return `<img class="${cls}" src="${src}" alt="" draggable="false"` +
+      ` data-who="${who}" data-kind="fullbody">`;
   };
 
   // the official Main Character artwork: one config, used by every screen
@@ -2258,12 +2291,16 @@
     }
     const list = R.portraitArtFor(id);
     let m = ART_ALIAS[mood] || mood || 'neutral';
+    // anything this character does not ship shows its neutral face
     if (list.indexOf(m) < 0) m = 'neutral';
-    // the single-file build inlines every illustration as a data URI so the
-    // game keeps working when index.html is opened straight from disk
+    const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[id] : null;
+    // the single-file build may bundle illustrations as data URIs
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[id + '/' + m]) return bundled[id + '/' + m];
-    return 'assets/portraits/' + id + '/' + m + '.webp';
+    if (npc && npc.art && npc.art.expressions && npc.art.expressions[m]) {
+      return npc.art.expressions[m];
+    }
+    return 'assets/portraits/' + id + '/' + m + '.png';
   };
 
   R.portraitImg = function (who, opts) {
