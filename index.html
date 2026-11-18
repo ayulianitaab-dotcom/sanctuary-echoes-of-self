@@ -1548,8 +1548,13 @@ window.SAN = window.SAN || {};
 
   U.pad2 = (n) => String(n).padStart(2, '0');
 
-  U.dateLabel = (t) =>
-    `${U.SEASONS[t.season]} ${t.day}, Year ${t.year}`;
+  U.SEASON_KEYS = ['spring', 'summer', 'autumn', 'winter'];
+  U.seasonName = (i) => (SAN.i18n ? SAN.i18n.t('season.' + U.SEASON_KEYS[i], U.SEASONS[i]) : U.SEASONS[i]);
+
+  U.dateLabel = (t) => {
+    const year = SAN.t ? SAN.t('day.year') : 'Year';
+    return `${U.seasonName(t.season)} ${t.day}, ${year} ${t.year}`;
+  };
 })();
 </script>
 <script>
@@ -1659,6 +1664,11 @@ window.SAN = window.SAN || {};
     'day.day': 'Day',
     'day.year': 'Year',
 
+    'season.spring': 'Spring',
+    'season.summer': 'Summer',
+    'season.autumn': 'Autumn',
+    'season.winter': 'Winter',
+
     'weather.sunny': 'sunny',
     'weather.cloudy': 'cloudy',
     'weather.rain': 'rain',
@@ -1767,6 +1777,11 @@ window.SAN = window.SAN || {};
 
     'day.day': 'Hari',
     'day.year': 'Tahun',
+
+    'season.spring': 'Semi',
+    'season.summer': 'Panas',
+    'season.autumn': 'Gugur',
+    'season.winter': 'Dingin',
 
     'weather.sunny': 'cerah',
     'weather.cloudy': 'berawan',
@@ -10803,7 +10818,7 @@ window.SAN = window.SAN || {};
     const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
     el.innerHTML = `
       <div class="day-card-inner">
-        <div class="day-season">${U.SEASONS[S_.time.season]}</div>
+        <div class="day-season">${U.seasonName(S_.time.season)}</div>
         <div class="day-num">${SAN.t('day.day')} ${S_.time.day}</div>
         <div class="day-year">${SAN.t('day.year')} ${S_.time.year}</div>
         <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${SAN.t('weather.' + S_.time.weather, S_.time.weather)}</div>
@@ -10819,7 +10834,7 @@ window.SAN = window.SAN || {};
     if (!S_ || !UI.hud) return;
     const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
     const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-    set('hud-date', U.SEASONS[S_.time.season] + ' ' + S_.time.day);
+    set('hud-date', U.seasonName(S_.time.season) + ' ' + S_.time.day);
     set('hud-time', U.fmtClock(S_.time.minutes));
     set('hud-weather-icon', weatherIcons[S_.time.weather] || '☀');
     set('hud-weather-label', SAN.t('weather.' + S_.time.weather, S_.time.weather));

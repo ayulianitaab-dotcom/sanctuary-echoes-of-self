@@ -97,7 +97,7 @@
     const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
     el.innerHTML = `
       <div class="day-card-inner">
-        <div class="day-season">${U.SEASONS[S_.time.season]}</div>
+        <div class="day-season">${U.seasonName(S_.time.season)}</div>
         <div class="day-num">${SAN.t('day.day')} ${S_.time.day}</div>
         <div class="day-year">${SAN.t('day.year')} ${S_.time.year}</div>
         <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${SAN.t('weather.' + S_.time.weather, S_.time.weather)}</div>
@@ -113,7 +113,7 @@
     if (!S_ || !UI.hud) return;
     const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
     const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-    set('hud-date', U.SEASONS[S_.time.season] + ' ' + S_.time.day);
+    set('hud-date', U.seasonName(S_.time.season) + ' ' + S_.time.day);
     set('hud-time', U.fmtClock(S_.time.minutes));
     set('hud-weather-icon', weatherIcons[S_.time.weather] || '☀');
     set('hud-weather-label', SAN.t('weather.' + S_.time.weather, S_.time.weather));

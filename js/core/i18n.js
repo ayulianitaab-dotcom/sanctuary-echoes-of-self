@@ -104,6 +104,11 @@
     'day.day': 'Day',
     'day.year': 'Year',
 
+    'season.spring': 'Spring',
+    'season.summer': 'Summer',
+    'season.autumn': 'Autumn',
+    'season.winter': 'Winter',
+
     'weather.sunny': 'sunny',
     'weather.cloudy': 'cloudy',
     'weather.rain': 'rain',
@@ -212,6 +217,11 @@
 
     'day.day': 'Hari',
     'day.year': 'Tahun',
+
+    'season.spring': 'Semi',
+    'season.summer': 'Panas',
+    'season.autumn': 'Gugur',
+    'season.winter': 'Dingin',
 
     'weather.sunny': 'cerah',
     'weather.cloudy': 'berawan',

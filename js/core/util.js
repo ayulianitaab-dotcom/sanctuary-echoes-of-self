@@ -92,6 +92,11 @@ window.SAN = window.SAN || {};
 
   U.pad2 = (n) => String(n).padStart(2, '0');
 
-  U.dateLabel = (t) =>
-    `${U.SEASONS[t.season]} ${t.day}, Year ${t.year}`;
+  U.SEASON_KEYS = ['spring', 'summer', 'autumn', 'winter'];
+  U.seasonName = (i) => (SAN.i18n ? SAN.i18n.t('season.' + U.SEASON_KEYS[i], U.SEASONS[i]) : U.SEASONS[i]);
+
+  U.dateLabel = (t) => {
+    const year = SAN.t ? SAN.t('day.year') : 'Year';
+    return `${U.seasonName(t.season)} ${t.day}, ${year} ${t.year}`;
+  };
 })();
