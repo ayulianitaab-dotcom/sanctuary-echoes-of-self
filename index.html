@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2b2334">
 <title>Sanctuary: Echoes of Self</title>
+<script>window.SAN_ASSET_PORTRAIT_EXT = "png";</script>
 <style>
 /* ============================================================
    SANCTUARY: ECHOES OF SELF — cozy fantasy UI
@@ -1208,6 +1209,25 @@ body.reduce-motion .ts-clouds, body.reduce-motion .ts-cast { transform: none !im
   .ts-mote, .tbl-cat, .tbl-cat .tail, .tbl-cat::before { animation: none !important; }
   .ts-mountains, .ts-village, .ts-clouds, .ts-cast { transform: none !important; }
 }
+
+/* Settings / Character Creation cover the scene: hold the idle life in place.
+   Positions are untouched, so the composition looks exactly the same. */
+#title-screen.life-paused .ts-sway,
+#title-screen.life-paused .ts-frame,
+#title-screen.life-paused .ts-frame::after,
+#title-screen.life-paused .ts-mote,
+#title-screen.life-paused .ts-petal,
+#title-screen.life-paused .ts-sun,
+#title-screen.life-paused .ts-clouds i,
+#title-screen.life-paused .ts-wisteria i,
+#title-screen.life-paused .ts-foreground i,
+#title-screen.life-paused .tbl-cat,
+#title-screen.life-paused .tbl-cat .tail,
+#title-screen.life-paused .ts-windmill .blades { animation-play-state: paused !important; }
+
+/* small screens / modest devices: skip the decorative hair glint */
+#title-screen.life-light .ts-frame::after,
+#title-screen.life-light .ts-wisteria i { animation: none; }
 
 /* --- tea table foreground --- */
 .ts-table { position: absolute; left: 58%; bottom: -1%; width: min(40vw, 560px); height: 23%; transform: translateX(-50%); z-index: 4; pointer-events: none; }
@@ -7553,14 +7573,29 @@ window.SAN = window.SAN || {};
     return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
   };
 
+  /* The repository keeps the uploaded PNGs as the source of truth. The
+     published build re-encodes that same artwork to WebP (the host allows
+     far less than the 27 MB of PNGs), and index.html declares which one to
+     request: "png" locally, "webp" in deploy/public. */
+  R.assetExt = function () {
+    const ext = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAIT_EXT : '';
+    return ext === 'webp' ? 'webp' : 'png';
+  };
+  R.withAssetExt = function (path) {
+    if (!path) return path;
+    const ext = R.assetExt();
+    if (ext === 'png') return path;
+    return String(path).replace(/\.png$/i, '.' + ext);
+  };
+
   // the illustrated full body registered for an NPC
   R.npcFullBodySrc = function (who) {
     const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[who + '/fullbody']) return bundled[who + '/fullbody'];
-    if (npc && npc.fullBody) return npc.fullBody;
+    if (npc && npc.fullBody) return R.withAssetExt(npc.fullBody);
     if (!npc) return '';
-    return 'assets/portraits/' + who + '/fullbody.png';
+    return R.withAssetExt('assets/portraits/' + who + '/fullbody.png');
   };
 
   R.npcFullBodyImg = function (who, opts) {
@@ -7609,9 +7644,9 @@ window.SAN = window.SAN || {};
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[id + '/' + m]) return bundled[id + '/' + m];
     if (npc && npc.art && npc.art.expressions && npc.art.expressions[m]) {
-      return npc.art.expressions[m];
+      return R.withAssetExt(npc.art.expressions[m]);
     }
-    return 'assets/portraits/' + id + '/' + m + '.png';
+    return R.withAssetExt('assets/portraits/' + id + '/' + m + '.png');
   };
 
   R.portraitImg = function (who, opts) {
@@ -13803,6 +13838,15 @@ window.SAN = window.SAN || {};
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
   };
 
+  // keep the title light on small screens and modest devices: fewer motes and
+  // petals, and less frequent idle changes, without touching the composition
+  SC.titleLightMode = function () {
+    const small = window.innerWidth <= 760;
+    const weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    return !!(small || weak);
+  };
+
   SC.showTitle = function () {
     SC.stopTitleLife();
     SAN.ui.titleActive = true;
@@ -13900,9 +13944,13 @@ window.SAN = window.SAN || {};
         <div class="ts-foot">${L('title.foot', 'WASD move · E interact · ESC pause · plays fully offline')}</div>
       </div>`;
 
+    const light = SC.titleLightMode();
+    el.classList.toggle('life-light', light);
+
     // ambient petal layer: decorative only, identities and layout untouched
     const petalLayer = el.querySelector('.ts-petals');
-    for (let i = 0; i < 18; i++) {
+    const petalCount = light ? 10 : 18;
+    for (let i = 0; i < petalCount; i++) {
       const petal = document.createElement('i');
       petal.className = 'ts-petal';
       petal.style.setProperty('--x', ((i * 37) % 100) + '%');
@@ -13914,7 +13962,8 @@ window.SAN = window.SAN || {};
 
     // floating motes of light: pure CSS dots, no extra artwork
     const moteLayer = el.querySelector('.ts-motes');
-    for (let i = 0; i < 16; i++) {
+    const moteCount = light ? 7 : 16;
+    for (let i = 0; i < moteCount; i++) {
       const mote = document.createElement('i');
       mote.className = 'ts-mote';
       mote.style.setProperty('--x', (6 + (i * 61) % 88) + '%');
@@ -14005,6 +14054,19 @@ window.SAN = window.SAN || {};
     const figs = Array.prototype.slice.call(el.querySelectorAll('.ts-char[data-npc]'));
     const card = el.querySelector('#ts-card');
     if (!card) return;
+    const light = SC.titleLightMode();
+
+    // Settings and Character Creation cover the scene: hold the idle life and
+    // its timers until the modal is gone, then carry on where it left off.
+    const paused = () => !!el.querySelector('.title-modal') || el.classList.contains('title-subpanel');
+    const syncPause = () => el.classList.toggle('life-paused', paused());
+    const observer = new MutationObserver((records) => {
+      for (let i = 0; i < records.length; i++) {
+        if (records[i].type === 'childList' || records[i].target === el) { syncPause(); return; }
+      }
+    });
+    observer.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    syncPause();
 
     // swap between the two stacked faces so expressions cross-fade
     const paint = (fig, mood) => {
@@ -14086,7 +14148,7 @@ window.SAN = window.SAN || {};
     const scheduleIdle = () => {
       fx.tick = setTimeout(() => {
         if (!el.isConnected) { fx.tick = 0; return; }
-        if (!reduce() && !document.hidden && SAN.ui.titleActive) {
+        if (!reduce() && !paused() && !document.hidden && SAN.ui.titleActive) {
           const free = figs.filter((f) => !f.classList.contains('lit'));
           const fig = free.length ? free[Math.floor(Math.random() * free.length)] : null;
           if (fig) {
@@ -14116,14 +14178,14 @@ window.SAN = window.SAN || {};
           }
         }
         scheduleIdle();
-      }, 1500 + Math.random() * 2200);
+      }, light ? 2600 + Math.random() * 2800 : 1500 + Math.random() * 2200);
     };
 
     // the still busts blink through a very short, very small squash
     const scheduleBlink = () => {
       fx.blink = setTimeout(() => {
         if (!el.isConnected) { fx.blink = 0; return; }
-        if (!reduce() && !document.hidden) {
+        if (!reduce() && !paused() && !document.hidden) {
           const fig = figs[Math.floor(Math.random() * figs.length)];
           const sway = fig && fig.querySelector('.ts-sway');
           if (sway) {
@@ -14132,7 +14194,7 @@ window.SAN = window.SAN || {};
           }
         }
         scheduleBlink();
-      }, 1500 + Math.random() * 2600);
+      }, light ? 3200 + Math.random() * 4200 : 1500 + Math.random() * 2600);
     };
 
     // the cat on the tea table: blink, tail flick, yawn
@@ -14140,14 +14202,14 @@ window.SAN = window.SAN || {};
     const scheduleCat = () => {
       fx.cat = setTimeout(() => {
         if (!el.isConnected) { fx.cat = 0; return; }
-        if (cat && !reduce() && !document.hidden) {
+        if (cat && !reduce() && !paused() && !document.hidden) {
           const acts = ['blink', 'tail', 'yawn', 'tail', 'blink'];
           const act = acts[Math.floor(Math.random() * acts.length)];
           cat.classList.add(act);
           setTimeout(() => cat.classList.remove(act), act === 'yawn' ? 1550 : act === 'blink' ? 230 : 950);
         }
         scheduleCat();
-      }, 4800 + Math.random() * 5200);
+      }, light ? 7000 + Math.random() * 6000 : 4800 + Math.random() * 5200);
     };
 
     // very subtle parallax: the scene drifts against the pointer
@@ -14160,7 +14222,7 @@ window.SAN = window.SAN || {};
       el.style.setProperty('--py', py.toFixed(3));
     };
     const onMove = (e) => {
-      if (reduce()) return;
+      if (reduce() || paused()) return;
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) return;
       px = U.clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1);
@@ -14172,6 +14234,7 @@ window.SAN = window.SAN || {};
     el.addEventListener('mouseleave', onLeaveScene);
 
     fx.detach = () => {
+      observer.disconnect();
       closeBtn.removeEventListener('click', closeCard);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('click', onDocClick);

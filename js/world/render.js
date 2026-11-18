@@ -2242,14 +2242,29 @@
     return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
   };
 
+  /* The repository keeps the uploaded PNGs as the source of truth. The
+     published build re-encodes that same artwork to WebP (the host allows
+     far less than the 27 MB of PNGs), and index.html declares which one to
+     request: "png" locally, "webp" in deploy/public. */
+  R.assetExt = function () {
+    const ext = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAIT_EXT : '';
+    return ext === 'webp' ? 'webp' : 'png';
+  };
+  R.withAssetExt = function (path) {
+    if (!path) return path;
+    const ext = R.assetExt();
+    if (ext === 'png') return path;
+    return String(path).replace(/\.png$/i, '.' + ext);
+  };
+
   // the illustrated full body registered for an NPC
   R.npcFullBodySrc = function (who) {
     const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[who + '/fullbody']) return bundled[who + '/fullbody'];
-    if (npc && npc.fullBody) return npc.fullBody;
+    if (npc && npc.fullBody) return R.withAssetExt(npc.fullBody);
     if (!npc) return '';
-    return 'assets/portraits/' + who + '/fullbody.png';
+    return R.withAssetExt('assets/portraits/' + who + '/fullbody.png');
   };
 
   R.npcFullBodyImg = function (who, opts) {
@@ -2298,9 +2313,9 @@
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[id + '/' + m]) return bundled[id + '/' + m];
     if (npc && npc.art && npc.art.expressions && npc.art.expressions[m]) {
-      return npc.art.expressions[m];
+      return R.withAssetExt(npc.art.expressions[m]);
     }
-    return 'assets/portraits/' + id + '/' + m + '.png';
+    return R.withAssetExt('assets/portraits/' + id + '/' + m + '.png');
   };
 
   R.portraitImg = function (who, opts) {

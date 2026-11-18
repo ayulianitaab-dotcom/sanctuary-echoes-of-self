@@ -34,6 +34,15 @@
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
   };
 
+  // keep the title light on small screens and modest devices: fewer motes and
+  // petals, and less frequent idle changes, without touching the composition
+  SC.titleLightMode = function () {
+    const small = window.innerWidth <= 760;
+    const weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    return !!(small || weak);
+  };
+
   SC.showTitle = function () {
     SC.stopTitleLife();
     SAN.ui.titleActive = true;
@@ -131,9 +140,13 @@
         <div class="ts-foot">${L('title.foot', 'WASD move · E interact · ESC pause · plays fully offline')}</div>
       </div>`;
 
+    const light = SC.titleLightMode();
+    el.classList.toggle('life-light', light);
+
     // ambient petal layer: decorative only, identities and layout untouched
     const petalLayer = el.querySelector('.ts-petals');
-    for (let i = 0; i < 18; i++) {
+    const petalCount = light ? 10 : 18;
+    for (let i = 0; i < petalCount; i++) {
       const petal = document.createElement('i');
       petal.className = 'ts-petal';
       petal.style.setProperty('--x', ((i * 37) % 100) + '%');
@@ -145,7 +158,8 @@
 
     // floating motes of light: pure CSS dots, no extra artwork
     const moteLayer = el.querySelector('.ts-motes');
-    for (let i = 0; i < 16; i++) {
+    const moteCount = light ? 7 : 16;
+    for (let i = 0; i < moteCount; i++) {
       const mote = document.createElement('i');
       mote.className = 'ts-mote';
       mote.style.setProperty('--x', (6 + (i * 61) % 88) + '%');
@@ -236,6 +250,19 @@
     const figs = Array.prototype.slice.call(el.querySelectorAll('.ts-char[data-npc]'));
     const card = el.querySelector('#ts-card');
     if (!card) return;
+    const light = SC.titleLightMode();
+
+    // Settings and Character Creation cover the scene: hold the idle life and
+    // its timers until the modal is gone, then carry on where it left off.
+    const paused = () => !!el.querySelector('.title-modal') || el.classList.contains('title-subpanel');
+    const syncPause = () => el.classList.toggle('life-paused', paused());
+    const observer = new MutationObserver((records) => {
+      for (let i = 0; i < records.length; i++) {
+        if (records[i].type === 'childList' || records[i].target === el) { syncPause(); return; }
+      }
+    });
+    observer.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    syncPause();
 
     // swap between the two stacked faces so expressions cross-fade
     const paint = (fig, mood) => {
@@ -317,7 +344,7 @@
     const scheduleIdle = () => {
       fx.tick = setTimeout(() => {
         if (!el.isConnected) { fx.tick = 0; return; }
-        if (!reduce() && !document.hidden && SAN.ui.titleActive) {
+        if (!reduce() && !paused() && !document.hidden && SAN.ui.titleActive) {
           const free = figs.filter((f) => !f.classList.contains('lit'));
           const fig = free.length ? free[Math.floor(Math.random() * free.length)] : null;
           if (fig) {
@@ -347,14 +374,14 @@
           }
         }
         scheduleIdle();
-      }, 1500 + Math.random() * 2200);
+      }, light ? 2600 + Math.random() * 2800 : 1500 + Math.random() * 2200);
     };
 
     // the still busts blink through a very short, very small squash
     const scheduleBlink = () => {
       fx.blink = setTimeout(() => {
         if (!el.isConnected) { fx.blink = 0; return; }
-        if (!reduce() && !document.hidden) {
+        if (!reduce() && !paused() && !document.hidden) {
           const fig = figs[Math.floor(Math.random() * figs.length)];
           const sway = fig && fig.querySelector('.ts-sway');
           if (sway) {
@@ -363,7 +390,7 @@
           }
         }
         scheduleBlink();
-      }, 1500 + Math.random() * 2600);
+      }, light ? 3200 + Math.random() * 4200 : 1500 + Math.random() * 2600);
     };
 
     // the cat on the tea table: blink, tail flick, yawn
@@ -371,14 +398,14 @@
     const scheduleCat = () => {
       fx.cat = setTimeout(() => {
         if (!el.isConnected) { fx.cat = 0; return; }
-        if (cat && !reduce() && !document.hidden) {
+        if (cat && !reduce() && !paused() && !document.hidden) {
           const acts = ['blink', 'tail', 'yawn', 'tail', 'blink'];
           const act = acts[Math.floor(Math.random() * acts.length)];
           cat.classList.add(act);
           setTimeout(() => cat.classList.remove(act), act === 'yawn' ? 1550 : act === 'blink' ? 230 : 950);
         }
         scheduleCat();
-      }, 4800 + Math.random() * 5200);
+      }, light ? 7000 + Math.random() * 6000 : 4800 + Math.random() * 5200);
     };
 
     // very subtle parallax: the scene drifts against the pointer
@@ -391,7 +418,7 @@
       el.style.setProperty('--py', py.toFixed(3));
     };
     const onMove = (e) => {
-      if (reduce()) return;
+      if (reduce() || paused()) return;
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) return;
       px = U.clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1);
@@ -403,6 +430,7 @@
     el.addEventListener('mouseleave', onLeaveScene);
 
     fx.detach = () => {
+      observer.disconnect();
       closeBtn.removeEventListener('click', closeCard);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('click', onDocClick);

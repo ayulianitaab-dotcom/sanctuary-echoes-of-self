@@ -115,11 +115,20 @@ awk '
 
 echo "Built index.html ($(wc -c < index.html) bytes)"
 
-# deploy/ holds the Worker + static assets used when publishing to the web
+# deploy/ holds the Worker + static assets used when publishing to the web.
+# The repository keeps the uploaded PNGs; the published copy re-encodes that
+# same artwork to WebP so it fits the host's per-deployment allowance.
 mkdir -p deploy/public
 cp index.html deploy/public/index.html
-rm -rf deploy/public/assets/portraits deploy/public/assets/characters
-mkdir -p deploy/public/assets
-cp -R assets/portraits deploy/public/assets/portraits
-cp -R assets/characters deploy/public/assets/characters
-echo "Staged deploy/public/index.html + assets"
+rm -rf deploy/public/assets
+if ! php tools/build-deploy-assets.php; then
+  echo "ERROR: could not package the deploy assets" >&2
+  exit 1
+fi
+# index.html keeps .png for local play; the published copy asks for .webp
+sed -i 's/window.SAN_ASSET_PORTRAIT_EXT = "png"/window.SAN_ASSET_PORTRAIT_EXT = "webp"/' deploy/public/index.html
+if ! grep -q 'SAN_ASSET_PORTRAIT_EXT = "webp"' deploy/public/index.html; then
+  echo "ERROR: could not point the deploy build at the WebP assets" >&2
+  exit 1
+fi
+echo "Staged deploy/public ($(du -sh deploy/public | cut -f1))"

@@ -1201,6 +1201,25 @@ body.reduce-motion .ts-clouds, body.reduce-motion .ts-cast { transform: none !im
   .ts-mountains, .ts-village, .ts-clouds, .ts-cast { transform: none !important; }
 }
 
+/* Settings / Character Creation cover the scene: hold the idle life in place.
+   Positions are untouched, so the composition looks exactly the same. */
+#title-screen.life-paused .ts-sway,
+#title-screen.life-paused .ts-frame,
+#title-screen.life-paused .ts-frame::after,
+#title-screen.life-paused .ts-mote,
+#title-screen.life-paused .ts-petal,
+#title-screen.life-paused .ts-sun,
+#title-screen.life-paused .ts-clouds i,
+#title-screen.life-paused .ts-wisteria i,
+#title-screen.life-paused .ts-foreground i,
+#title-screen.life-paused .tbl-cat,
+#title-screen.life-paused .tbl-cat .tail,
+#title-screen.life-paused .ts-windmill .blades { animation-play-state: paused !important; }
+
+/* small screens / modest devices: skip the decorative hair glint */
+#title-screen.life-light .ts-frame::after,
+#title-screen.life-light .ts-wisteria i { animation: none; }
+
 /* --- tea table foreground --- */
 .ts-table { position: absolute; left: 58%; bottom: -1%; width: min(40vw, 560px); height: 23%; transform: translateX(-50%); z-index: 4; pointer-events: none; }
 .tbl-top { position: absolute; left: 0; right: 0; bottom: 14%; height: 54%; border-radius: 50%; background: radial-gradient(ellipse at 50% 18%, #c99a6c, #a5764f 58%, #86613f 100%); box-shadow: 0 18px 40px rgba(80,50,40,.35), inset 0 -8px 0 rgba(120,80,50,.28); }
