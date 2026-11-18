@@ -40,9 +40,10 @@
     let targetH = 300;
     if (aspect < 0.75) targetH = 392;
     else if (aspect < 1.05) targetH = 340;
+    else if (aspect >= 1.2) targetH = 340;
     else if (aspect > 2.1) targetH = 306;
     let targetW = Math.round(targetH * aspect);
-    targetW = Math.max(172, Math.min(920, targetW));
+    targetW = Math.max(172, Math.min(780, targetW));
     targetH = Math.round(targetW / aspect);
     if (targetW === viewW && targetH === viewH && canvas.width === targetW) return;
     viewW = targetW; viewH = targetH;
@@ -1613,7 +1614,10 @@
   R.drawWorld = function (scene) {
     if (!ctx) return;
     const { area, cam, player, npcs, cat, timeSec, weather } = scene;
-    ctx.fillStyle = '#2a2a30';
+    const backdrop = ctx.createLinearGradient(0, 0, 0, H);
+    backdrop.addColorStop(0, '#241d2f');
+    backdrop.addColorStop(1, '#171320');
+    ctx.fillStyle = backdrop;
     ctx.fillRect(0, 0, W, H);
     curArea = area;
     const startX = Math.floor(cam.x / T) - 1;

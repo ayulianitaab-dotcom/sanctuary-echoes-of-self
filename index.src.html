@@ -9,9 +9,95 @@
 </head>
 <body>
 <div id="app">
-  <div id="canvas-wrap">
-    <canvas id="game" width="480" height="270"></canvas>
-  </div>
+
+  <header id="topbar" aria-label="Game status">
+    <div class="tb-brand">
+      <span class="tb-mark">✦</span>
+      <span class="tb-wordmark">Sanctuary<i>Echoes of Self</i></span>
+    </div>
+    <div class="tb-stats">
+      <div class="tb-chip"><span class="tb-ico">❀</span><span id="tb-date">Spring 1</span></div>
+      <div class="tb-chip"><span class="tb-ico">◷</span><span id="tb-time">06:00</span></div>
+      <div class="tb-chip"><span id="tb-weather-icon">☀</span><span id="tb-weather">sunny</span></div>
+      <div class="tb-chip tb-money"><span class="coin">◈</span><b id="tb-money">320</b></div>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-icon" id="tb-bell" aria-label="Notifications" title="Notifications">
+        <span class="tb-bell-ico">🔔</span><span class="tb-dot" id="tb-dot" hidden></span>
+      </button>
+      <button class="tb-profile" id="tb-profile" data-panel="relations" aria-label="Player profile">
+        <span class="tb-avatar" id="tb-avatar"></span>
+        <span class="tb-who"><b id="tb-name">Elara</b><i id="tb-status">morning</i></span>
+      </button>
+      <button class="tb-icon" id="tb-settings" data-panel="settings" aria-label="Settings" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <aside id="left-rail" aria-label="Player">
+    <div class="rail-card rail-profile">
+      <div class="rail-portrait" id="rail-portrait"></div>
+      <div class="rail-name" id="rail-name">Elara</div>
+      <div class="rail-hearts" id="rail-hearts">♡♡♡♡♡</div>
+      <div class="rail-status" id="rail-status">Content</div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>Energy</span><span class="rail-muted" id="rail-energy-text">100/100</span></div>
+      <div class="energy-track rail-energy-track"><div class="energy-fill" id="rail-energy-fill"></div></div>
+      <div class="rail-cat" id="rail-cat">Mochi · content</div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>To-Do</span></div>
+      <ul class="rail-todo" id="rail-todo"></ul>
+    </div>
+
+    <div class="rail-card rail-quests-card">
+      <div class="rail-card-title"><span>Quests</span><button class="rail-link" data-panel="quests">All</button></div>
+      <div id="rail-quests"></div>
+    </div>
+  </aside>
+
+  <main id="stage">
+    <div id="canvas-wrap">
+      <canvas id="game" width="480" height="270"></canvas>
+    </div>
+
+    <div id="dock" class="hidden">
+      <button class="dock-btn" data-panel="journal"><span class="dock-ico">✎</span><span class="dock-lbl">Journal</span></button>
+      <button class="dock-btn" data-panel="inventory"><span class="dock-ico">🎒</span><span class="dock-lbl">Satchel</span></button>
+      <button class="dock-btn" data-panel="map"><span class="dock-ico">🗺</span><span class="dock-lbl">Map</span></button>
+      <button class="dock-btn" data-panel="quests"><span class="dock-ico">✦</span><span class="dock-lbl">Quests</span></button>
+      <button class="dock-btn" data-panel="memories"><span class="dock-ico">🪨</span><span class="dock-lbl">Memories</span></button>
+      <button class="dock-btn" data-panel="relations"><span class="dock-ico">♡</span><span class="dock-lbl">People</span></button>
+      <button class="dock-btn" data-panel="collection"><span class="dock-ico">❀</span><span class="dock-lbl">Album</span></button>
+      <button class="dock-btn" data-panel="pause"><span class="dock-ico">⚙</span><span class="dock-lbl">Menu</span></button>
+    </div>
+    <button id="rail-open" aria-label="Open world panel" title="World panel">‹</button>
+  </main>
+
+  <aside id="right-rail" aria-label="World">
+    <button id="rail-collapse" class="rail-collapse" aria-label="Collapse side panel" title="Collapse">›</button>
+
+    <div class="rail-card rail-map">
+      <canvas id="minimap" width="252" height="252"></canvas>
+      <div class="mm-controls">
+        <button data-mm="in" aria-label="Zoom in">+</button>
+        <button data-mm="out" aria-label="Zoom out">−</button>
+      </div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span class="rail-pin">◈</span><span id="rail-loc-name">Sanctuary Village</span></div>
+      <p class="rail-desc" id="rail-loc-desc">A peaceful village where nature, people, and stories grow together.</p>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>Nearby</span><button class="rail-link" data-panel="relations">People</button></div>
+      <ul class="rail-npcs" id="rail-npcs"></ul>
+    </div>
+  </aside>
+
   <div id="ui-root">
 
     <div id="hud" class="hidden">
@@ -37,17 +123,6 @@
       <div class="hud-cat" id="hud-cat">
         <span class="cat-emoji">🐈</span><span class="cat-label">Mochi · content</span>
       </div>
-    </div>
-
-    <div id="dock" class="hidden">
-      <button class="dock-btn" data-panel="journal"><span class="dock-ico">✎</span><span class="dock-lbl">Journal</span></button>
-      <button class="dock-btn" data-panel="inventory"><span class="dock-ico">🎒</span><span class="dock-lbl">Satchel</span></button>
-      <button class="dock-btn" data-panel="map"><span class="dock-ico">🗺</span><span class="dock-lbl">Map</span></button>
-      <button class="dock-btn" data-panel="quests"><span class="dock-ico">✦</span><span class="dock-lbl">Quests</span></button>
-      <button class="dock-btn" data-panel="memories"><span class="dock-ico">🪨</span><span class="dock-lbl">Memories</span></button>
-      <button class="dock-btn" data-panel="relations"><span class="dock-ico">♡</span><span class="dock-lbl">People</span></button>
-      <button class="dock-btn" data-panel="collection"><span class="dock-ico">❀</span><span class="dock-lbl">Album</span></button>
-      <button class="dock-btn" data-panel="pause"><span class="dock-ico">⚙</span><span class="dock-lbl">Menu</span></button>
     </div>
 
     <div id="touch-ui" class="hidden">

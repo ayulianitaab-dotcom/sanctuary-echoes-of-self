@@ -33,6 +33,24 @@
     if (pauseBtn) pauseBtn.addEventListener('click', () => { SAN.audio.sfx('click'); UI.togglePause(); });
     const camBtn = document.getElementById('hud-camera');
     if (camBtn) camBtn.addEventListener('click', () => { SAN.audio.init(); SAN.audio.sfx('click'); SAN.photos.open(); });
+    const collapse = document.getElementById('rail-collapse');
+    if (collapse) collapse.addEventListener('click', () => { SAN.audio.sfx('click'); document.body.classList.add('rail-collapsed'); document.body.classList.remove('rail-peek'); });
+    const reopen = document.getElementById('rail-open');
+    if (reopen) reopen.addEventListener('click', () => {
+      SAN.audio.sfx('click');
+      document.body.classList.remove('rail-collapsed');
+      if (window.innerWidth < 1280) document.body.classList.add('rail-peek');
+    });
+    const bell = document.getElementById('tb-bell');
+    if (bell) bell.addEventListener('click', () => { SAN.audio.sfx('click'); UI.openPanel('quests'); });
+    document.querySelectorAll('[data-mm]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        SAN.audio.sfx('click');
+        UI.mmZoom = Math.max(1, Math.min(3, UI.mmZoom + (btn.getAttribute('data-mm') === 'in' ? 0.5 : -0.5)));
+        UI._mmKey = '';
+        UI.drawMinimap();
+      });
+    });
 
     document.getElementById('dialogue-layer').addEventListener('click', (e) => {
       if (e.target.closest('.dlg-choice') || e.target.closest('.dlg-btn')) return;
@@ -158,6 +176,7 @@
       live.textContent = ev ? ev.name : '';
       live.style.display = ev ? '' : 'none';
     }
+    UI.refreshDesktop(S_);
   };
 
   /* ---------------- dialogue ---------------- */
@@ -574,5 +593,136 @@
     if (attrs) Object.keys(attrs).forEach((k) => b.setAttribute(k, attrs[k]));
     b.addEventListener('click', (e) => { e.stopPropagation(); SAN.audio.sfx('click'); onClick(b); });
     return b;
+  };
+
+  /* ---------------- desktop shell ---------------- */
+  const AREA_DESC = {
+    village: 'A peaceful village where nature, people, and stories grow together.',
+    home: 'Your cottage: dust, rain, and the quiet work of starting again.',
+    garden: 'Rows of green, turned earth, and the smell of growing things.',
+    greenhouse: 'Warm glass and shared seedlings. Someone else\'s patience, borrowed.',
+    forest: 'Old trees that keep whatever you tell them.',
+    beach: 'Salt, long light, and the sound of something patient.',
+    lighthouse: 'A promise you make to strangers, kept every night.',
+    windmill: 'Gears turning slowly, like a thought being worked through.',
+    meadow: 'A secret the village keeps for itself.',
+  };
+  const MM_COLORS = {
+    '.': '#7fae66', ',': '#8dbd70', '#': '#c9a678', '=': '#b7ada0', '~': '#79b6cc',
+    's': '#e8d6ab', 'w': '#a87d52', 'g': '#bcd6c8', 'm': '#557048', 'c': '#8a6247',
+    'x': '#e3cfbe', 'o': '#cfc6b5', 'r': '#b98ba0', '_': '#241d2f', 'F': '#a0805a',
+  };
+  UI.mmZoom = 1;
+  UI._mmKey = '';
+
+  UI.drawMinimap = function () {
+    const cv = document.getElementById('minimap');
+    const W = SAN.world;
+    if (!cv || !W.area || !W.player) return;
+    const p = W.player, a = W.area, size = cv.width;
+    const key = a.id + ':' + Math.floor(p.x) + ',' + Math.floor(p.y) + ':' + UI.mmZoom;
+    if (key === UI._mmKey) return;
+    UI._mmKey = key;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#241d2f';
+    g.fillRect(0, 0, size, size);
+    const s = Math.max(1.5, Math.min(size / a.w, size / a.h) * UI.mmZoom);
+    const viewTiles = size / s;
+    const camX = Math.max(0, Math.min(a.w - viewTiles, p.x - viewTiles / 2));
+    const camY = Math.max(0, Math.min(a.h - viewTiles, p.y - viewTiles / 2));
+    const ox = (size - viewTiles * s) / 2, oy = (size - viewTiles * s) / 2;
+    for (let y = 0; y < a.h; y++) {
+      for (let x = 0; x < a.w; x++) {
+        const sx = ox + (x - camX) * s, sy = oy + (y - camY) * s;
+        if (sx < -s || sy < -s || sx > size || sy > size) continue;
+        g.fillStyle = MM_COLORS[a.grid[y][x]] || '#6f8a5e';
+        g.fillRect(Math.floor(sx), Math.floor(sy), Math.ceil(s), Math.ceil(s));
+      }
+    }
+    W.npcs.forEach((n) => {
+      const sx = ox + (n.px / 16 - camX) * s, sy = oy + (n.py / 16 - camY) * s;
+      g.fillStyle = '#8a6a92';
+      g.beginPath(); g.arc(sx + s / 2, sy + s / 2, Math.max(2, s * 0.4), 0, Math.PI * 2); g.fill();
+    });
+    const mx = ox + (p.px / 16 - camX) * s, my = oy + (p.py / 16 - camY) * s;
+    g.beginPath(); g.arc(mx + s / 2, my + s / 2, Math.max(3, s * 0.62), 0, Math.PI * 2);
+    g.fillStyle = '#f4d07a'; g.fill();
+    g.lineWidth = 1.5; g.strokeStyle = '#4a3524'; g.stroke();
+  };
+
+  UI.refreshDesktop = function (S_) {
+    if (!S_) return;
+    document.body.classList.toggle('playing', !!S_.started && !UI.titleActive);
+    if (!S_.started || UI.titleActive) return;
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    const W = SAN.world, area = W.area;
+    const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
+    const phase = U.phase(S_.time.minutes);
+    set('tb-date', U.seasonName(S_.time.season) + ' · ' + SAN.t('day.day') + ' ' + S_.time.day);
+    set('tb-time', U.fmtClock(S_.time.minutes));
+    set('tb-weather-icon', weatherIcons[S_.time.weather] || '☀');
+    set('tb-weather', SAN.t('weather.' + S_.time.weather, S_.time.weather));
+    set('tb-money', S_.money.toLocaleString());
+    set('tb-name', S_.player.name || 'Elara');
+    set('tb-status', SAN.t('phase.' + phase, phase));
+    set('rail-name', S_.player.name || 'Elara');
+    set('rail-status', phase === 'morning' ? 'Feeling rested' : phase === 'night' ? 'Ready to rest' : 'Feeling steady');
+    const pct = Math.max(0, Math.min(100, (S_.energy / S_.maxEnergy) * 100));
+    const fill = document.getElementById('rail-energy-fill');
+    if (fill) { fill.style.width = pct + '%'; fill.className = 'energy-fill' + (pct < 20 ? ' low' : pct < 45 ? ' mid' : ''); }
+    set('rail-energy-text', Math.round(S_.energy) + '/' + S_.maxEnergy);
+    const filled = Math.round(pct / 20);
+    set('rail-hearts', '♥'.repeat(filled) + '♡'.repeat(5 - filled));
+    if (S_.cat.adopted) set('rail-cat', S_.cat.name + ' · ' + SAN.cat.hungerLabel());
+
+    const src = SAN.render.portraitSrc('player', 'neutral');
+    const railP = document.getElementById('rail-portrait');
+    if (railP && railP.getAttribute('data-src') !== src) {
+      railP.setAttribute('data-src', src);
+      railP.innerHTML = `<img src="${src}" alt="">`;
+    }
+    const avatar = document.getElementById('tb-avatar');
+    if (avatar && avatar.getAttribute('data-src') !== src) {
+      avatar.setAttribute('data-src', src);
+      avatar.innerHTML = `<img src="${src}" alt="">`;
+    }
+
+    if (area) {
+      set('rail-loc-name', area.name);
+      set('rail-loc-desc', AREA_DESC[area.id] || 'Somewhere between who you were and who you are becoming.');
+    }
+
+    const near = W.npcs.map((n) => ({ n, d: Math.hypot(n.px - W.player.px, n.py - W.player.py) }))
+      .sort((a, b) => a.d - b.d).slice(0, 4);
+    const npcEl = document.getElementById('rail-npcs');
+    if (npcEl) {
+      npcEl.innerHTML = near.length
+        ? near.map(({ n, d }) => `<li><span class="rail-npc-face"><img src="${SAN.render.portraitSrc(n.def.id, 'neutral')}" alt=""></span>
+            <span class="rail-npc-meta"><b>${U.esc(n.def.name)}</b><span>${U.esc(n.def.title || '')} · ${Math.max(1, Math.round(d / 16))} tiles</span></span></li>`).join('')
+        : '<li class="empty">No one nearby.</li>';
+    }
+
+    const active = SAN.quests.activeList();
+    const tracked = active.filter((q) => q.def.type !== 'daily')[0] || active[0];
+    const todoEl = document.getElementById('rail-todo');
+    if (todoEl) {
+      const objs = tracked ? SAN.quests.objectiveList(tracked.id) : [];
+      todoEl.innerHTML = objs.length
+        ? objs.slice(0, 5).map((o) => `<li class="${o.done ? 'done' : ''}"><span class="tick">${o.done ? '✓' : ''}</span><span>${U.esc(o.label)}${o.need > 1 ? ' (' + o.cur + '/' + o.need + ')' : ''}</span></li>`).join('')
+        : '<li class="empty">Nothing pressing. Wander a little.</li>';
+    }
+    const qEl = document.getElementById('rail-quests');
+    if (qEl) {
+      qEl.innerHTML = active.length
+        ? active.slice(0, 3).map((q) => {
+          const objs = SAN.quests.objectiveList(q.id);
+          const cur = objs.find((o) => !o.done) || objs[0];
+          return `<div class="rail-quest"><b>${U.esc(q.def.title)}</b><span>${cur ? U.esc(cur.label) : 'Complete'}</span></div>`;
+        }).join('')
+        : '<div class="rail-quest empty">No quests right now. Talk to people.</div>';
+    }
+    const dot = document.getElementById('tb-dot');
+    if (dot) dot.hidden = active.length === 0;
+    UI.drawMinimap();
   };
 })();

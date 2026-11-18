@@ -1370,13 +1370,283 @@ body.hide-hints .hud-quest { opacity: .75; }
 .ms-track { display: flex; gap: 8px; margin: 6px 0 4px; }
 .ms-pip { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; border: 1px dashed rgba(120,96,140,.4); color: #b0a0c0; font-size: 10px; }
 .ms-pip.on { background: linear-gradient(180deg, #e6d8f5, #c9b6e3); border: 1px solid rgba(120,92,160,.6); color: #5d4276; }
+
+
+/* DESKTOP WEB SHELL: top bar + player rail + world rail */
+#app {
+  display: grid;
+  grid-template-columns: 252px minmax(0, 1fr) 288px;
+  grid-template-rows: 68px minmax(0, 1fr);
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(120, 96, 150, .28), transparent 70%), #171320;
+}
+#ui-root { position: absolute; inset: 0; z-index: 60; }
+#topbar {
+  grid-column: 1 / -1; grid-row: 1;
+  display: none; align-items: center; gap: 18px;
+  padding: 0 18px;
+  background: linear-gradient(180deg, #3a2d47, #2a2135);
+  border-bottom: 1px solid rgba(214, 178, 112, .38);
+  box-shadow: 0 6px 18px rgba(12, 8, 18, .45);
+  color: #f4e8d6; position: relative; z-index: 40;
+}
+body.playing #topbar { display: flex; }
+.tb-brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+.tb-mark {
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border-radius: 10px; color: #f0d79a;
+  background: radial-gradient(circle at 35% 30%, #6b557f, #3a2b47);
+  border: 1px solid rgba(214, 178, 112, .45); font-size: 17px;
+}
+.tb-wordmark { display: flex; flex-direction: column; line-height: 1.05; font-family: var(--serif, Georgia, serif); font-size: 18px; letter-spacing: .5px; color: #f7ecd9; }
+.tb-wordmark i { font-style: italic; font-size: 10.5px; letter-spacing: .8px; color: rgba(240, 216, 170, .75); margin-top: 2px; }
+.tb-stats { display: flex; align-items: center; gap: 9px; flex: 1; justify-content: center; }
+.tb-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 246, 231, .96), rgba(238, 226, 203, .94));
+  border: 1px solid rgba(120, 88, 60, .55);
+  color: #43301f; font-size: 12.5px; font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .22), inset 0 1px 0 #fff;
+  white-space: nowrap;
+}
+.tb-chip .tb-ico { color: #8a6547; font-weight: 400; }
+.tb-money b { font-variant-numeric: tabular-nums; }
+.tb-actions { display: flex; align-items: center; gap: 8px; }
+.tb-icon {
+  width: 38px; height: 38px; border-radius: 11px;
+  display: grid; place-items: center;
+  background: rgba(255, 245, 228, .1);
+  border: 1px solid rgba(214, 178, 112, .32);
+  color: #f0d79a; font-size: 16px; position: relative;
+}
+.tb-icon:hover { background: rgba(255, 245, 228, .18); }
+.tb-dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: #e8896f; }
+.tb-profile {
+  display: flex; align-items: center; gap: 9px;
+  background: rgba(255, 245, 228, .08);
+  border: 1px solid rgba(214, 178, 112, .32);
+  border-radius: 999px; padding: 4px 14px 4px 4px; color: #f6ead6;
+}
+.tb-profile:hover { background: rgba(255, 245, 228, .16); }
+.tb-avatar { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: #4a3a58; display: block; }
+.tb-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+.tb-who { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+.tb-who b { font-size: 12.5px; font-weight: 600; }
+.tb-who i { font-style: normal; font-size: 10px; color: rgba(240, 216, 170, .7); text-transform: capitalize; }
+
+/* side rails */
+#left-rail, #right-rail {
+  display: none; flex-direction: column; gap: 12px;
+  padding: 14px 12px 16px; overflow-y: auto;
+  background: linear-gradient(180deg, #241d2f, #1d1826);
+  border-right: 1px solid rgba(214, 178, 112, .16);
+  position: relative; z-index: 20;
+  scrollbar-width: thin;
+}
+#right-rail { border-right: none; border-left: 1px solid rgba(214, 178, 112, .16); grid-column: 3; }
+body.playing #left-rail, body.playing #right-rail { display: flex; }
+.rail-card {
+  background: linear-gradient(180deg, rgba(252, 245, 232, .97), rgba(240, 230, 212, .95));
+  border: 1px solid rgba(150, 116, 78, .5);
+  border-radius: 14px; padding: 12px 13px;
+  box-shadow: 0 8px 20px rgba(10, 7, 14, .32), inset 0 1px 0 rgba(255, 255, 255, .85);
+  color: #4a3524;
+}
+.rail-card-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 12px; font-weight: 700; color: #6d4f34; margin-bottom: 8px;
+}
+.rail-muted { font-weight: 500; color: #8a7360; font-variant-numeric: tabular-nums; font-size: 11px; }
+.rail-link { background: none; border: none; color: #8a6547; font-size: 10.5px; text-decoration: underline; padding: 0; }
+.rail-profile { padding: 0; overflow: hidden; }
+.rail-portrait {
+  height: 176px;
+  background: radial-gradient(120px 90px at 50% 10%, rgba(186, 160, 214, .45), transparent 70%), linear-gradient(180deg, #efe4f0, #dccddd);
+  display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
+}
+.rail-portrait img { width: 82%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.rail-name { font-family: var(--serif, Georgia, serif); font-size: 19px; color: #463122; text-align: center; margin-top: 10px; padding: 0 12px; }
+.rail-hearts { text-align: center; color: #c07a92; letter-spacing: 3px; font-size: 13px; margin-top: 3px; }
+.rail-status { text-align: center; font-size: 11px; color: #8a7360; padding: 0 12px 12px; margin-top: 2px; }
+.rail-energy-track { height: 10px; margin: 2px 0 8px; }
+.rail-cat { font-size: 11px; color: #6f5a45; }
+.rail-todo { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.rail-todo li { display: flex; gap: 8px; align-items: flex-start; font-size: 11.5px; line-height: 1.35; color: #54402f; }
+.rail-todo .tick {
+  width: 14px; height: 14px; flex: 0 0 14px; margin-top: 1px;
+  border-radius: 4px; border: 1.5px solid rgba(130, 100, 70, .55);
+  display: grid; place-items: center; font-size: 9px; color: #6b8a5f;
+  background: rgba(255, 255, 255, .6);
+}
+.rail-todo li.done { color: #8a7763; text-decoration: line-through; }
+.rail-todo li.done .tick { background: #a8c795; border-color: #8aad78; color: #34502c; }
+.rail-todo .empty { color: #8a7763; font-style: italic; }
+.rail-quests-card { flex: 1 1 auto; }
+.rail-quest { padding: 8px 9px; border-radius: 9px; background: rgba(180, 158, 124, .14); border-left: 3px solid #d0a85c; margin-bottom: 7px; }
+.rail-quest:last-child { margin-bottom: 0; }
+.rail-quest b { display: block; font-size: 11.5px; color: #4f3a28; font-weight: 600; }
+.rail-quest span { font-size: 10.5px; color: #7d6a58; }
+.rail-quest.empty { border-left-color: rgba(138, 101, 71, .3); background: rgba(180, 158, 124, .08); font-style: italic; color: #8a7763; font-size: 11px; }
+
+/* stage, minimap, collapse */
+#stage { grid-column: 2; grid-row: 2; position: relative; overflow: hidden; min-width: 0; min-height: 0; background: #171320; }
+#stage #canvas-wrap { position: absolute; inset: 0; }
+#stage #dock { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 30; }
+.rail-map { padding: 8px; position: relative; }
+#minimap { width: 100%; height: auto; display: block; border-radius: 9px; background: #2b2334; image-rendering: pixelated; border: 1px solid rgba(120, 88, 60, .45); }
+.mm-controls { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+.mm-controls button { width: 22px; height: 22px; border-radius: 7px; background: rgba(250, 244, 232, .92); border: 1px solid rgba(120, 88, 60, .5); color: #5a412d; font-size: 13px; line-height: 1; display: grid; place-items: center; }
+.rail-desc { margin: 0; font-size: 11.5px; line-height: 1.55; color: #5b4634; }
+.rail-npcs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rail-npcs li { display: flex; align-items: center; gap: 9px; }
+.rail-npc-face { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: 0 0 34px; background: #d9cde2; border: 1px solid rgba(120, 88, 60, .35); }
+.rail-npc-face img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; }
+.rail-npc-meta { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.rail-npc-meta b { font-size: 11.5px; color: #4a3524; font-weight: 600; }
+.rail-npc-meta span { font-size: 10px; color: #8a7360; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rail-npcs .empty { font-size: 11px; color: #8a7763; font-style: italic; }
+.rail-collapse { position: absolute; top: 10px; left: -13px; z-index: 25; width: 26px; height: 26px; border-radius: 50%; background: #f2e7d2; border: 1px solid rgba(120, 88, 60, .5); color: #5a412d; display: grid; place-items: center; font-size: 14px; }
+body.rail-collapsed #right-rail { display: none; }
+body.rail-collapsed #app { grid-template-columns: 252px minmax(0, 1fr) 0; }
+#rail-open { display: none; position: absolute; right: 12px; top: 12px; z-index: 35; width: 34px; height: 34px; border-radius: 10px; background: rgba(240, 229, 210, .95); border: 1px solid rgba(120, 88, 60, .5); color: #4a3524; font-size: 16px; }
+body.rail-collapsed #rail-open { display: grid; place-items: center; }
+
+@media (min-width: 1024px) {
+  .dlg-box { max-width: 1040px; margin: 0 auto; }
+  .dlg-portrait { width: 168px; height: 214px; flex-basis: 168px; }
+  .dlg-text { font-size: 16.5px; line-height: 1.7; }
+  .dlg-name { font-size: 15px; }
+  .dlg-choice { font-size: 14px; padding: 10px 16px; }
+  .dlg-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .hud-top-left, .hud-top-right, .hud-energy, .hud-cat { display: none; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  #app { grid-template-columns: 212px minmax(0, 1fr) 0; }
+  body.playing.rail-peek #right-rail { position: absolute; right: 0; top: 68px; bottom: 0; width: 268px; display: flex; z-index: 45; box-shadow: -14px 0 30px rgba(8, 5, 12, .45); }
+  body:not(.rail-peek) #right-rail { display: none; }
+  body:not(.rail-peek) #rail-open { display: grid; place-items: center; }
+  .rail-profile .rail-portrait { height: 148px; }
+}
+@media (max-width: 1023px) {
+  #app { display: block; }
+  #topbar, #left-rail, #right-rail, #rail-open, .rail-collapse { display: none !important; }
+  #stage { position: absolute; inset: 0; }
+}
+
+/* illustrations ship on a light mat: blend it into the parchment cards */
+.rail-portrait img { mix-blend-mode: multiply; }
+.rail-portrait { background: linear-gradient(180deg, #efe4f0, #ded2e2); }
+
+/* portrait phones keep the dock outside the playable canvas */
+@media (max-aspect-ratio: 4/5) {
+  #stage #canvas-wrap { bottom: 66px; }
+}
+
+/* dialogue choices: two columns on desktop */
+@media (min-width: 1024px) {
+  .dlg-side { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+  .dlg-side .dlg-choice { width: 100%; }
+}
+
+/* desktop dialogue: choices sit under the text, two readable columns */
+@media (min-width: 1024px) {
+  .dlg-box { flex-wrap: wrap; }
+  .dlg-side { flex: 1 0 100%; order: 4; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dlg-side:empty { display: none; }
+}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="canvas-wrap">
-    <canvas id="game" width="480" height="270"></canvas>
-  </div>
+
+  <header id="topbar" aria-label="Game status">
+    <div class="tb-brand">
+      <span class="tb-mark">✦</span>
+      <span class="tb-wordmark">Sanctuary<i>Echoes of Self</i></span>
+    </div>
+    <div class="tb-stats">
+      <div class="tb-chip"><span class="tb-ico">❀</span><span id="tb-date">Spring 1</span></div>
+      <div class="tb-chip"><span class="tb-ico">◷</span><span id="tb-time">06:00</span></div>
+      <div class="tb-chip"><span id="tb-weather-icon">☀</span><span id="tb-weather">sunny</span></div>
+      <div class="tb-chip tb-money"><span class="coin">◈</span><b id="tb-money">320</b></div>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-icon" id="tb-bell" aria-label="Notifications" title="Notifications">
+        <span class="tb-bell-ico">🔔</span><span class="tb-dot" id="tb-dot" hidden></span>
+      </button>
+      <button class="tb-profile" id="tb-profile" data-panel="relations" aria-label="Player profile">
+        <span class="tb-avatar" id="tb-avatar"></span>
+        <span class="tb-who"><b id="tb-name">Elara</b><i id="tb-status">morning</i></span>
+      </button>
+      <button class="tb-icon" id="tb-settings" data-panel="settings" aria-label="Settings" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <aside id="left-rail" aria-label="Player">
+    <div class="rail-card rail-profile">
+      <div class="rail-portrait" id="rail-portrait"></div>
+      <div class="rail-name" id="rail-name">Elara</div>
+      <div class="rail-hearts" id="rail-hearts">♡♡♡♡♡</div>
+      <div class="rail-status" id="rail-status">Content</div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>Energy</span><span class="rail-muted" id="rail-energy-text">100/100</span></div>
+      <div class="energy-track rail-energy-track"><div class="energy-fill" id="rail-energy-fill"></div></div>
+      <div class="rail-cat" id="rail-cat">Mochi · content</div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>To-Do</span></div>
+      <ul class="rail-todo" id="rail-todo"></ul>
+    </div>
+
+    <div class="rail-card rail-quests-card">
+      <div class="rail-card-title"><span>Quests</span><button class="rail-link" data-panel="quests">All</button></div>
+      <div id="rail-quests"></div>
+    </div>
+  </aside>
+
+  <main id="stage">
+    <div id="canvas-wrap">
+      <canvas id="game" width="480" height="270"></canvas>
+    </div>
+
+    <div id="dock" class="hidden">
+      <button class="dock-btn" data-panel="journal"><span class="dock-ico">✎</span><span class="dock-lbl">Journal</span></button>
+      <button class="dock-btn" data-panel="inventory"><span class="dock-ico">🎒</span><span class="dock-lbl">Satchel</span></button>
+      <button class="dock-btn" data-panel="map"><span class="dock-ico">🗺</span><span class="dock-lbl">Map</span></button>
+      <button class="dock-btn" data-panel="quests"><span class="dock-ico">✦</span><span class="dock-lbl">Quests</span></button>
+      <button class="dock-btn" data-panel="memories"><span class="dock-ico">🪨</span><span class="dock-lbl">Memories</span></button>
+      <button class="dock-btn" data-panel="relations"><span class="dock-ico">♡</span><span class="dock-lbl">People</span></button>
+      <button class="dock-btn" data-panel="collection"><span class="dock-ico">❀</span><span class="dock-lbl">Album</span></button>
+      <button class="dock-btn" data-panel="pause"><span class="dock-ico">⚙</span><span class="dock-lbl">Menu</span></button>
+    </div>
+    <button id="rail-open" aria-label="Open world panel" title="World panel">‹</button>
+  </main>
+
+  <aside id="right-rail" aria-label="World">
+    <button id="rail-collapse" class="rail-collapse" aria-label="Collapse side panel" title="Collapse">›</button>
+
+    <div class="rail-card rail-map">
+      <canvas id="minimap" width="252" height="252"></canvas>
+      <div class="mm-controls">
+        <button data-mm="in" aria-label="Zoom in">+</button>
+        <button data-mm="out" aria-label="Zoom out">−</button>
+      </div>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span class="rail-pin">◈</span><span id="rail-loc-name">Sanctuary Village</span></div>
+      <p class="rail-desc" id="rail-loc-desc">A peaceful village where nature, people, and stories grow together.</p>
+    </div>
+
+    <div class="rail-card">
+      <div class="rail-card-title"><span>Nearby</span><button class="rail-link" data-panel="relations">People</button></div>
+      <ul class="rail-npcs" id="rail-npcs"></ul>
+    </div>
+  </aside>
+
   <div id="ui-root">
 
     <div id="hud" class="hidden">
@@ -1402,17 +1672,6 @@ body.hide-hints .hud-quest { opacity: .75; }
       <div class="hud-cat" id="hud-cat">
         <span class="cat-emoji">🐈</span><span class="cat-label">Mochi · content</span>
       </div>
-    </div>
-
-    <div id="dock" class="hidden">
-      <button class="dock-btn" data-panel="journal"><span class="dock-ico">✎</span><span class="dock-lbl">Journal</span></button>
-      <button class="dock-btn" data-panel="inventory"><span class="dock-ico">🎒</span><span class="dock-lbl">Satchel</span></button>
-      <button class="dock-btn" data-panel="map"><span class="dock-ico">🗺</span><span class="dock-lbl">Map</span></button>
-      <button class="dock-btn" data-panel="quests"><span class="dock-ico">✦</span><span class="dock-lbl">Quests</span></button>
-      <button class="dock-btn" data-panel="memories"><span class="dock-ico">🪨</span><span class="dock-lbl">Memories</span></button>
-      <button class="dock-btn" data-panel="relations"><span class="dock-ico">♡</span><span class="dock-lbl">People</span></button>
-      <button class="dock-btn" data-panel="collection"><span class="dock-ico">❀</span><span class="dock-lbl">Album</span></button>
-      <button class="dock-btn" data-panel="pause"><span class="dock-ico">⚙</span><span class="dock-lbl">Menu</span></button>
     </div>
 
     <div id="touch-ui" class="hidden">
@@ -4617,9 +4876,10 @@ window.SAN = window.SAN || {};
     let targetH = 300;
     if (aspect < 0.75) targetH = 392;
     else if (aspect < 1.05) targetH = 340;
+    else if (aspect >= 1.2) targetH = 340;
     else if (aspect > 2.1) targetH = 306;
     let targetW = Math.round(targetH * aspect);
-    targetW = Math.max(172, Math.min(920, targetW));
+    targetW = Math.max(172, Math.min(780, targetW));
     targetH = Math.round(targetW / aspect);
     if (targetW === viewW && targetH === viewH && canvas.width === targetW) return;
     viewW = targetW; viewH = targetH;
@@ -6190,7 +6450,10 @@ window.SAN = window.SAN || {};
   R.drawWorld = function (scene) {
     if (!ctx) return;
     const { area, cam, player, npcs, cat, timeSec, weather } = scene;
-    ctx.fillStyle = '#2a2a30';
+    const backdrop = ctx.createLinearGradient(0, 0, 0, H);
+    backdrop.addColorStop(0, '#241d2f');
+    backdrop.addColorStop(1, '#171320');
+    ctx.fillStyle = backdrop;
     ctx.fillRect(0, 0, W, H);
     curArea = area;
     const startX = Math.floor(cam.x / T) - 1;
@@ -10754,6 +11017,24 @@ window.SAN = window.SAN || {};
     if (pauseBtn) pauseBtn.addEventListener('click', () => { SAN.audio.sfx('click'); UI.togglePause(); });
     const camBtn = document.getElementById('hud-camera');
     if (camBtn) camBtn.addEventListener('click', () => { SAN.audio.init(); SAN.audio.sfx('click'); SAN.photos.open(); });
+    const collapse = document.getElementById('rail-collapse');
+    if (collapse) collapse.addEventListener('click', () => { SAN.audio.sfx('click'); document.body.classList.add('rail-collapsed'); document.body.classList.remove('rail-peek'); });
+    const reopen = document.getElementById('rail-open');
+    if (reopen) reopen.addEventListener('click', () => {
+      SAN.audio.sfx('click');
+      document.body.classList.remove('rail-collapsed');
+      if (window.innerWidth < 1280) document.body.classList.add('rail-peek');
+    });
+    const bell = document.getElementById('tb-bell');
+    if (bell) bell.addEventListener('click', () => { SAN.audio.sfx('click'); UI.openPanel('quests'); });
+    document.querySelectorAll('[data-mm]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        SAN.audio.sfx('click');
+        UI.mmZoom = Math.max(1, Math.min(3, UI.mmZoom + (btn.getAttribute('data-mm') === 'in' ? 0.5 : -0.5)));
+        UI._mmKey = '';
+        UI.drawMinimap();
+      });
+    });
 
     document.getElementById('dialogue-layer').addEventListener('click', (e) => {
       if (e.target.closest('.dlg-choice') || e.target.closest('.dlg-btn')) return;
@@ -10879,6 +11160,7 @@ window.SAN = window.SAN || {};
       live.textContent = ev ? ev.name : '';
       live.style.display = ev ? '' : 'none';
     }
+    UI.refreshDesktop(S_);
   };
 
   /* ---------------- dialogue ---------------- */
@@ -11295,6 +11577,137 @@ window.SAN = window.SAN || {};
     if (attrs) Object.keys(attrs).forEach((k) => b.setAttribute(k, attrs[k]));
     b.addEventListener('click', (e) => { e.stopPropagation(); SAN.audio.sfx('click'); onClick(b); });
     return b;
+  };
+
+  /* ---------------- desktop shell ---------------- */
+  const AREA_DESC = {
+    village: 'A peaceful village where nature, people, and stories grow together.',
+    home: 'Your cottage: dust, rain, and the quiet work of starting again.',
+    garden: 'Rows of green, turned earth, and the smell of growing things.',
+    greenhouse: 'Warm glass and shared seedlings. Someone else\'s patience, borrowed.',
+    forest: 'Old trees that keep whatever you tell them.',
+    beach: 'Salt, long light, and the sound of something patient.',
+    lighthouse: 'A promise you make to strangers, kept every night.',
+    windmill: 'Gears turning slowly, like a thought being worked through.',
+    meadow: 'A secret the village keeps for itself.',
+  };
+  const MM_COLORS = {
+    '.': '#7fae66', ',': '#8dbd70', '#': '#c9a678', '=': '#b7ada0', '~': '#79b6cc',
+    's': '#e8d6ab', 'w': '#a87d52', 'g': '#bcd6c8', 'm': '#557048', 'c': '#8a6247',
+    'x': '#e3cfbe', 'o': '#cfc6b5', 'r': '#b98ba0', '_': '#241d2f', 'F': '#a0805a',
+  };
+  UI.mmZoom = 1;
+  UI._mmKey = '';
+
+  UI.drawMinimap = function () {
+    const cv = document.getElementById('minimap');
+    const W = SAN.world;
+    if (!cv || !W.area || !W.player) return;
+    const p = W.player, a = W.area, size = cv.width;
+    const key = a.id + ':' + Math.floor(p.x) + ',' + Math.floor(p.y) + ':' + UI.mmZoom;
+    if (key === UI._mmKey) return;
+    UI._mmKey = key;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#241d2f';
+    g.fillRect(0, 0, size, size);
+    const s = Math.max(1.5, Math.min(size / a.w, size / a.h) * UI.mmZoom);
+    const viewTiles = size / s;
+    const camX = Math.max(0, Math.min(a.w - viewTiles, p.x - viewTiles / 2));
+    const camY = Math.max(0, Math.min(a.h - viewTiles, p.y - viewTiles / 2));
+    const ox = (size - viewTiles * s) / 2, oy = (size - viewTiles * s) / 2;
+    for (let y = 0; y < a.h; y++) {
+      for (let x = 0; x < a.w; x++) {
+        const sx = ox + (x - camX) * s, sy = oy + (y - camY) * s;
+        if (sx < -s || sy < -s || sx > size || sy > size) continue;
+        g.fillStyle = MM_COLORS[a.grid[y][x]] || '#6f8a5e';
+        g.fillRect(Math.floor(sx), Math.floor(sy), Math.ceil(s), Math.ceil(s));
+      }
+    }
+    W.npcs.forEach((n) => {
+      const sx = ox + (n.px / 16 - camX) * s, sy = oy + (n.py / 16 - camY) * s;
+      g.fillStyle = '#8a6a92';
+      g.beginPath(); g.arc(sx + s / 2, sy + s / 2, Math.max(2, s * 0.4), 0, Math.PI * 2); g.fill();
+    });
+    const mx = ox + (p.px / 16 - camX) * s, my = oy + (p.py / 16 - camY) * s;
+    g.beginPath(); g.arc(mx + s / 2, my + s / 2, Math.max(3, s * 0.62), 0, Math.PI * 2);
+    g.fillStyle = '#f4d07a'; g.fill();
+    g.lineWidth = 1.5; g.strokeStyle = '#4a3524'; g.stroke();
+  };
+
+  UI.refreshDesktop = function (S_) {
+    if (!S_) return;
+    document.body.classList.toggle('playing', !!S_.started && !UI.titleActive);
+    if (!S_.started || UI.titleActive) return;
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    const W = SAN.world, area = W.area;
+    const weatherIcons = { sunny: '☀', cloudy: '☁', rain: '🌧', storm: '⛈', fog: '🌫', snow: '❄' };
+    const phase = U.phase(S_.time.minutes);
+    set('tb-date', U.seasonName(S_.time.season) + ' · ' + SAN.t('day.day') + ' ' + S_.time.day);
+    set('tb-time', U.fmtClock(S_.time.minutes));
+    set('tb-weather-icon', weatherIcons[S_.time.weather] || '☀');
+    set('tb-weather', SAN.t('weather.' + S_.time.weather, S_.time.weather));
+    set('tb-money', S_.money.toLocaleString());
+    set('tb-name', S_.player.name || 'Elara');
+    set('tb-status', SAN.t('phase.' + phase, phase));
+    set('rail-name', S_.player.name || 'Elara');
+    set('rail-status', phase === 'morning' ? 'Feeling rested' : phase === 'night' ? 'Ready to rest' : 'Feeling steady');
+    const pct = Math.max(0, Math.min(100, (S_.energy / S_.maxEnergy) * 100));
+    const fill = document.getElementById('rail-energy-fill');
+    if (fill) { fill.style.width = pct + '%'; fill.className = 'energy-fill' + (pct < 20 ? ' low' : pct < 45 ? ' mid' : ''); }
+    set('rail-energy-text', Math.round(S_.energy) + '/' + S_.maxEnergy);
+    const filled = Math.round(pct / 20);
+    set('rail-hearts', '♥'.repeat(filled) + '♡'.repeat(5 - filled));
+    if (S_.cat.adopted) set('rail-cat', S_.cat.name + ' · ' + SAN.cat.hungerLabel());
+
+    const src = SAN.render.portraitSrc('player', 'neutral');
+    const railP = document.getElementById('rail-portrait');
+    if (railP && railP.getAttribute('data-src') !== src) {
+      railP.setAttribute('data-src', src);
+      railP.innerHTML = `<img src="${src}" alt="">`;
+    }
+    const avatar = document.getElementById('tb-avatar');
+    if (avatar && avatar.getAttribute('data-src') !== src) {
+      avatar.setAttribute('data-src', src);
+      avatar.innerHTML = `<img src="${src}" alt="">`;
+    }
+
+    if (area) {
+      set('rail-loc-name', area.name);
+      set('rail-loc-desc', AREA_DESC[area.id] || 'Somewhere between who you were and who you are becoming.');
+    }
+
+    const near = W.npcs.map((n) => ({ n, d: Math.hypot(n.px - W.player.px, n.py - W.player.py) }))
+      .sort((a, b) => a.d - b.d).slice(0, 4);
+    const npcEl = document.getElementById('rail-npcs');
+    if (npcEl) {
+      npcEl.innerHTML = near.length
+        ? near.map(({ n, d }) => `<li><span class="rail-npc-face"><img src="${SAN.render.portraitSrc(n.def.id, 'neutral')}" alt=""></span>
+            <span class="rail-npc-meta"><b>${U.esc(n.def.name)}</b><span>${U.esc(n.def.title || '')} · ${Math.max(1, Math.round(d / 16))} tiles</span></span></li>`).join('')
+        : '<li class="empty">No one nearby.</li>';
+    }
+
+    const active = SAN.quests.activeList();
+    const tracked = active.filter((q) => q.def.type !== 'daily')[0] || active[0];
+    const todoEl = document.getElementById('rail-todo');
+    if (todoEl) {
+      const objs = tracked ? SAN.quests.objectiveList(tracked.id) : [];
+      todoEl.innerHTML = objs.length
+        ? objs.slice(0, 5).map((o) => `<li class="${o.done ? 'done' : ''}"><span class="tick">${o.done ? '✓' : ''}</span><span>${U.esc(o.label)}${o.need > 1 ? ' (' + o.cur + '/' + o.need + ')' : ''}</span></li>`).join('')
+        : '<li class="empty">Nothing pressing. Wander a little.</li>';
+    }
+    const qEl = document.getElementById('rail-quests');
+    if (qEl) {
+      qEl.innerHTML = active.length
+        ? active.slice(0, 3).map((q) => {
+          const objs = SAN.quests.objectiveList(q.id);
+          const cur = objs.find((o) => !o.done) || objs[0];
+          return `<div class="rail-quest"><b>${U.esc(q.def.title)}</b><span>${cur ? U.esc(cur.label) : 'Complete'}</span></div>`;
+        }).join('')
+        : '<div class="rail-quest empty">No quests right now. Talk to people.</div>';
+    }
+    const dot = document.getElementById('tb-dot');
+    if (dot) dot.hidden = active.length === 0;
+    UI.drawMinimap();
   };
 })();
 </script>

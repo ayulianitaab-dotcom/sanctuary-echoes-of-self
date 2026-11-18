@@ -1,13 +1,14 @@
 {
-  "siteId": "d66cec4b-4e41-49c6-92a6-2fa1a3a5e917",
+  "siteId": "0f1e2d3c-4b5a-4c6d-8e7f-9a0b1c2d3e4f",
   "name": "Sanctuary: Echoes of Self",
   "preview": {
-    "url": "https://sanctuary-echoes-of-self-jauf0d-preview.freebuff.page",
-    "environmentId": "d9f620fd-0353-4b91-92e1-1c64caba2130"
+    "url": "https://sanctuary-echoes-of-self-aru6jp-preview.freebuff.page",
+    "environmentId": "f4b8e143-6b78-45c5-b69b-5eb3af210f88",
+    "published": true
   },
   "production": {
-    "url": "https://sanctuary-echoes-of-self-jauf0d.freebuff.page",
-    "environmentId": "559439b8-981f-4a99-a695-10351cb522b8",
+    "url": "https://sanctuary-echoes-of-self-aru6jp.freebuff.page",
+    "environmentId": "ebf3f2eb-fa94-4fbf-8158-d93827c3c397",
     "deployed": false
   }
 }
