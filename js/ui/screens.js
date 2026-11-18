@@ -19,7 +19,23 @@
     { id: 'player', name: 'You', pos: 10, pc: true, mood: 'happy' },
   ];
 
+  /* how each portrait comes alive on the title screen. The moods are the
+     character's own uploaded expressions — never a borrowed or invented face. */
+  const TITLE_LIFE = {
+    nyssa: { hover: 'gentle', idle: ['gentle', 'happy'], look: true },
+    rowan: { hover: 'thinking', idle: ['thinking', 'smile'], look: true },
+    celeste: { hover: 'smile', idle: ['gentle'], look: true },
+    finn: { hover: 'happy', idle: ['smile'], look: true },
+    theo: { hover: 'thinking', idle: ['serious'], look: true },
+    elowen: { hover: 'gentle', idle: ['smile'], look: true },
+    liora: { hover: 'gentle', idle: ['serious', 'smile'], look: true },
+    mira: { hover: 'happy', idle: ['smile'], look: true },
+    aria: { hover: 'thinking', idle: ['serious', 'gentle'], look: true },
+    player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
+  };
+
   SC.showTitle = function () {
+    SC.stopTitleLife();
     SAN.ui.titleActive = true;
     SAN.ui.closeAll();
     const hud = document.getElementById('hud');
@@ -32,11 +48,22 @@
     el.className = '';
     const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
 
-    const cast = SC.TITLE_CAST.map((c) => `
-      <figure class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" aria-hidden="true">
-        <div class="ts-frame"><img src="${SAN.render.portraitSrc(c.id, c.mood || 'neutral')}" alt="" draggable="false"></div>
-        <figcaption>${U.esc(c.name)}</figcaption>
-      </figure>`).join('');
+    const roleOf = (c) => (c.pc ? 'Newly arrived' : ((SAN.data.npcs[c.id] || {}).title || ''));
+    const cast = SC.TITLE_CAST.map((c) => {
+      const mood = c.mood || 'neutral';
+      const role = roleOf(c);
+      return `
+      <button type="button" class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
+        aria-label="${U.esc(c.name)}${role ? ' — ' + U.esc(role) : ''}">
+        <span class="ts-frame">
+          <span class="ts-sway">
+            <img class="ts-face" src="${SAN.render.portraitSrc(c.id, mood)}" alt="" draggable="false">
+            <img class="ts-face ts-face-alt" alt="" aria-hidden="true" draggable="false">
+          </span>
+        </span>
+        <span class="ts-tag" aria-hidden="true"><b>${U.esc(c.name)}</b><i>${U.esc(role)}</i></span>
+      </button>`;
+    }).join('');
 
     el.innerHTML = `
       <div class="ts-scene" aria-hidden="true">
@@ -55,11 +82,12 @@
         <div class="ts-glow"></div>
       </div>
       <div class="ts-petals" aria-hidden="true"></div>
+      <div class="ts-motes" aria-hidden="true"></div>
 
-      <div class="ts-cast" aria-hidden="true">
+      <div class="ts-cast">
         ${cast}
-        <div class="ts-foreground"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="ts-table">
+        <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-table" aria-hidden="true">
           <span class="tbl-top"></span>
           <span class="tbl-cloth"></span>
           <span class="tbl-book"></span>
@@ -68,6 +96,14 @@
           <span class="tbl-cake"><i></i><i></i><i></i></span>
           <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i></span>
         </div>
+      </div>
+
+      <div class="ts-card" id="ts-card" role="dialog" aria-label="Villager" hidden>
+        <button type="button" class="ts-card-close" id="ts-card-close" aria-label="Close">✕</button>
+        <div class="ts-card-crest" aria-hidden="true">❀</div>
+        <div class="ts-card-name"></div>
+        <div class="ts-card-role"></div>
+        <p class="ts-card-line"></p>
       </div>
 
       <div class="ts-panel">
@@ -107,6 +143,19 @@
       petalLayer.appendChild(petal);
     }
 
+    // floating motes of light: pure CSS dots, no extra artwork
+    const moteLayer = el.querySelector('.ts-motes');
+    for (let i = 0; i < 16; i++) {
+      const mote = document.createElement('i');
+      mote.className = 'ts-mote';
+      mote.style.setProperty('--x', (6 + (i * 61) % 88) + '%');
+      mote.style.setProperty('--s', (4 + (i % 3) * 2) + 'px');
+      mote.style.setProperty('--d', (12 + (i % 5) * 3.4).toFixed(1) + 's');
+      mote.style.setProperty('--delay', (-(i * 2.3) % 18).toFixed(1) + 's');
+      mote.style.setProperty('--dx', ((i % 2 ? 1 : -1) * (12 + (i % 4) * 9)) + 'px');
+      moteLayer.appendChild(mote);
+    }
+
     SAN.audio.init();
     SAN.audio.playMusic('title');
     SAN.audio.ambient('birds');
@@ -129,6 +178,8 @@
 
     el.querySelector('#t-settings').addEventListener('click', () => { SAN.audio.sfx('click'); SC.showTitleSettings(); });
 
+    SC.initTitleLife(el);
+
     // Credits reuses the existing About screen and its return behaviour
     el.querySelector('#t-credits').addEventListener('click', () => {
       SAN.audio.sfx('open');
@@ -139,6 +190,229 @@
       // the title overlay sits above the normal panel layer; credits must stay readable
       SAN.ui.panelLayer.classList.add('above-title');
     });
+  };
+
+  /* ---------------------------------------------------------
+     LIVING TITLE SCREEN
+     The uploaded artwork is never redrawn or replaced: life is
+     added around each official portrait — a slow breath, a head
+     sway, a breath of light over the hair, a simulated blink,
+     expression swaps using that character's own moods, and a
+     small turn toward a neighbour. Everything stops under
+     prefers-reduced-motion or the in-game Reduce Motion setting.
+     --------------------------------------------------------- */
+  SC.titleInfo = function (id) {
+    if (id === 'player') {
+      return {
+        name: 'You',
+        role: 'Newly arrived',
+        line: 'A traveller who came to rest. Sanctuary has been keeping a light on for you.',
+      };
+    }
+    const n = SAN.data.npcs && SAN.data.npcs[id];
+    if (!n) return null;
+    const bio = String(n.bio || '');
+    const stop = bio.indexOf('. ');
+    return { name: n.name, role: n.title || '', line: stop > 0 ? bio.slice(0, stop + 1) : bio };
+  };
+
+  SC.stopTitleLife = function () {
+    const fx = SC._titleFx;
+    if (!fx) return;
+    if (fx.tick) clearTimeout(fx.tick);
+    if (fx.blink) clearTimeout(fx.blink);
+    if (fx.cat) clearTimeout(fx.cat);
+    if (fx.raf) cancelAnimationFrame(fx.raf);
+    if (fx.detach) fx.detach();
+    SC._titleFx = null;
+  };
+
+  SC.initTitleLife = function (el) {
+    const fx = (SC._titleFx = {});
+    const reduce = () => (
+      document.body.classList.contains('reduce-motion') ||
+      (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    );
+    const figs = Array.prototype.slice.call(el.querySelectorAll('.ts-char[data-npc]'));
+    const card = el.querySelector('#ts-card');
+    if (!card) return;
+
+    // swap between the two stacked faces so expressions cross-fade
+    const paint = (fig, mood) => {
+      const id = fig.dataset.npc;
+      const base = fig.querySelector('.ts-face');
+      const alt = fig.querySelector('.ts-face-alt');
+      if (!id || !mood || !base || !alt) return;
+      const src = SAN.render.portraitSrc(id, mood);
+      if (!src) return;
+      fig.dataset.mood = mood;
+      if (base.getAttribute('src') === src) { alt.classList.remove('on'); return; }
+      if (alt.getAttribute('src') !== src) alt.setAttribute('src', src);
+      alt.classList.add('on');
+    };
+
+    const look = (fig, dir) => {
+      fig.classList.toggle('look-left', dir === 'left');
+      fig.classList.toggle('look-right', dir === 'right');
+    };
+
+    const closeCard = () => {
+      card.classList.remove('on', 'below');
+      card.hidden = true;
+      Array.prototype.forEach.call(el.querySelectorAll('.ts-char.card-open'), (f) => f.classList.remove('card-open'));
+    };
+
+    // a short note about the villager — never starts a dialogue
+    const openCard = (fig) => {
+      const info = SC.titleInfo(fig.dataset.npc);
+      if (!info) return;
+      Array.prototype.forEach.call(el.querySelectorAll('.ts-char.card-open'), (f) => f.classList.remove('card-open'));
+      fig.classList.add('card-open');
+      card.querySelector('.ts-card-name').textContent = info.name;
+      card.querySelector('.ts-card-role').textContent = info.role;
+      card.querySelector('.ts-card-line').textContent = info.line;
+      card.hidden = false;
+      const r = fig.getBoundingClientRect();
+      const half = Math.min(300, window.innerWidth * 0.82) / 2;
+      const x = Math.max(half + 12, Math.min(window.innerWidth - half - 12, r.left + r.width / 2));
+      const above = r.top > 220;
+      card.classList.toggle('below', !above);
+      card.style.left = Math.round(x) + 'px';
+      card.style.top = Math.round(above ? r.top - 10 : r.bottom + 10) + 'px';
+      card.classList.add('on');
+      SAN.audio.sfx('click');
+    };
+
+    figs.forEach((fig) => {
+      const life = TITLE_LIFE[fig.dataset.npc] || {};
+      const base = fig.dataset.baseMood || 'neutral';
+      const enter = () => {
+        fig.classList.add('lit');
+        paint(fig, life.hover || base);
+      };
+      const leave = () => {
+        fig.classList.remove('lit');
+        paint(fig, fig.dataset.baseMood || 'neutral');
+      };
+      fig.addEventListener('mouseenter', enter);
+      fig.addEventListener('focus', enter);
+      fig.addEventListener('mouseleave', leave);
+      fig.addEventListener('blur', leave);
+      fig.addEventListener('click', () => openCard(fig));
+    });
+
+    const closeBtn = card.querySelector('.ts-card-close');
+    closeBtn.addEventListener('click', closeCard);
+    const onKey = (e) => { if (e.key === 'Escape') closeCard(); };
+    const onDocClick = (e) => {
+      if (!card.classList.contains('on')) return;
+      const t = e.target;
+      if (t && t.closest && (t.closest('.ts-card') || t.closest('.ts-char'))) return;
+      closeCard();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('click', onDocClick);
+
+    // occasional expression changes and a glance toward a neighbour
+    const scheduleIdle = () => {
+      fx.tick = setTimeout(() => {
+        if (!el.isConnected) { fx.tick = 0; return; }
+        if (!reduce() && !document.hidden && SAN.ui.titleActive) {
+          const free = figs.filter((f) => !f.classList.contains('lit'));
+          const fig = free.length ? free[Math.floor(Math.random() * free.length)] : null;
+          if (fig) {
+            const life = TITLE_LIFE[fig.dataset.npc] || {};
+            const moods = life.idle || [];
+            if (moods.length) {
+              paint(fig, moods[Math.floor(Math.random() * moods.length)]);
+              setTimeout(() => {
+                if (fig.isConnected && !fig.classList.contains('lit')) paint(fig, fig.dataset.baseMood || 'neutral');
+              }, 1900 + Math.random() * 1700);
+            }
+            // turn toward whichever neighbour is actually closest
+            if (life.look && Math.random() < 0.55) {
+              const here = fig.getBoundingClientRect();
+              let nearest = null;
+              let best = Infinity;
+              figs.forEach((other) => {
+                if (other === fig) return;
+                const q = other.getBoundingClientRect();
+                const d = Math.abs(q.left - here.left) + Math.abs(q.top - here.top);
+                if (d < best) { best = d; nearest = q; }
+              });
+              const dir = nearest && nearest.left + nearest.width / 2 < here.left + here.width / 2 ? 'left' : 'right';
+              look(fig, dir);
+              setTimeout(() => { if (fig.isConnected) look(fig, 'none'); }, 1300 + Math.random() * 1000);
+            }
+          }
+        }
+        scheduleIdle();
+      }, 1500 + Math.random() * 2200);
+    };
+
+    // the still busts blink through a very short, very small squash
+    const scheduleBlink = () => {
+      fx.blink = setTimeout(() => {
+        if (!el.isConnected) { fx.blink = 0; return; }
+        if (!reduce() && !document.hidden) {
+          const fig = figs[Math.floor(Math.random() * figs.length)];
+          const sway = fig && fig.querySelector('.ts-sway');
+          if (sway) {
+            sway.classList.add('blink');
+            setTimeout(() => sway.classList.remove('blink'), 250);
+          }
+        }
+        scheduleBlink();
+      }, 1500 + Math.random() * 2600);
+    };
+
+    // the cat on the tea table: blink, tail flick, yawn
+    const cat = el.querySelector('.tbl-cat');
+    const scheduleCat = () => {
+      fx.cat = setTimeout(() => {
+        if (!el.isConnected) { fx.cat = 0; return; }
+        if (cat && !reduce() && !document.hidden) {
+          const acts = ['blink', 'tail', 'yawn', 'tail', 'blink'];
+          const act = acts[Math.floor(Math.random() * acts.length)];
+          cat.classList.add(act);
+          setTimeout(() => cat.classList.remove(act), act === 'yawn' ? 1550 : act === 'blink' ? 230 : 950);
+        }
+        scheduleCat();
+      }, 4800 + Math.random() * 5200);
+    };
+
+    // very subtle parallax: the scene drifts against the pointer
+    let px = 0;
+    let py = 0;
+    let queued = false;
+    const applyParallax = () => {
+      queued = false;
+      el.style.setProperty('--px', px.toFixed(3));
+      el.style.setProperty('--py', py.toFixed(3));
+    };
+    const onMove = (e) => {
+      if (reduce()) return;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      px = U.clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1);
+      py = U.clamp((e.clientY - r.top) / r.height * 2 - 1, -1, 1);
+      if (!queued) { queued = true; fx.raf = requestAnimationFrame(applyParallax); }
+    };
+    const onLeaveScene = () => { px = 0; py = 0; applyParallax(); };
+    el.addEventListener('mousemove', onMove);
+    el.addEventListener('mouseleave', onLeaveScene);
+
+    fx.detach = () => {
+      closeBtn.removeEventListener('click', closeCard);
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('click', onDocClick);
+      el.removeEventListener('mousemove', onMove);
+      el.removeEventListener('mouseleave', onLeaveScene);
+    };
+
+    scheduleIdle();
+    scheduleBlink();
+    scheduleCat();
   };
 
   SC.showTitleSettings = function () {
@@ -277,6 +551,7 @@
 
   /* ---------------- new game / intro ---------------- */
   SC.beginGame = function (custom) {
+    SC.stopTitleLife();
     const S_ = SAN.state.newGame({ player: custom, cat: { name: 'Mochi', color: 'cream', adopted: false }, slot: SC.pickFreeSlot() });
     const bg = SAN.state.background(custom.background);
     const pr = SAN.state.pronoun(custom.pronoun);
@@ -373,6 +648,7 @@
   };
 
   SC.loadSlot = function (slot) {
+    SC.stopTitleLife();
     const snap = SAN.save.read(slot);
     if (!snap) { SAN.ui.toast('That slot is empty.', 'warn'); return; }
     SAN.state.apply(snap);
