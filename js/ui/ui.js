@@ -297,7 +297,7 @@
     if (speakerId === 'narrator') return { name: '', portrait: '', narr: true };
     if (speakerId === 'player') {
       const S_ = S();
-      return { name: S_.player.name, portrait: SAN.render.portrait('player'), narr: false, accent: S_.player.colors.dress };
+      return { name: S_.player.name, portrait: SAN.render.portraitSrc('player', 'neutral'), narr: false, accent: S_.player.colors.dress };
     }
     const npc = SAN.data.npcs[speakerId];
     if (!npc) return { name: speakerId, portrait: '', narr: true };

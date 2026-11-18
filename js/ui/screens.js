@@ -141,34 +141,6 @@
     });
   };
 
-  SC.showSlots = function () {
-    const meta = SAN.save.slotMeta();
-    const el = document.getElementById('title-screen');
-    el.classList.add('title-subpanel');
-    const wrap = document.createElement('div');
-    wrap.className = 'title-modal';
-    wrap.innerHTML = `<h2>Save Slots</h2><div class="title-slots">${meta.map((m) => `
-      <div class="title-slot ${m.empty ? 'empty' : ''}">
-        <div class="ts-head">Slot ${m.slot}</div>
-        ${m.empty ? '<div class="ts-empty">Empty — a good place for a new story.</div>' : `
-          <div class="ts-name">${U.esc(m.name)}${m.catName ? ' & ' + U.esc(m.catName) : ''}</div>
-          <div class="ts-meta">${U.SEASONS[m.season]} ${m.day}, Year ${m.year}</div>
-          <div class="ts-meta">${m.money} coins · ${Math.floor((m.playtime || 0) / 60)} min</div>
-          <div class="ts-actions">
-            <button class="btn btn-small btn-primary" data-load="${m.slot}">Continue</button>
-            <button class="btn btn-small btn-ghost" data-del="${m.slot}">Delete</button>
-          </div>`}
-      </div>`).join('')}</div>
-      <button class="title-btn" id="ts-close">Back</button>`;
-    el.appendChild(wrap);
-    wrap.querySelector('#ts-close').addEventListener('click', () => { wrap.remove(); el.classList.remove('title-subpanel'); });
-    wrap.querySelectorAll('[data-load]').forEach((b) => b.addEventListener('click', () => SC.loadSlot(parseInt(b.getAttribute('data-load'), 10))));
-    wrap.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
-      SAN.save.clear(parseInt(b.getAttribute('data-del'), 10));
-      wrap.remove(); el.classList.remove('title-subpanel'); SC.showTitle();
-    }));
-  };
-
   SC.showTitleSettings = function () {
     const st = SAN.save.loadSettings() || { musicVol: 0.5, sfxVol: 0.7, ambVol: 0.5, textSpeed: 1, showHints: true, reduceMotion: false, autosave: true, useAI: false };
     const el = document.getElementById('title-screen');
@@ -255,7 +227,7 @@
 
     function paint() {
       const full = Object.assign({}, custom, { colors: SAN.state.playerColors(custom) });
-      portrait.innerHTML = SAN.render.portrait('player', { player: full });
+      portrait.innerHTML = SAN.render.fullBodyImg();
       nameDisplay.textContent = custom.name || 'Elara';
     }
     function chips(containerId, list, key, labelKey) {

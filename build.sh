@@ -11,6 +11,7 @@ FILES=(
   js/core/save.js
   js/data/items.js
   js/data/npcs.js
+  js/data/character.js
   js/data/quests.js
   js/data/life.js
   js/world/areas.js
@@ -82,8 +83,31 @@ PORTRAITS_JS=$(mktemp)
   echo "Embedded $count portrait illustrations" >&2
 } > "$PORTRAITS_JS"
 
+# main character: the reference-derived full body and expressions, inlined the
+# same way so the single-file build shows the official artwork
+MAIN_JS=$(mktemp)
+{
+  echo '<script>'
+  echo 'window.SAN_ASSET_MAIN={'
+  echo 'fullbody:"data:image/png;base64,'"$(base64 -w 0 assets/characters/main/fullbody.png)"'",'
+  echo 'expressions:{'
+  mc_sep=''
+  for mood in neutral happy sad surprised embarrassed thinking angry thanking; do
+    art="assets/characters/main/expressions/$mood.png"
+    if [ ! -f "$art" ]; then
+      echo "ERROR: missing main character expression $art" >&2
+      exit 1
+    fi
+    printf '%s"%s":"data:image/png;base64,%s"' "$mc_sep" "$mood" "$(base64 -w 0 "$art")"
+    mc_sep=$',\n'
+  done
+  echo
+  echo '}};'
+  echo '</script>'
+} > "$MAIN_JS"
+
 TMP=$(mktemp)
-trap 'rm -f "$TMP" "$PORTRAITS_JS"' EXIT
+trap 'rm -f "$TMP" "$PORTRAITS_JS" "$MAIN_JS"' EXIT
 
 awk '
 /<!-- CSS_HERE -->/ {
@@ -99,6 +123,7 @@ awk '
 {
   cat "$TMP" | sed '/<!-- JS_HERE -->/q' | sed '$d'
   cat "$PORTRAITS_JS"
+  cat "$MAIN_JS"
   for f in "${FILES[@]}"; do
     echo "<script>"
     cat "$f"

@@ -1420,7 +1420,7 @@
     const portrait = el.querySelector('#wd-portrait');
     function apply() {
       p.colors = SAN.state.playerColors(p);
-      portrait.innerHTML = SAN.render.portrait('player', { player: p });
+      portrait.innerHTML = SAN.render.fullBodyImg();
       el.querySelector('#wd-name').textContent = p.name;
       el.querySelector('#wd-input-name').value = p.name;
       SAN.save.autosave();

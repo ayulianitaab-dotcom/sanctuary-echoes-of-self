@@ -2173,10 +2173,24 @@
      reference sheets in assets/portraits/<id>/<mood>.png. The SVG
      above is only the fallback when an illustration is missing.
      ========================================================= */
-  R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry'];
+  R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry', 'thanking'];
   R.MOODS = R.PLAYER_MOODS.slice();
   // dialogue returns 'thoughtful'; the sheets label that expression 'thinking'
-  const ART_ALIAS = { thoughtful: 'thinking' };
+  const ART_ALIAS = {
+    thoughtful: 'thinking',
+    thankful: 'thanking',
+    grateful: 'thanking',
+    relieved: 'thanking',
+    shy: 'embarrassed',
+    flustered: 'embarrassed',
+    annoyed: 'angry',
+    irritated: 'angry',
+    mad: 'angry',
+    crying: 'sad',
+    worried: 'sad',
+    excited: 'happy',
+    delighted: 'happy',
+  };
 
   // dialogue data can name the expression it needs; anything unknown falls back
   R.resolveMood = function (mood) {
@@ -2212,8 +2226,34 @@
     return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
   };
 
+  // the official Main Character artwork: one config, used by every screen
+  R.mainCharacter = function () {
+    return (SAN.data && SAN.data.mainCharacter) || null;
+  };
+
+  R.mainAssetSrc = function (kind, mood) {
+    const mc = R.mainCharacter();
+    if (!mc) return '';
+    const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_MAIN : null;
+    if (kind === 'fullbody') return (bundled && bundled.fullbody) || mc.fullBody;
+    const key = mc.expressions[R.resolveMood(mood)] ? R.resolveMood(mood) : 'neutral';
+    if (bundled && bundled.expressions && bundled.expressions[key]) return bundled.expressions[key];
+    return mc.expressions[key] || '';
+  };
+
+  R.fullBodyImg = function (opts) {
+    const o = opts || {};
+    return `<img class="portrait-img fullbody-img${o.className ? ' ' + o.className : ''}"` +
+      ` src="${R.mainAssetSrc('fullbody')}" alt="" draggable="false"` +
+      ` data-who="player" data-kind="fullbody">`;
+  };
+
   R.portraitSrc = function (who, mood) {
     const id = who === 'player' ? 'player' : who;
+    if (id === 'player') {
+      const face = R.mainAssetSrc('face', mood);
+      if (face) return face;
+    }
     const list = R.portraitArtFor(id);
     let m = ART_ALIAS[mood] || mood || 'neutral';
     if (list.indexOf(m) < 0) m = 'neutral';
@@ -2228,6 +2268,7 @@
     const o = opts || {};
     const id = who === 'player' ? 'player' : who;
     if (id !== 'player' && !SAN.data.npcs[id]) return '';
+    if (id === 'player' && o.fullBody) return R.fullBodyImg(o);
     const mood = ART_ALIAS[o.mood] || o.mood || 'neutral';
     const cls = 'portrait-img' + (o.className ? ' ' + o.className : '');
     return `<img class="${cls}" src="${R.portraitSrc(id, mood)}" alt="" draggable="false"` +
