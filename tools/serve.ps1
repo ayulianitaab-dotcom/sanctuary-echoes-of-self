@@ -24,17 +24,22 @@ while ($listener.IsListening) {
   try {
     $ctx = $listener.GetContext()
   } catch { break }
-  $rel = [System.Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart("/")
-  if ([string]::IsNullOrWhiteSpace($rel)) { $rel = "index.html" }
-  $path = Join-Path $root $rel
-  if (Test-Path -LiteralPath $path -PathType Leaf) {
-    $bytes = [System.IO.File]::ReadAllBytes($path)
-    $ext = [System.IO.Path]::GetExtension($path).ToLower()
-    if ($types.ContainsKey($ext)) { $ctx.Response.ContentType = $types[$ext] }
-    $ctx.Response.ContentLength64 = $bytes.Length
-    $ctx.Response.OutputStream.Write($bytes, 0, $bytes.Length)
-  } else {
-    $ctx.Response.StatusCode = 404
+  try {
+    $rel = [System.Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart("/")
+    if ([string]::IsNullOrWhiteSpace($rel)) { $rel = "index.html" }
+    $path = Join-Path $root $rel
+    if (Test-Path -LiteralPath $path -PathType Leaf) {
+      $bytes = [System.IO.File]::ReadAllBytes($path)
+      $ext = [System.IO.Path]::GetExtension($path).ToLower()
+      if ($types.ContainsKey($ext)) { $ctx.Response.ContentType = $types[$ext] }
+      $ctx.Response.ContentLength64 = $bytes.Length
+      $ctx.Response.OutputStream.Write($bytes, 0, $bytes.Length)
+    } else {
+      $ctx.Response.StatusCode = 404
+    }
+    $ctx.Response.Close()
+  } catch {
+    # a reload that cancels an in-flight response must not kill the server
+    try { $ctx.Response.Abort() } catch { }
   }
-  $ctx.Response.Close()
 }
