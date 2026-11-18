@@ -3975,10 +3975,10 @@ window.SAN = window.SAN || {};
     door(a, 39, 11, 'bakery', 10, 10, 'Mira\'s Bakery');
     add(a, 'building', 46, 12, { w: 8, h: 6, style: 'library', solid: true, doorRel: { x: 3, y: 5 }, sign: 'LIBRARY' });
     door(a, 49, 17, 'library', 10, 10, 'Village Library');
-    add(a, 'building', 20, 28, { w: 8, h: 6, style: 'flower', solid: true, doorRel: { x: 3, y: 0 }, sign: 'FLOWERS' });
-    door(a, 23, 28, 'flower', 10, 10, 'Flower Shop');
-    add(a, 'building', 38, 28, { w: 8, h: 6, style: 'teashop', solid: true, doorRel: { x: 3, y: 0 }, sign: 'TEA' });
-    door(a, 41, 28, 'teashop', 10, 10, 'The Steeping Room');
+    add(a, 'building', 20, 28, { w: 8, h: 6, style: 'flower', solid: true, doorRel: { x: 3, y: 5 }, sign: 'FLOWERS' });
+    door(a, 23, 33, 'flower', 10, 10, 'Flower Shop');
+    add(a, 'building', 38, 28, { w: 8, h: 6, style: 'teashop', solid: true, doorRel: { x: 3, y: 5 }, sign: 'TEA' });
+    door(a, 41, 33, 'teashop', 10, 10, 'The Steeping Room');
 
     // decorative cottages
     add(a, 'building', 4, 8, { w: 5, h: 4, style: 'cottage', solid: true, doorRel: { x: 2, y: 3 } });
@@ -4022,6 +4022,22 @@ window.SAN = window.SAN || {};
     add(a, 'chair', 45, 35, { solid: true });
     add(a, 'crate', 45, 20, { solid: true });
     add(a, 'barrel', 44, 20, { solid: true });
+    // greenery softening the plaza edges
+    add(a, 'flowers', 24, 14, { solid: false });
+    add(a, 'flowers', 25, 14, { solid: false });
+    add(a, 'flowers', 38, 14, { solid: false });
+    add(a, 'flowers', 39, 15, { solid: false });
+    add(a, 'flowers', 31, 25, { solid: false });
+    add(a, 'flowers', 23, 26, { solid: false });
+    add(a, 'bush', 22, 17, { solid: true });
+    add(a, 'bush', 42, 17, { solid: true });
+    add(a, 'bush', 22, 25, { solid: true });
+    add(a, 'bush', 42, 25, { solid: true });
+    add(a, 'tree', 22, 13, { solid: true, variant: 1 });
+    add(a, 'tree', 41, 13, { solid: true, variant: 2 });
+    add(a, 'lamp', 30, 17, { solid: false });
+    add(a, 'flowerpot', 26, 22, { solid: false });
+    add(a, 'flowerpot', 33, 24, { solid: false });
 
     scatter(a, 'tree', 26, 101, { noEdge: true, avoid: (x, y) => x > 8 && x < 56 && y > 5 && y < 40 });
     scatter(a, 'bush', 14, 102, { noEdge: true });
@@ -4571,6 +4587,7 @@ window.SAN = window.SAN || {};
   R.palette = C;
 
   let canvas, ctx, W = 480, H = 270;
+  let curArea = null;
 
   let viewH = 270, viewW = 480;
 
@@ -4583,11 +4600,11 @@ window.SAN = window.SAN || {};
     // Portrait screens get a taller, closer view so the world fills the screen;
     // desktop/landscape sees more of the surroundings.
     let targetH = 300;
-    if (aspect < 0.75) targetH = 344;
-    else if (aspect < 1.05) targetH = 326;
+    if (aspect < 0.75) targetH = 392;
+    else if (aspect < 1.05) targetH = 340;
     else if (aspect > 2.1) targetH = 306;
     let targetW = Math.round(targetH * aspect);
-    targetW = Math.max(188, Math.min(920, targetW));
+    targetW = Math.max(172, Math.min(920, targetW));
     targetH = Math.round(targetW / aspect);
     if (targetW === viewW && targetH === viewH && canvas.width === targetW) return;
     viewW = targetW; viewH = targetH;
@@ -4637,18 +4654,20 @@ window.SAN = window.SAN || {};
     const h = SAN.util.hash(tx, ty);
     switch (ch) {
       case '.': {
-        px(sx, sy, T, T, C.grass);
+        px(sx, sy, T, T, '#8abb72');
         // soft patchwork so large lawns do not read as flat colour
-        if (h > 0.5) px(sx + 2, sy + 2, 5, 4, 'rgba(104,150,88,0.22)');
-        if (h < 0.3) px(sx + 9, sy + 7, 5, 5, 'rgba(198,224,164,0.2)');
-        if (h > 0.24 && h < 0.42) px(sx + 8, sy + 1, 4, 6, 'rgba(96,140,80,0.14)');
-        // blades and tufts
-        px(sx + 3, sy + 6, 1, 2, C.grassDark);
-        px(sx + 4, sy + 5, 1, 3, C.grass2);
-        px(sx + 11, sy + 10, 1, 2, C.grassDark);
-        if (h > 0.62) { px(sx + 7, sy + 12, 3, 1, C.grassLight); px(sx + 8, sy + 11, 1, 2, C.grass2); }
-        if (h < 0.18) { px(sx + 12, sy + 3, 2, 1, C.grassLight); px(sx + 12, sy + 4, 1, 2, C.grassDark); }
-        if (h > 0.93) { px(sx + 5, sy + 9, 1, 1, '#f6f0d0'); }
+        if (h > 0.5) px(sx + 2, sy + 2, 5, 4, 'rgba(94,140,76,0.26)');
+        if (h < 0.3) px(sx + 9, sy + 7, 5, 5, 'rgba(184,216,138,0.26)');
+        if (h > 0.24 && h < 0.42) px(sx + 8, sy + 1, 4, 6, 'rgba(84,128,68,0.18)');
+        if (h > 0.62 && h < 0.72) px(sx + 1, sy + 9, 6, 3, 'rgba(170,204,126,0.22)');
+        // blades and tufts, jittered per tile so lawns never form a lattice
+        const bx = 1 + ((h * 13.7) % 11), by = 2 + ((h * 7.3) % 9);
+        px(sx + bx, sy + by, 1, 2, C.grassDark);
+        px(sx + bx + 1, sy + by - 1, 1, 3, C.grass2);
+        px(sx + 13 - bx * 0.6, sy + 12 - by * 0.4, 1, 2, C.grassDark);
+        if (h > 0.62) { px(sx + 2 + bx * 0.5, sy + 11, 3, 1, C.grassLight); px(sx + 4 + bx * 0.5, sy + 10, 1, 2, C.grass2); }
+        if (h < 0.18) { px(sx + 1 + (h * 31 % 12), sy + 3, 2, 1, C.grassLight); px(sx + 2 + (h * 31 % 12), sy + 4, 1, 2, C.grassDark); }
+        if (h > 0.975) { px(sx + 5, sy + 9, 1, 1, '#cddba6'); }
         break;
       }
       case ',': {
@@ -4669,34 +4688,69 @@ window.SAN = window.SAN || {};
         break;
       }
       case '#': {
-        // packed earth with soft trodden edges and small stones
-        px(sx, sy, T, T, C.path);
-        px(sx, sy, T, 3, 'rgba(210,180,140,0.35)');
-        px(sx, sy + 12, T, 4, 'rgba(150,118,86,0.25)');
-        for (let i = 0; i < 4; i++) {
-          const hx2 = (h * (i + 1) * 97) % 12;
-          const hy2 = (h * (i + 1) * 53) % 12;
-          circle(sx + 2 + hx2, sy + 2 + hy2, 0.9 + (i % 2) * 0.4, i % 2 ? 'rgba(160,130,96,0.5)' : 'rgba(225,205,170,0.45)');
+        // trodden earth: irregular patches, no repeating plank seams
+        px(sx, sy, T, T, '#c39c6d');
+        const patch = (cx, cy, rw, rh, col) => {
+          ctx.fillStyle = col;
+          ctx.beginPath();
+          ctx.ellipse(sx + cx, sy + cy, rw, rh, 0, 0, Math.PI * 2);
+          ctx.fill();
+        };
+        patch(4 + (h * 7) % 4, 5 + (h * 5) % 3, 4, 2.6, 'rgba(214,178,138,0.55)');
+        patch(11, 11 + (h * 4) % 3, 3.6, 2.2, 'rgba(166,124,86,0.45)');
+        patch(8, 3, 2.4, 1.6, 'rgba(150,112,78,0.3)');
+        // ragged dirt edge where the path meets grass
+        if (curArea) {
+          const at = (dx, dy) => ((curArea.grid[ty + dy] || [])[tx + dx] || '');
+          const lawn = (c) => c === '.' || c === ',' || c === 's';
+          if (lawn(at(-1, 0))) {
+            px(sx, sy + 0.5 + (h * 9) % 12, 3, 4, '#8fbb74');
+            px(sx + 2, sy + 5 + (h * 7) % 8, 2, 2, '#7fae66');
+            px(sx + 2, sy + 10 + (h * 5) % 5, 1, 3, '#6d9e5c');
+          }
+          if (lawn(at(1, 0))) {
+            px(sx + 13, sy + 1 + (h * 11) % 11, 3, 4, '#8fbb74');
+            px(sx + 13, sy + 6 + (h * 5) % 7, 2, 2, '#7fae66');
+            px(sx + 13, sy + 11 + (h * 3) % 4, 1, 3, '#6d9e5c');
+          }
+          if (lawn(at(0, -1))) { px(sx + 1 + (h * 11) % 11, sy, 4, 3, '#8fbb74'); px(sx + 3 + (h * 5) % 9, sy + 2, 2, 1, '#7fae66'); }
+          if (lawn(at(0, 1))) { px(sx + 2 + (h * 7) % 9, sy + 13, 4, 3, '#8fbb74'); px(sx + 5 + (h * 3) % 8, sy + 13, 2, 1, '#7fae66'); }
         }
-        if (h > 0.8) px(sx + 3, sy + 4, 2, 1, 'rgba(120,160,100,0.45)');
-        if (h < 0.12) { px(sx + 11, sy + 10, 2, 1, '#b08d66'); px(sx + 12, sy + 9, 1, 1, '#c9a97e'); }
+        for (let i = 0; i < 5; i++) {
+          const hx2 = (h * (i + 3) * 71) % 13;
+          const hy2 = (h * (i + 2) * 41) % 13;
+          px(sx + 1 + hx2, sy + 1 + hy2, 1, 1, i % 2 ? '#b08a60' : '#dcbd94');
+        }
+        if (h > 0.82) { px(sx + 2, sy + 13, 2, 1, '#a07f58'); px(sx + 12, sy + 2, 1, 2, 'rgba(118,156,96,0.5)'); }
+        if (h < 0.14) px(sx + 5, sy + 7, 3, 1, 'rgba(150,112,78,0.45)');
         break;
       }
       case '=': {
-        // irregular flagstones, warm stone, mossy joints
-        px(sx, sy, T, T, '#b4aa9a');
-        ctx.fillStyle = h > 0.5 ? '#d3cabb' : '#c8bfaf';
-        ctx.beginPath();
-        ctx.moveTo(sx + 1, sy + 2);
-        ctx.quadraticCurveTo(sx + 7, sy - 0.5, sx + 14, sy + 1.5);
-        ctx.quadraticCurveTo(sx + 16, sy + 8, sx + 14.5, sy + 14);
-        ctx.quadraticCurveTo(sx + 8, sy + 16, sx + 1.5, sy + 14);
-        ctx.quadraticCurveTo(sx - 0.5, sy + 8, sx + 1, sy + 2);
-        ctx.closePath(); ctx.fill();
-        px(sx + 2, sy + 3, 5, 1, 'rgba(255,250,240,0.35)');
-        px(sx + 9, sy + 12, 4, 1, 'rgba(140,130,112,0.35)');
-        if (h > 0.72) { px(sx + 12, sy + 2, 2, 1, 'rgba(120,155,100,0.5)'); px(sx + 13, sy + 3, 1, 1, 'rgba(120,155,100,0.4)'); }
-        if (h < 0.2) px(sx + 2, sy + 13, 2, 1, 'rgba(120,155,100,0.4)');
+        // warm cobbled plaza: small irregular setts, not a grid of slabs
+        px(sx, sy, T, T, '#b0a596');
+        const jx = (k) => 1 + ((h * 17.3 + k * 7.1) % 3);
+        const jy = (k) => 1 + ((h * 11.9 + k * 5.3) % 3);
+        const stones = [
+          [0.4, 0.4, 6, 5],
+          [8, 1, 6, 5],
+          [2, 8, 5, 5],
+          [8, 8, 7, 6],
+        ];
+        stones.forEach(([ox, oy, sw2, sh2], i) => {
+          ox += jx(i) - 1; oy += jy(i) - 1.5;
+          const c = ['#cbc1b1', '#c1b7a6', '#c6bcaa', '#bcb2a1'][(i + Math.floor(h * 4)) % 4];
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.moveTo(sx + ox + 1, sy + oy);
+          ctx.quadraticCurveTo(sx + ox + sw2 / 2, sy + oy - 1, sx + ox + sw2, sy + oy + 1);
+          ctx.quadraticCurveTo(sx + ox + sw2 + 1, sy + oy + sh2 / 2, sx + ox + sw2 - 1, sy + oy + sh2);
+          ctx.quadraticCurveTo(sx + ox + sw2 / 2, sy + oy + sh2 + 1, sx + ox, sy + oy + sh2 - 1);
+          ctx.quadraticCurveTo(sx + ox - 1, sy + oy + sh2 / 2, sx + ox + 1, sy + oy);
+          ctx.closePath(); ctx.fill();
+          if (i === 0) px(sx + ox + 1, sy + oy + 1, 3, 1, 'rgba(255,250,240,0.35)');
+        });
+        if (h > 0.8) { px(sx + 13, sy + 12, 2, 1, 'rgba(112,148,94,0.5)'); px(sx + 3, sy + 7, 1, 1, 'rgba(112,148,94,0.35)'); }
+        if (h < 0.16) px(sx + 6, sy + 7, 2, 1, '#a89d8c');
         break;
       }
       case '~': {
@@ -4780,13 +4834,14 @@ window.SAN = window.SAN || {};
   function drawTree(x, y, variant) {
     const tm = Date.now() / 1000;
     const sw = Math.sin(tm * 0.85 + x * 0.11 + y * 0.05) * 1.3;
-    ellipse(x + 9, y + 16, 9, 3, 'rgba(30,42,28,0.22)');
+    ellipse(x + 9, y + 17, 10, 3.4, 'rgba(30,42,28,0.26)');
     // trunk with bark and roots
-    px(x + 6, y + 7, 5, 9, '#7b5a3c');
-    px(x + 6, y + 7, 2, 9, '#8d6b49');
-    px(x + 10, y + 9, 1, 7, '#664a30');
-    px(x + 4, y + 14, 3, 1, '#6d5138');
-    px(x + 10, y + 15, 3, 1, '#6d5138');
+    px(x + 5, y + 6, 7, 11, '#6d4e33');
+    px(x + 6, y + 7, 3, 10, '#8d6b49');
+    px(x + 9, y + 8, 2, 9, '#664a30');
+    px(x + 3, y + 15, 4, 2, '#5d452e');
+    px(x + 11, y + 16, 4, 1, '#5d452e');
+    px(x + 7, y + 9, 1, 5, '#a17d55');
     if (variant === 2) {
       // blossom tree
       circle(x + 8 + sw * 0.4, y + 2, 8, '#d9a3bd');
@@ -4799,8 +4854,9 @@ window.SAN = window.SAN || {};
       if (Math.sin(tm * 0.8 + x) > 0.6) px(x + 3 + (tm * 6 % 5), y + 8, 1, 1, '#f7d6e6');
       return;
     }
-    // layered canopy
-    circle(x + 8 + sw * 0.3, y + 1, 7.5, '#456f43');
+    // layered canopy with a dark underside so it lifts off the grass
+    circle(x + 8 + sw * 0.3, y + 2, 8, '#33553a');
+    circle(x + 8 + sw * 0.3, y + 1, 7.2, '#456f43');
     circle(x + 2.5 + sw * 0.5, y + 6, 6, '#527c4a');
     circle(x + 13 + sw * 0.2, y + 5.5, 6, '#4d7647');
     circle(x + 8 + sw * 0.45, y + 4.5, 7, '#5c8651');
@@ -4874,7 +4930,7 @@ window.SAN = window.SAN || {};
   function drawBuilding(p, x, y) {
     const w = (p.w || 1) * T, h = (p.h || 1) * T;
     const style = p.style || 'cottage';
-    const roofs = { home: '#a8667a', store: '#8a7aa8', bakery: '#c07f56', library: '#66758f', flower: '#b57a9a', teashop: '#84945f', cottage: '#a8846a', shed: '#8a7a68', lighthouse: '#e8e4dc' };
+    const roofs = { home: '#a8788a', store: '#83789e', bakery: '#b8815c', library: '#66738a', flower: '#ac7c96', teashop: '#7f8f60', cottage: '#a0806a', shed: '#8a7a68', lighthouse: '#e8e4dc' };
     const walls = { home: '#f4e8d9', store: '#efe4d2', bakery: '#f8ead4', library: '#e8e2d4', flower: '#f6e6ee', teashop: '#eef0dd', cottage: '#eddfcc', shed: '#e2d6c4', lighthouse: '#f4f2ec' };
     const trims = { home: '#8e5f70', store: '#6f6290', bakery: '#9a6240', library: '#55627a', flower: '#94607e', teashop: '#687a4e', cottage: '#8a6a52', shed: '#6f6252' };
     const lit = windowsLit();
@@ -4914,14 +4970,29 @@ window.SAN = window.SAN || {};
     rg.addColorStop(1, SAN.util.shade(roofs[style] || '#a8667a', -0.12));
     ctx.fillStyle = rg;
     ctx.fillRect(x - 4, apexY, w + 8, eaveY - apexY + 1);
-    // shingle courses
-    for (let ry = apexY + 4; ry < eaveY; ry += 4) {
-      px(x - 4, ry, w + 8, 0.8, 'rgba(60,38,44,0.18)');
-      const off = (ry - apexY) % 8 > 4 ? 3 : 0;
-      for (let sx2 = x - 4 + off; sx2 < x + w + 4; sx2 += 7) {
-        px(sx2, ry - 3, 0.8, 3, 'rgba(255,255,255,0.10)');
+    // lateral shading: sunlit left slope, shaded right slope
+    ctx.beginPath();
+    ctx.moveTo(x - 4, eaveY); ctx.lineTo(apexX, apexY); ctx.lineTo(apexX, eaveY);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,246,232,0.10)'; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x + w + 4, eaveY); ctx.lineTo(apexX, apexY); ctx.lineTo(apexX, eaveY);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(38,20,28,0.12)'; ctx.fill();
+    // shingle courses with stronger relief
+    for (let ry = apexY + 3; ry < eaveY; ry += 3.2) {
+      px(x - 4, ry, w + 8, 1, 'rgba(56,34,42,0.28)');
+      const off = ((ry - apexY) * 2) % 7 > 3.5 ? 3 : 0;
+      let k = 0;
+      for (let sx2 = x - 4 + off; sx2 < x + w + 4; sx2 += 6.5) {
+        px(sx2, ry - 2.4, 1, 2.4, 'rgba(255,255,255,0.14)');
+        // alternating shingle tabs give the roof a layered, tiled read
+        px(sx2 + 1, ry - 2.2, 5, 1.6, k % 2 ? 'rgba(255,255,255,0.07)' : 'rgba(52,30,40,0.09)');
+        k++;
       }
     }
+    // dark under-eave so the roof reads as a solid volume
+    px(x - 4, eaveY - 4, w + 8, 4, 'rgba(52,30,40,0.22)');
     // left-light gradient
     ctx.fillStyle = 'rgba(255,255,255,0.14)';
     ctx.beginPath();
@@ -4929,10 +5000,12 @@ window.SAN = window.SAN || {};
     ctx.closePath(); ctx.fill();
     ctx.restore();
     // ridge cap + eaves
-    px(apexX - 1, apexY + 1, 2, roofH, 'rgba(80,50,56,0.35)');
-    px(x - 4, eaveY, w + 8, 2.5, trim);
-    px(x - 4, eaveY + 2, w + 8, 1, 'rgba(40,26,30,0.2)');
-    circle(apexX, apexY + 1, 1.6, trim);
+    px(apexX - 1.5, apexY + 1, 3, roofH, 'rgba(92,58,64,0.4)');
+    px(apexX - 4, apexY + 1, 8, 2, trim);
+    px(x - 5, eaveY, w + 10, 3, trim);
+    px(x - 5, eaveY + 3, w + 10, 1.5, 'rgba(40,26,30,0.28)');
+    px(x - 5, eaveY - 1, w + 10, 1, 'rgba(255,255,255,0.18)');
+    circle(apexX, apexY + 1, 2, trim);
     // chimney + smoke
     if (style === 'bakery' || style === 'home' || style === 'teashop') {
       const chx = x + w - 16, chy = apexY + roofH * 0.32;
@@ -4979,8 +5052,8 @@ window.SAN = window.SAN || {};
     }
     if (p.sign) {
       const sw2 = Math.max(38, Math.min(70, String(p.sign).length * 5.4 + 10));
-      px(x + w / 2 - sw2 / 2, y + roofH + 2, sw2, 9, '#f4e7cf');
-      px(x + w / 2 - sw2 / 2, y + roofH + 2, sw2, 1, '#c9b58a');
+      px(x + w / 2 - sw2 / 2, y + roofH + 5, sw2, 9, '#f4e7cf');
+      px(x + w / 2 - sw2 / 2, y + roofH + 5, sw2, 1, '#c9b58a');
       px(x + w / 2 - sw2 / 2, y + roofH + 10, sw2, 1, '#c9b58a');
       ctx.fillStyle = '#7c5a40';
       ctx.font = '6px monospace';
@@ -5047,19 +5120,36 @@ window.SAN = window.SAN || {};
     circle(x + w / 2, y + 26, 3, '#6d5a44');
   }
   function drawFountain(x, y, t) {
-    const w = 48, h = 48;
-    ellipse(x + 24, y + 44, 24, 6, 'rgba(40,40,40,0.2)');
-    px(x + 2, y + 16, 44, 28, '#c9c2b4');
-    px(x + 4, y + 18, 40, 24, '#a9c9d4');
-    const wob = Math.sin(t * 2) * 1.5;
-    px(x + 6, y + 20 + wob, 36, 2, '#c6e4ec');
-    px(x + 16, y + 10, 16, 22, '#cfc8bb');
-    px(x + 18, y + 12, 12, 8, '#b9d6e0');
-    for (let i = 0; i < 4; i++) {
-      const ph = (t * 1.5 + i * 0.9) % 4;
-      circle(x + 24 + Math.sin(i * 2 + t) * 8, y + 8 - ph * 3, 1.6, `rgba(200,235,245,${0.9 - ph / 5})`);
+    ellipse(x + 24, y + 45, 25, 6.5, 'rgba(30,34,34,0.26)');
+    // stone coping: individual blocks, chipped corners
+    px(x + 1, y + 15, 46, 30, '#b7ae9e');
+    px(x + 3, y + 17, 42, 26, '#cfc6b5');
+    for (let i = 0; i < 7; i++) {
+      const bx = x + 3 + i * 6;
+      px(bx, y + 17, 1, 26, 'rgba(126,114,96,0.35)');
+      px(bx + 1, y + 17, 4, 2, 'rgba(255,250,238,0.55)');
     }
-    circle(x + 24, y + 6, 3, '#dfeef5');
+    px(x + 3, y + 41, 42, 2, 'rgba(110,98,82,0.45)');
+    // water with depth and moving highlights
+    px(x + 6, y + 20, 36, 22, '#7fb4c6');
+    px(x + 7, y + 21, 34, 20, '#96c8d6');
+    const wob = Math.sin(t * 2) * 1.4;
+    px(x + 9, y + 24 + wob, 12, 1, 'rgba(224,246,250,0.7)');
+    px(x + 24, y + 33 - wob, 13, 1, 'rgba(214,240,248,0.55)');
+    px(x + 13, y + 37, 8, 1, 'rgba(120,168,186,0.5)');
+    // pedestal and statue
+    px(x + 19, y + 12, 11, 26, '#bdb3a2');
+    px(x + 20, y + 13, 9, 24, '#d8cfbd');
+    px(x + 20, y + 13, 3, 24, 'rgba(255,252,244,0.35)');
+    px(x + 21, y + 22, 7, 3, '#b9d7e0');
+    ellipse(x + 24.5, y + 10, 3.4, 2.2, '#e6ded0');
+    // falling water
+    for (let i = 0; i < 5; i++) {
+      const ph = (t * 1.6 + i * 0.7) % 4.2;
+      px(x + 20 + i * 2, y + 13 + ph * 5, 1, 2, `rgba(214,242,250,${0.75 - ph / 7})`);
+    }
+    circle(x + 24, y + 9, 2.6, '#f0f8fb');
+    if (Math.sin(t * 0.9) > 0.6) px(x + 12, y + 29, 2, 1, 'rgba(240,252,255,0.65)');
   }
 
   function drawBubble(text, cx, cy, a) {
@@ -5805,6 +5895,10 @@ window.SAN = window.SAN || {};
     const liftR = Math.max(0, -swing) * 2;
     const y = sy + bob;
     const hx = sx + 3, hy = y - 1;
+    ctx.save();
+    ctx.shadowColor = 'rgba(38,30,44,0.28)';
+    ctx.shadowBlur = 1;
+    ctx.shadowOffsetY = 0.8;
     const sw = swing * 0.8;
     ellipse(sx + 8, y + 23, 6.5, 2.2, 'rgba(26,24,30,0.26)');
     if (p.glow) circle(sx + 8, sy + 12, 14, 'rgba(230,225,255,0.14)');
@@ -5969,6 +6063,7 @@ window.SAN = window.SAN || {};
     if (p.moving && (p.hair === 'long' || p.hair === 'wavy')) {
       px(hx + (swing > 0 ? -2 : 13), hy + 9, 1, 4, hair);
     }
+    ctx.restore();
   };
 
   R.drawNPC = function (n, sx, sy, t) {
@@ -6082,6 +6177,7 @@ window.SAN = window.SAN || {};
     const { area, cam, player, npcs, cat, timeSec, weather } = scene;
     ctx.fillStyle = '#2a2a30';
     ctx.fillRect(0, 0, W, H);
+    curArea = area;
     const startX = Math.floor(cam.x / T) - 1;
     const startY = Math.floor(cam.y / T) - 1;
     const cols = Math.ceil(W / T) + 2;

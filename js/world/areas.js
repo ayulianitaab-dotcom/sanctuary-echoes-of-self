@@ -126,10 +126,10 @@
     door(a, 39, 11, 'bakery', 10, 10, 'Mira\'s Bakery');
     add(a, 'building', 46, 12, { w: 8, h: 6, style: 'library', solid: true, doorRel: { x: 3, y: 5 }, sign: 'LIBRARY' });
     door(a, 49, 17, 'library', 10, 10, 'Village Library');
-    add(a, 'building', 20, 28, { w: 8, h: 6, style: 'flower', solid: true, doorRel: { x: 3, y: 0 }, sign: 'FLOWERS' });
-    door(a, 23, 28, 'flower', 10, 10, 'Flower Shop');
-    add(a, 'building', 38, 28, { w: 8, h: 6, style: 'teashop', solid: true, doorRel: { x: 3, y: 0 }, sign: 'TEA' });
-    door(a, 41, 28, 'teashop', 10, 10, 'The Steeping Room');
+    add(a, 'building', 20, 28, { w: 8, h: 6, style: 'flower', solid: true, doorRel: { x: 3, y: 5 }, sign: 'FLOWERS' });
+    door(a, 23, 33, 'flower', 10, 10, 'Flower Shop');
+    add(a, 'building', 38, 28, { w: 8, h: 6, style: 'teashop', solid: true, doorRel: { x: 3, y: 5 }, sign: 'TEA' });
+    door(a, 41, 33, 'teashop', 10, 10, 'The Steeping Room');
 
     // decorative cottages
     add(a, 'building', 4, 8, { w: 5, h: 4, style: 'cottage', solid: true, doorRel: { x: 2, y: 3 } });
@@ -173,6 +173,22 @@
     add(a, 'chair', 45, 35, { solid: true });
     add(a, 'crate', 45, 20, { solid: true });
     add(a, 'barrel', 44, 20, { solid: true });
+    // greenery softening the plaza edges
+    add(a, 'flowers', 24, 14, { solid: false });
+    add(a, 'flowers', 25, 14, { solid: false });
+    add(a, 'flowers', 38, 14, { solid: false });
+    add(a, 'flowers', 39, 15, { solid: false });
+    add(a, 'flowers', 31, 25, { solid: false });
+    add(a, 'flowers', 23, 26, { solid: false });
+    add(a, 'bush', 22, 17, { solid: true });
+    add(a, 'bush', 42, 17, { solid: true });
+    add(a, 'bush', 22, 25, { solid: true });
+    add(a, 'bush', 42, 25, { solid: true });
+    add(a, 'tree', 22, 13, { solid: true, variant: 1 });
+    add(a, 'tree', 41, 13, { solid: true, variant: 2 });
+    add(a, 'lamp', 30, 17, { solid: false });
+    add(a, 'flowerpot', 26, 22, { solid: false });
+    add(a, 'flowerpot', 33, 24, { solid: false });
 
     scatter(a, 'tree', 26, 101, { noEdge: true, avoid: (x, y) => x > 8 && x < 56 && y > 5 && y < 40 });
     scatter(a, 'bush', 14, 102, { noEdge: true });
