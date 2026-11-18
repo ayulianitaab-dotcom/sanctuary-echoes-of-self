@@ -479,7 +479,7 @@
   UI.closeTop = function () {
     const top = UI.panelStack.pop();
     if (top) { top.el.remove(); SAN.audio.sfx('close'); }
-    if (!UI.panelStack.length) UI.panelLayer.classList.add('hidden');
+    if (!UI.panelStack.length) { UI.panelLayer.classList.add('hidden'); UI.panelLayer.classList.remove('above-title'); }
     else UI.panelLayer.classList.remove('hidden');
   };
 
@@ -490,13 +490,14 @@
         UI.panelStack.splice(i, 1);
       }
     }
-    if (!UI.panelStack.length) UI.panelLayer.classList.add('hidden');
+    if (!UI.panelStack.length) { UI.panelLayer.classList.add('hidden'); UI.panelLayer.classList.remove('above-title'); }
   };
 
   UI.closeAll = function () {
     UI.panelStack.forEach((p) => p.el.remove());
     UI.panelStack = [];
     UI.panelLayer.classList.add('hidden');
+    UI.panelLayer.classList.remove('above-title');
     UI.closeDialogue();
   };
 

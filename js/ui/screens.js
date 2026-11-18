@@ -4,6 +4,21 @@
   const U = SAN.util;
   const S = () => SAN.state.S;
 
+  /* the nine official villagers plus the player, placed around the tea table.
+     portraits come from the approved assets so identities never change. */
+  SC.TITLE_CAST = [
+    { id: 'nyssa', name: 'Nyssa', pos: 1 },
+    { id: 'rowan', name: 'Rowan', pos: 2 },
+    { id: 'celeste', name: 'Celeste', pos: 3 },
+    { id: 'finn', name: 'Finn', pos: 4 },
+    { id: 'theo', name: 'Theo', pos: 5 },
+    { id: 'elowen', name: 'Elowen', pos: 6 },
+    { id: 'liora', name: 'Liora', pos: 7 },
+    { id: 'mira', name: 'Mira', pos: 8 },
+    { id: 'aria', name: 'Aria', pos: 9 },
+    { id: 'player', name: 'You', pos: 10, pc: true, mood: 'happy' },
+  ];
+
   SC.showTitle = function () {
     SAN.ui.titleActive = true;
     SAN.ui.closeAll();
@@ -14,56 +29,115 @@
     const touch = document.getElementById('touch-ui');
     if (touch) touch.classList.add('hidden');
     const el = document.getElementById('title-screen');
-    el.classList.remove('hidden');
-    const hasSave = SAN.save.hasAny();
+    el.className = '';
+    const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
+
+    const cast = SC.TITLE_CAST.map((c) => `
+      <figure class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" aria-hidden="true">
+        <div class="ts-frame"><img src="${SAN.render.portraitSrc(c.id, c.mood || 'neutral')}" alt="" draggable="false"></div>
+        <figcaption>${U.esc(c.name)}</figcaption>
+      </figure>`).join('');
+
     el.innerHTML = `
-      <div class="title-bg">
-        <div class="title-glow"></div>
-        <div class="title-stars">${Array.from({ length: 26 }).map((_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 70}%;animation-delay:${i * 0.21}s"></i>`).join('')}</div>
-        <div class="title-hills"><i></i><i></i><i></i></div>
-        <div class="title-house"><div class="th-roof"></div><div class="th-body"><span></span></div></div>
-      </div>
-      <div class="title-content">
-        <div class="title-kicker">${SAN.t('title.kicker')}</div>
-        <h1 class="title-logo">Sanctuary</h1>
-        <div class="title-sub">Echoes of Self</div>
-        <div class="title-flowers">✿ ❀ ✿</div>
-        <div class="title-menu">
-          <button class="title-btn primary" id="t-new">${SAN.t('title.newGame')}</button>
-          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>${SAN.t('title.continue')}</button>
-          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>${SAN.t('title.slots')}</button>
-          <button class="title-btn" id="t-settings">${SAN.t('title.settings')}</button>
-          <button class="title-btn" id="t-about">${SAN.t('title.about')}</button>
-          <button class="title-btn ghost" id="t-quit">${SAN.t('title.quit')}</button>
+      <div class="ts-scene" aria-hidden="true">
+        <div class="ts-sun"></div>
+        <div class="ts-clouds"><i></i><i></i><i></i></div>
+        <div class="ts-mountains"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
+        <div class="ts-windmill"><span class="tower"></span><span class="blades"><i></i><i></i><i></i><i></i></span></div>
+        <div class="ts-village">
+          <div class="ts-house h1"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
+          <div class="ts-house h2"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
+          <div class="ts-house h3"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
         </div>
-        <div class="title-foot">${SAN.t('title.foot')}</div>
+        <div class="ts-garden"></div>
+        <div class="ts-wisteria left"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-wisteria right"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-glow"></div>
+      </div>
+      <div class="ts-petals" aria-hidden="true"></div>
+
+      <div class="ts-cast" aria-hidden="true">
+        ${cast}
+        <div class="ts-foreground"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-table">
+          <span class="tbl-top"></span>
+          <span class="tbl-cloth"></span>
+          <span class="tbl-book"></span>
+          <span class="tbl-teapot"><i></i></span>
+          <span class="tbl-cup c1"></span><span class="tbl-cup c2"></span><span class="tbl-cup c3"></span>
+          <span class="tbl-cake"><i></i><i></i><i></i></span>
+          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i></span>
+        </div>
+      </div>
+
+      <div class="ts-panel">
+        <div class="ts-crest" aria-hidden="true">✦ ❀ ✦</div>
+        <h1 class="ts-logo" aria-label="Sanctuary: Echoes of Self">
+          <span>Sanctuary:</span>
+          <em>Echoes of Self</em>
+        </h1>
+        <p class="ts-tagline">“A little world where your heart can rest.”</p>
+        <div class="ts-rule" aria-hidden="true"><i></i><b>❀</b><i></i></div>
+        <nav class="ts-menu" aria-label="Main menu">
+          <button type="button" class="ts-btn" id="t-new">
+            <span class="ts-btn-glyph" aria-hidden="true">✿</span><span class="ts-btn-label">${L('title.newGame', 'New Game')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-continue">
+            <span class="ts-btn-glyph" aria-hidden="true">❧</span><span class="ts-btn-label">${L('title.continue', 'Continue')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-settings">
+            <span class="ts-btn-glyph" aria-hidden="true">✾</span><span class="ts-btn-label">${L('title.settings', 'Settings')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-credits">
+            <span class="ts-btn-glyph" aria-hidden="true">❦</span><span class="ts-btn-label">${L('title.credits', 'Credits')}</span>
+          </button>
+        </nav>
+        <div class="ts-foot">${L('title.foot', 'WASD move · E interact · ESC pause · plays fully offline')}</div>
       </div>`;
+
+    // ambient petal layer: decorative only, identities and layout untouched
+    const petalLayer = el.querySelector('.ts-petals');
+    for (let i = 0; i < 18; i++) {
+      const petal = document.createElement('i');
+      petal.className = 'ts-petal';
+      petal.style.setProperty('--x', ((i * 37) % 100) + '%');
+      petal.style.setProperty('--d', (11 + (i % 7) * 2.3).toFixed(1) + 's');
+      petal.style.setProperty('--delay', (-(i * 1.7) % 17).toFixed(1) + 's');
+      petal.style.setProperty('--s', (7 + (i % 4) * 2) + 'px');
+      petalLayer.appendChild(petal);
+    }
+
     SAN.audio.init();
     SAN.audio.playMusic('title');
     SAN.audio.ambient('birds');
 
     el.querySelector('#t-new').addEventListener('click', () => { SAN.audio.sfx('open'); SC.showCustomizer(); });
-    const cont = el.querySelector('#t-continue');
-    cont.addEventListener('click', () => {
+
+    el.querySelector('#t-continue').addEventListener('click', () => {
       const meta = SAN.save.slotMeta().filter((m) => !m.empty).sort((a, b) => b.savedAt - a.savedAt)[0];
-      if (!meta) return;
+      if (!meta) {
+        SAN.audio.sfx('close');
+        SAN.ui.toast('No saved journey yet — start a new one.', 'info');
+        const fresh = el.querySelector('#t-new');
+        fresh.classList.remove('nudge');
+        void fresh.offsetWidth;
+        fresh.classList.add('nudge');
+        return;
+      }
       SC.loadSlot(meta.slot);
     });
-    el.querySelector('#t-slots').addEventListener('click', () => SC.showSlots());
-    el.querySelector('#t-settings').addEventListener('click', () => SC.showTitleSettings());
-    el.querySelector('#t-about').addEventListener('click', () => {
+
+    el.querySelector('#t-settings').addEventListener('click', () => { SAN.audio.sfx('click'); SC.showTitleSettings(); });
+
+    // Credits reuses the existing About screen and its return behaviour
+    el.querySelector('#t-credits').addEventListener('click', () => {
+      SAN.audio.sfx('open');
       SAN.ui.panelStack = [];
       SAN.ui.titleActive = false;
       SAN.ui.PANELS.about();
       SAN.ui.titleActive = true;
-    });
-    el.querySelector('#t-quit').addEventListener('click', () => {
-      el.innerHTML = `<div class="title-quit">
-        <h2>Thank you for visiting.</h2>
-        <p>Sanctuary will be here whenever you come back. You can close this tab now.</p>
-        <button class="title-btn" id="t-back">Stay a while longer</button>
-      </div>`;
-      el.querySelector('#t-back').addEventListener('click', () => SC.showTitle());
+      // the title overlay sits above the normal panel layer; credits must stay readable
+      SAN.ui.panelLayer.classList.add('above-title');
     });
   };
 

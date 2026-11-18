@@ -268,6 +268,7 @@ img { -webkit-user-drag: none; }
   backdrop-filter: blur(3px);
   pointer-events: auto;
 }
+#panel-layer.above-title { z-index: 90; }
 .panel-wrap { display: flex; align-items: center; justify-content: center; max-height: 94vh; animation: panelIn .28s cubic-bezier(.2,.9,.3,1); }
 @keyframes panelIn { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
 .panel-card {
@@ -896,74 +897,317 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
 
 /* ---------------- title screen ---------------- */
 #title-screen {
-  position: absolute; inset: 0; z-index: 80; overflow: auto;
-  background: radial-gradient(ellipse at 50% 110%, #3b2f4a, #241d33 45%, #14111c 100%);
-  color: #f6ecd9; display: flex; align-items: center; justify-content: center;
-  pointer-events: auto;
+  position: absolute; inset: 0; z-index: 80; overflow: hidden;
+  background: #f4e8d7; color: #4a3a30; pointer-events: auto; font-family: var(--serif);
 }
 #title-screen.hidden { display: none; }
-.title-bg { position: absolute; inset: 0; overflow: hidden; }
-.title-glow {
-  position: absolute; left: 50%; top: 58%; width: 90vmax; height: 90vmax;
-  transform: translate(-50%, -40%);
-  background: radial-gradient(circle, rgba(184,166,212,.28), transparent 62%);
+
+/* --- background illustration layer (pure CSS, no baked artwork) --- */
+.ts-scene {
+  position: absolute; inset: 0; overflow: hidden;
+  background: linear-gradient(180deg, #ece0f2 0%, #f6e7da 30%, #fbf0de 50%, #f2e0c9 72%, #e6cfb5 100%);
 }
-.title-stars i {
-  position: absolute; width: 2px; height: 2px; border-radius: 50%;
-  background: #fff8e0; opacity: .7;
-  animation: twinkle 4s ease-in-out infinite;
+.ts-sun {
+  position: absolute; left: 64%; top: -12%; width: 70vmax; height: 70vmax; transform: translate(-50%, 0);
+  background: radial-gradient(circle, rgba(255,243,206,.95) 0%, rgba(255,228,174,.5) 30%, rgba(255,226,178,0) 62%);
 }
-@keyframes twinkle { 0%,100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.3); } }
-.title-hills { position: absolute; left: 0; right: 0; bottom: 0; height: 42%; }
-.title-hills i { position: absolute; bottom: 0; display: block; border-radius: 50% 50% 0 0; }
-.title-hills i:nth-child(1) { left: -10%; width: 70%; height: 78%; background: linear-gradient(180deg, #2f3a3a, #1c2426); }
-.title-hills i:nth-child(2) { right: -14%; width: 76%; height: 92%; background: linear-gradient(180deg, #343146, #1e1b2a); }
-.title-hills i:nth-child(3) { left: 20%; width: 60%; height: 52%; background: linear-gradient(180deg, #3a3546, #211d2c); }
-.title-house { position: absolute; left: 50%; bottom: 26%; transform: translateX(-50%); width: 120px; height: 110px; }
-.th-roof {
-  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-  width: 0; height: 0; border-left: 62px solid transparent; border-right: 62px solid transparent;
-  border-bottom: 50px solid #5c4356;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,.4));
+.ts-clouds i { position: absolute; border-radius: 999px; background: rgba(255,252,244,.55); filter: blur(7px); }
+.ts-clouds i:nth-child(1) { left: 18%; top: 11%; width: 24%; height: 42px; }
+.ts-clouds i:nth-child(2) { left: 46%; top: 6%; width: 18%; height: 32px; }
+.ts-clouds i:nth-child(3) { right: 12%; top: 16%; width: 22%; height: 38px; }
+.ts-mountains { position: absolute; left: 0; right: 0; bottom: 36%; height: 26%; }
+.ts-mountains i { position: absolute; bottom: 0; height: 100%; }
+.ts-mountains .m1 { left: -4%; width: 54%; clip-path: polygon(0 100%, 22% 30%, 34% 52%, 52% 8%, 74% 60%, 100% 100%); background: linear-gradient(180deg, #dfd0ea, #c3b0d3); opacity: .85; }
+.ts-mountains .m2 { right: -6%; width: 58%; clip-path: polygon(0 100%, 18% 44%, 38% 64%, 58% 18%, 86% 62%, 100% 100%); background: linear-gradient(180deg, #d6c4e4, #b8a3cb); opacity: .8; }
+.ts-mountains .m3 { left: 26%; width: 46%; clip-path: polygon(0 100%, 30% 46%, 52% 66%, 70% 30%, 100% 100%); background: linear-gradient(180deg, #cbb7da, #a894bd); opacity: .55; }
+.ts-village { position: absolute; right: 0; bottom: 31%; width: 52%; height: 22%; }
+.ts-house { position: absolute; bottom: 0; }
+.ts-house .roof { position: absolute; left: 0; right: 0; top: 0; height: 62%; clip-path: polygon(0 100%, 50% 0, 100% 100%); background: linear-gradient(180deg, #9c7e90, #6d5265); }
+.ts-house .body { position: absolute; left: 12%; right: 12%; bottom: 0; top: 46%; background: linear-gradient(180deg, #f8ecd6, #e3cfae); border-radius: 3px 3px 0 0; box-shadow: inset 0 -8px 14px rgba(140,110,80,.18); }
+.ts-house .body i { position: absolute; width: 22%; height: 26%; top: 22%; border-radius: 2px; background: radial-gradient(circle, #ffe6a6, #e8bd6a); box-shadow: 0 0 10px rgba(255,210,130,.75); }
+.ts-house .body i:first-child { left: 16%; }
+.ts-house .body i:last-child { right: 16%; }
+.ts-house .body::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 26%; height: 44%; margin-left: -13%; border-radius: 2px 2px 0 0; background: linear-gradient(180deg, #b98f66, #8a6a4a); }
+.ts-house .roof { box-shadow: inset 0 6px 0 rgba(255,240,220,.18); }
+.ts-house.h1 { left: 0; width: 21%; height: 66%; }
+.ts-house.h2 { left: 29%; width: 18%; height: 56%; }
+.ts-house.h3 { left: 62%; width: 23%; height: 74%; }
+.ts-windmill { position: absolute; right: 4%; bottom: 45%; width: 8%; height: 22%; opacity: .95; }
+.ts-windmill .tower { position: absolute; left: 16%; right: 16%; bottom: 0; top: 40%; clip-path: polygon(24% 0, 76% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, #f4e8d4, #d3bd9d); box-shadow: inset -6px 0 0 rgba(150,120,90,.16), 0 6px 14px rgba(120,90,70,.16); }
+.ts-windmill .blades { position: absolute; left: 50%; top: 36%; width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%); animation: tsMill 46s linear infinite; }
+.ts-windmill .blades::after { content: ''; position: absolute; left: 50%; top: 50%; width: 18%; aspect-ratio: 1; margin: -9% 0 0 -9%; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #f6ead2, #b08c62); box-shadow: 0 0 0 1px rgba(120,95,70,.45); }
+.ts-windmill .blades i { position: absolute; left: 50%; top: 50%; width: 9%; height: 44%; margin-left: -4.5%; border-radius: 1px; transform-origin: 50% 0; box-shadow: 0 0 0 1px rgba(120,95,70,.32); background: repeating-linear-gradient(180deg, rgba(120,95,70,.7) 0 3px, rgba(240,228,206,.9) 3px 9px), linear-gradient(180deg, #8a6f57, #b0906f); }
+.ts-windmill .blades i:nth-child(1) { transform: rotate(0deg); }
+.ts-windmill .blades i:nth-child(2) { transform: rotate(90deg); }
+.ts-windmill .blades i:nth-child(3) { transform: rotate(180deg); }
+.ts-windmill .blades i:nth-child(4) { transform: rotate(270deg); }
+@keyframes tsMill { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.ts-garden { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; background: linear-gradient(180deg, #cdd8bb 0%, #c2cfae 34%, #adbd99 64%, #97a985 100%); }
+.ts-garden::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(96deg, rgba(146,118,184,.28) 0 1.5px, transparent 1.5px 22px),
+    repeating-linear-gradient(94deg, rgba(160,132,196,.16) 0 2px, transparent 2px 34px);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 32%, #000 82%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 32%, #000 82%, transparent);
+  opacity: .55;
 }
-.th-body {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: 94px; height: 66px; background: linear-gradient(180deg, #efe0c8, #d9c5a8);
-  border-radius: 4px 4px 0 0;
-  box-shadow: 0 0 40px rgba(255,220,150,.35);
+.ts-garden::after { content: ''; position: absolute; left: 0; right: 0; top: 14%; height: 62%; background: linear-gradient(180deg, rgba(255,244,220,.32), transparent); }
+.ts-wisteria { position: absolute; top: 0; height: 32vh; width: 23%; pointer-events: none; }
+.ts-wisteria.left { left: 0; }
+.ts-wisteria.right { right: 0; transform: scaleX(-1); }
+.ts-wisteria::before {
+  content: ''; position: absolute; inset: 0 2% auto 0; height: 46%; filter: blur(4px);
+  background:
+    radial-gradient(ellipse at 18% 0%, rgba(168,138,208,.75), rgba(168,138,208,0) 62%),
+    radial-gradient(ellipse at 58% 2%, rgba(199,175,226,.7), rgba(199,175,226,0) 58%),
+    radial-gradient(ellipse at 92% 0%, rgba(140,110,180,.55), rgba(140,110,180,0) 55%);
 }
-.th-body span {
-  position: absolute; left: 50%; top: 20px; transform: translateX(-50%);
-  width: 26px; height: 24px; border-radius: 3px;
-  background: radial-gradient(circle, #ffe9a8, #f0c46a);
-  box-shadow: 0 0 22px rgba(255,220,140,.9);
-  animation: lampPulse 4s ease-in-out infinite;
+.ts-wisteria i {
+  position: absolute; top: 4%; left: var(--l, 10%); width: 19px; height: var(--h, 56%); opacity: .38;
+  border-radius: 0 0 42% 42%; filter: blur(.4px);
+  background-image:
+    radial-gradient(circle at 50% 5px, #d9c4ee 0 3px, rgba(217,196,238,0) 4px),
+    linear-gradient(180deg, rgba(132,146,112,.5), rgba(132,146,112,0));
+  background-size: 100% 19px, 100% 100%;
+  background-repeat: repeat-y, no-repeat;
 }
-@keyframes lampPulse { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
-.title-content { position: relative; text-align: center; padding: 4vh 20px; max-width: 620px; z-index: 2; }
-.title-kicker { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: #cbb8d8; opacity: .85; font-family: var(--sans); }
-.title-logo {
-  font-size: clamp(52px, 11vw, 96px); margin: 4px 0 0; font-weight: 400;
-  letter-spacing: 10px; text-transform: uppercase;
-  color: #fdf3e0;
-  text-shadow: 0 2px 0 #b9a6c9, 0 0 40px rgba(226,183,199,.55), 0 12px 30px rgba(0,0,0,.5);
-  font-family: var(--serif);
+.ts-wisteria i:nth-child(1) { --l: 2%; --h: 48%; }
+.ts-wisteria i:nth-child(2) { --l: 14%; --h: 64%; }
+.ts-wisteria i:nth-child(3) { --l: 27%; --h: 40%; }
+.ts-wisteria i:nth-child(4) { --l: 39%; --h: 58%; }
+.ts-wisteria i:nth-child(5) { --l: 52%; --h: 36%; }
+.ts-wisteria i:nth-child(6) { --l: 64%; --h: 50%; }
+.ts-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 22% 46%, rgba(255,249,232,.5), transparent 52%),
+    radial-gradient(ellipse at 82% 22%, rgba(255,240,205,.45), transparent 55%);
 }
-.title-sub { font-size: clamp(17px, 3.4vw, 26px); letter-spacing: 9px; color: #e2b7c7; font-style: italic; margin-top: -2px; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
-.title-flowers { margin: 12px 0 22px; color: rgba(240,211,154,.7); letter-spacing: 12px; font-size: 14px; }
-.title-menu { display: flex; flex-direction: column; gap: 9px; max-width: 290px; margin: 0 auto; }
-.title-btn {
-  padding: 11px 20px; font-size: 16px; letter-spacing: 1.4px;
-  background: rgba(246,236,217,.08); color: #f6ecd9;
-  border: 1px solid rgba(246,236,217,.3); border-radius: 8px;
-  backdrop-filter: blur(4px);
-  transition: all .18s ease;
+.ts-scene::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 16vmin rgba(120,90,120,.16);
 }
-.title-btn:hover:not(:disabled) { background: rgba(246,236,217,.16); border-color: rgba(240,211,154,.75); letter-spacing: 2.4px; }
-.title-btn.primary { background: linear-gradient(180deg, rgba(184,166,212,.5), rgba(155,134,191,.45)); border-color: rgba(226,183,199,.6); }
-.title-btn.ghost { opacity: .65; font-size: 14px; }
-.title-btn:disabled { opacity: .3; }
-.title-foot { margin-top: 22px; font-size: 10.5px; letter-spacing: 1.2px; color: rgba(246,236,217,.45); font-family: var(--sans); }
+
+/* --- ambient layer: floating petals --- */
+.ts-petals { position: absolute; inset: 0; z-index: 4; overflow: hidden; pointer-events: none; }
+.ts-petal {
+  position: absolute; top: -24px; left: var(--x, 20%); width: var(--s, 8px); height: calc(var(--s, 8px) * .72);
+  border-radius: 62% 38% 58% 42% / 56% 62% 38% 44%;
+  background: linear-gradient(135deg, #fff3f7, #e9c6dd);
+  opacity: .85; animation: tsFall var(--d, 16s) linear var(--delay, 0s) infinite;
+}
+@keyframes tsFall {
+  0% { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0; }
+  12% { opacity: .9; }
+  50% { transform: translate3d(4vw, 46vh, 0) rotate(180deg); }
+  100% { transform: translate3d(-3vw, 106vh, 0) rotate(360deg); opacity: 0; }
+}
+
+/* --- character layer: official portrait assets, framed in gold --- */
+.ts-cast { position: absolute; inset: 0; z-index: 3; --u: clamp(96px, 10.5vw, 152px); }
+.ts-char {
+  position: absolute; width: calc(var(--u) * var(--k, 1)); margin: 0;
+  transform: translateX(-50%) rotate(var(--rot, 0deg));
+}
+.ts-frame {
+  position: relative; aspect-ratio: 1 / 1.24; overflow: hidden; background: #fbf3e4;
+  border: 2px solid #c9a45e; border-radius: 120px 120px 14px 14px;
+  box-shadow: 0 0 0 5px rgba(251,243,228,.92), 0 0 0 7px rgba(201,164,94,.42), 0 16px 28px rgba(80,56,44,.24);
+  animation: tsBreathe 7.5s ease-in-out infinite;
+}
+.ts-char:nth-child(2n) .ts-frame { animation-delay: -2.4s; }
+.ts-char:nth-child(3n) .ts-frame { animation-delay: -4.1s; }
+@keyframes tsBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.ts-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; display: block; }
+/* names are kept for screen readers; visible name ribbons made the group read as a roster */
+.ts-char figcaption {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.ts-char.pc .ts-frame { border-color: #dcb877; box-shadow: 0 0 0 5px #fdf6e6, 0 0 0 8px rgba(220,184,119,.6), 0 20px 34px rgba(80,56,44,.3); }
+.ts-char.pc figcaption { background: linear-gradient(180deg, #dcb877, #b9924f); color: #4a3628; border-color: #f4e3bd; }
+/* three overlapping rows: back pair, middle group round the table, player in front */
+.ts-char.p1 { left: 42%; top: 24%; --k: .8; --rot: -3deg; z-index: 4; }
+.ts-char.p2 { left: 48%; top: 14%; --k: .78; --rot: 2deg; z-index: 3; }
+.ts-char.p3 { left: 56%; top: 12%; --k: .8; --rot: -1.5deg; z-index: 3; }
+.ts-char.p4 { left: 64%; top: 15%; --k: .78; --rot: 2.5deg; z-index: 3; }
+.ts-char.p5 { left: 72%; top: 20%; --k: .74; --rot: -2deg; z-index: 3; }
+.ts-char.p6 { left: 40%; top: 46%; --k: .84; --rot: -3deg; z-index: 5; }
+.ts-char.p7 { left: 49%; top: 41%; --k: .9; --rot: -1deg; z-index: 5; }
+.ts-char.p8 { left: 58%; top: 44%; --k: .92; --rot: 1.5deg; z-index: 6; }
+.ts-char.p9 { left: 67%; top: 39%; --k: .86; --rot: 3deg; z-index: 5; }
+.ts-char.p10 { left: 55%; top: 56%; --k: 1.05; --rot: 0deg; z-index: 9; }
+
+/* --- tea table foreground --- */
+.ts-table { position: absolute; left: 58%; bottom: -1%; width: min(40vw, 560px); height: 23%; transform: translateX(-50%); z-index: 4; pointer-events: none; }
+.tbl-top { position: absolute; left: 0; right: 0; bottom: 14%; height: 54%; border-radius: 50%; background: radial-gradient(ellipse at 50% 18%, #c99a6c, #a5764f 58%, #86613f 100%); box-shadow: 0 18px 40px rgba(80,50,40,.35), inset 0 -8px 0 rgba(120,80,50,.28); }
+.tbl-cloth { position: absolute; left: 8%; bottom: 24%; width: 34%; height: 34%; border-radius: 50% 50% 46% 46%; background: linear-gradient(180deg, #fff8ea, #f0e2c8); opacity: .85; transform: rotate(-6deg); }
+.tbl-book { position: absolute; left: 29%; bottom: 32%; width: 66px; height: 44px; border-radius: 3px; background: linear-gradient(135deg, #7d5b8e, #5c436c); box-shadow: inset 0 0 0 2px rgba(240,215,160,.5), 0 4px 8px rgba(60,40,50,.3); transform: rotate(-8deg); }
+.tbl-teapot { position: absolute; left: 52%; bottom: 46%; width: 74px; height: 52px; border-radius: 50% 50% 46% 46%; background: linear-gradient(180deg, #fffaf0, #e9dcc4); box-shadow: inset -6px -6px 12px rgba(180,150,120,.35), 0 8px 14px rgba(80,50,40,.25); }
+.tbl-teapot i { position: absolute; left: 50%; top: -8px; transform: translateX(-50%); width: 26px; height: 10px; border-radius: 8px; background: #f7efdd; box-shadow: 0 0 0 1px rgba(190,160,120,.5); }
+.tbl-teapot::before { content: ''; position: absolute; left: -22px; top: 12px; width: 26px; height: 10px; border-radius: 8px 0 0 8px; background: #f3e8d2; transform: rotate(-18deg); }
+.tbl-teapot::after { content: ''; position: absolute; right: -14px; top: 10px; width: 20px; height: 24px; border: 4px solid #f0e4cc; border-left: 0; border-radius: 0 14px 14px 0; }
+.tbl-cup { position: absolute; width: 34px; height: 20px; border-radius: 0 0 12px 12px; background: linear-gradient(180deg, #fffaf0, #eadfc8); box-shadow: 0 2px 4px rgba(80,50,40,.18); }
+.tbl-cup::after { content: ''; position: absolute; right: -9px; top: 3px; width: 12px; height: 10px; border: 3px solid #f2e6d0; border-left: 0; border-radius: 0 8px 8px 0; }
+.tbl-cup.c1 { left: 38%; bottom: 40%; }
+.tbl-cup.c2 { left: 45%; bottom: 33%; }
+.tbl-cup.c3 { left: 64%; bottom: 36%; }
+.tbl-cake { position: absolute; left: 55%; bottom: 43%; width: 96px; height: 14px; border-radius: 50%; background: linear-gradient(180deg, #f6ead6, #d9c3a0); box-shadow: 0 6px 10px rgba(80,50,40,.2); }
+.tbl-cake i { position: absolute; width: 14px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 40% 30%, #f7c9a0, #d98f6f); }
+.tbl-cake i:nth-child(1) { left: 18%; top: -8px; }
+.tbl-cake i:nth-child(2) { left: 42%; top: -10px; }
+.tbl-cake i:nth-child(3) { left: 66%; top: -8px; }
+.tbl-cat { position: absolute; right: 19%; bottom: 40%; width: 88px; height: 34px; border-radius: 50% 50% 46% 46%; background: radial-gradient(ellipse at 40% 30%, #fffdf8, #ece0cf); box-shadow: 0 6px 10px rgba(80,50,40,.22); }
+.tbl-cat .ear { position: absolute; top: -10px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid #fbf4e8; }
+.tbl-cat .ear.e1 { left: 14px; }
+.tbl-cat .ear.e2 { right: 14px; }
+.tbl-cat .tail { position: absolute; right: -22px; bottom: 2px; width: 40px; height: 14px; border: 5px solid #fbf4e8; border-left: 0; border-bottom: 0; border-radius: 0 18px 0 0; transform: rotate(-8deg); }
+.tbl-cat::before { content: ''; position: absolute; left: 6px; top: 4px; width: 26px; height: 24px; border-radius: 50%; background: #fffdf8; }
+
+/* --- foreground lavender, drawn in front of the table --- */
+.ts-foreground { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; z-index: 9; pointer-events: none; }
+.ts-foreground i { position: absolute; bottom: -8px; width: 3px; height: var(--h, 62px); transform: rotate(var(--r, 0deg)); transform-origin: 50% 100%; background: linear-gradient(180deg, rgba(127,145,101,0), #7f9165 34%, #6b7d55); }
+.ts-foreground i::before {
+  content: ''; position: absolute; left: 50%; top: -14px; width: 14px; height: 30px; margin-left: -7px;
+  border-radius: 50% 50% 44% 44%; background: radial-gradient(circle at 38% 26%, #cdb4ea, #9a7cc2 70%);
+  box-shadow: 0 0 8px rgba(180,150,220,.45);
+}
+.ts-foreground i:nth-child(1) { left: 1%; --h: 70px; --r: -7deg; }
+.ts-foreground i:nth-child(2) { left: 6%; --h: 88px; --r: 4deg; }
+.ts-foreground i:nth-child(3) { left: 11%; --h: 60px; --r: -3deg; }
+.ts-foreground i:nth-child(4) { left: 23%; --h: 76px; --r: 6deg; }
+.ts-foreground i:nth-child(5) { left: 70%; --h: 80px; --r: -5deg; }
+.ts-foreground i:nth-child(6) { left: 78%; --h: 64px; --r: 3deg; }
+.ts-foreground i:nth-child(7) { left: 86%; --h: 86px; --r: -4deg; }
+.ts-foreground i:nth-child(8) { left: 92%; --h: 68px; --r: 6deg; }
+.ts-foreground i:nth-child(9) { left: 97%; --h: 58px; --r: -6deg; }
+.ts-foreground i:nth-child(10) { left: 33%; --h: 56px; --r: 5deg; }
+
+/* --- logo + interactive menu layer --- */
+.ts-panel {
+  position: absolute; left: clamp(18px, 4vw, 64px); top: 50%; transform: translateY(-50%);
+  width: min(400px, 34vw); z-index: 10; animation: tsPanelIn .7s ease both;
+}
+@keyframes tsPanelIn { from { opacity: 0; transform: translate(-16px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
+.ts-crest { font-size: 16px; color: #b08a4e; letter-spacing: 9px; margin-bottom: 8px; }
+.ts-logo {
+  margin: 0; color: #4a3a63; font-weight: 500; line-height: .99; letter-spacing: .4px;
+  font-family: var(--serif); font-size: clamp(38px, 3.9vw, 58px);
+  text-shadow: 0 1px 0 rgba(255,255,255,.65);
+}
+.ts-logo span { display: block; }
+.ts-logo em { display: block; font-style: normal; font-size: .78em; margin-top: 6px; color: #5a4677; letter-spacing: 1px; }
+.ts-tagline { margin: 15px 0 0; font-size: clamp(13px, 1.05vw, 16px); font-style: italic; color: #6b5678; letter-spacing: .3px; }
+.ts-rule { display: flex; align-items: center; gap: 10px; margin: 15px 0 20px; color: #b8914f; }
+.ts-rule i { flex: 1 1 0; height: 1px; background: linear-gradient(90deg, transparent, #c9a45e, transparent); }
+.ts-rule b { font-weight: 400; font-size: 14px; }
+.ts-menu { display: flex; flex-direction: column; gap: 11px; max-width: 330px; }
+.ts-btn {
+  position: relative; display: flex; align-items: center; gap: 14px; padding: 13px 18px;
+  border-radius: 10px; border: 1.5px solid #c3a163; text-align: left; cursor: pointer;
+  background: linear-gradient(180deg, #fdf7e9 0%, #f4e7cd 58%, #ead8b7 100%);
+  color: #4a3628; font-family: var(--serif); font-size: clamp(17px, 1.35vw, 21px); letter-spacing: .4px;
+  box-shadow: 0 1px 0 #fffaf0 inset, 0 0 0 3px rgba(253,247,233,.65) inset, 0 0 0 4.5px rgba(195,161,99,.35), 0 8px 18px rgba(90,62,40,.16);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  animation: tsBtnIn .55s ease backwards;
+}
+.ts-btn:nth-child(1) { animation-delay: .12s; }
+.ts-btn:nth-child(2) { animation-delay: .2s; }
+.ts-btn:nth-child(3) { animation-delay: .28s; }
+.ts-btn:nth-child(4) { animation-delay: .36s; }
+@keyframes tsBtnIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+.ts-btn:hover {
+  transform: translateX(4px); border-color: #b3893f;
+  background: linear-gradient(180deg, #fffaf0, #f8ecd4 58%, #efe0c0 100%);
+  box-shadow: 0 1px 0 #fffaf0 inset, 0 0 0 3px rgba(255,251,240,.8) inset, 0 0 0 4.5px rgba(195,161,99,.5), 0 12px 22px rgba(90,62,40,.22);
+}
+.ts-btn:active { transform: translateX(4px) translateY(1px); }
+.ts-btn:focus-visible { outline: 2px solid #8d6fb4; outline-offset: 3px; }
+.ts-btn::after { content: '✦'; position: absolute; right: 15px; font-size: 13px; color: rgba(160,120,70,.5); }
+.ts-btn-glyph {
+  display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%;
+  color: #8a6fae; font-size: 16px;
+  background: radial-gradient(circle at 35% 30%, #fbf4ff, #e6d9f1);
+  border: 1px solid rgba(184,166,212,.7); box-shadow: 0 1px 3px rgba(120,90,150,.18);
+}
+.ts-btn-label { flex: 1 1 auto; }
+.ts-btn.nudge { animation: tsNudge .5s ease 2; }
+@keyframes tsNudge { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(6px); } 60% { transform: translateX(-2px); } }
+.ts-foot { margin-top: 18px; max-width: 100%; font-size: 10.5px; line-height: 1.6; letter-spacing: 1.4px; text-transform: uppercase; color: #8a7460; font-family: var(--sans); overflow-wrap: anywhere; }
+
+/* respect the player's reduced-motion choice and keep the menu readable when
+   the title opens in a background tab (entrance animations may never run) */
+body.reduce-motion .ts-panel, body.reduce-motion .ts-btn,
+body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal,
+body.reduce-motion .ts-windmill .blades { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .ts-panel, .ts-btn, .ts-char .ts-frame, .ts-petal, .ts-windmill .blades { animation: none !important; }
+}
+
+/* --- title-screen responsive layers --- */
+@media (max-width: 1180px) {
+  .ts-panel { width: min(320px, 36vw); }
+  .ts-cast { --u: clamp(66px, 7.4vw, 94px); }
+  .ts-char.p1 { left: 46%; }
+  .ts-char.p2 { left: 54%; }
+  .ts-char.p3 { left: 62%; }
+  .ts-char.p4 { left: 70%; }
+  .ts-char.p5 { left: 78%; }
+  .ts-char.p6 { left: 49%; }
+  .ts-char.p7 { left: 57%; }
+  .ts-char.p8 { left: 65%; }
+  .ts-char.p9 { left: 73%; }
+  .ts-char.p10 { left: 60%; }
+  .ts-table { left: 62%; width: 48vw; }
+}
+
+@media (max-width: 760px) {
+  #title-screen { overflow-y: auto; }
+  .ts-scene { position: fixed; }
+  .ts-panel { position: relative; left: auto; top: auto; transform: none; width: auto; padding: 30px 22px 0; text-align: center; animation: none; }
+  .ts-crest { letter-spacing: 7px; }
+  .ts-logo { font-size: clamp(34px, 9.6vw, 46px); }
+  .ts-tagline { margin-top: 11px; }
+  .ts-rule { margin: 14px auto 16px; max-width: 300px; }
+  .ts-menu { margin: 0 auto; max-width: 340px; }
+  .ts-btn { animation: none; font-size: 17px; padding: 12px 16px; }
+  .ts-foot { margin-top: 14px; font-size: 9.5px; letter-spacing: .8px; padding: 0 10px; white-space: normal; text-align: center; }
+  .ts-panel { padding: 20px 18px 0; }
+  .ts-logo { font-size: clamp(30px, 8.4vw, 42px); }
+  .ts-tagline { margin-top: 8px; font-size: 12.5px; }
+  .ts-rule { margin: 10px auto 12px; max-width: 260px; }
+  .ts-menu { gap: 8px; max-width: 330px; }
+  .ts-btn { font-size: 16px; padding: 10px 14px; }
+  .ts-btn-glyph { width: 28px; height: 28px; flex-basis: 28px; font-size: 14px; }
+  .ts-foot { margin-top: 10px; font-size: 8.5px; letter-spacing: .8px; }
+  .ts-wisteria { height: 16vh; width: 30%; }
+  .ts-cast { position: absolute; left: 0; right: 0; top: auto; bottom: 0; height: 42vh; min-height: 290px; margin: 0; --u: 62px; }
+  .ts-char .ts-frame { animation: none; }
+  .ts-char.p1 { left: 12%; top: 2%; --k: .62; --rot: -3deg; }
+  .ts-char.p2 { left: 32%; top: -2%; --k: .6; --rot: 2deg; }
+  .ts-char.p3 { left: 52%; top: 1%; --k: .62; --rot: 1deg; }
+  .ts-char.p4 { left: 72%; top: 3%; --k: .6; --rot: -2deg; }
+  .ts-char.p5 { left: 88%; top: 12%; --k: .52; --rot: 2deg; }
+  .ts-char.p6 { left: 18%; top: 30%; --k: .62; --rot: -3deg; }
+  .ts-char.p7 { left: 40%; top: 26%; --k: .66; --rot: -1deg; }
+  .ts-char.p8 { left: 62%; top: 27%; --k: .66; --rot: 1.5deg; }
+  .ts-char.p9 { left: 78%; top: 32%; --k: .6; --rot: 3deg; }
+  .ts-char.p10 { left: 51%; top: 56%; --k: .98; }
+  .ts-table { left: 50%; width: 94%; height: 18%; bottom: 0; z-index: 2; }
+  .tbl-teapot { width: 52px; height: 38px; }
+  .tbl-cup { width: 24px; height: 15px; }
+  .tbl-cake { width: 64px; }
+  .tbl-cat { width: 62px; height: 26px; }
+  .tbl-book { width: 46px; height: 32px; }
+}
+
+@media (max-width: 420px) {
+  .ts-cast { --u: 56px; min-height: 280px; }
+  .ts-char.p5 { display: none; }
+  .ts-char.p9 { left: 84%; }
+  .ts-foreground i { --h: 46px; }
+}
 
 .title-modal {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
@@ -1908,6 +2152,7 @@ window.SAN = window.SAN || {};
     'title.slots': 'Save Slots',
     'title.settings': 'Settings',
     'title.about': 'About',
+    'title.credits': 'Credits',
     'title.quit': 'Quit',
     'title.kicker': 'a cozy RPG about coming back to yourself',
     'title.foot': 'WASD move · E interact · ESC pause · plays fully offline',
@@ -2022,6 +2267,7 @@ window.SAN = window.SAN || {};
     'title.slots': 'Slot Simpanan',
     'title.settings': 'Pengaturan',
     'title.about': 'Tentang',
+    'title.credits': 'Kredit',
     'title.quit': 'Keluar',
     'title.kicker': 'RPG santai tentang kembali pada dirimu sendiri',
     'title.foot': 'WASD bergerak · E berinteraksi · ESC jeda · bisa dimainkan sepenuhnya offline',
@@ -11464,7 +11710,7 @@ window.SAN = window.SAN || {};
   UI.closeTop = function () {
     const top = UI.panelStack.pop();
     if (top) { top.el.remove(); SAN.audio.sfx('close'); }
-    if (!UI.panelStack.length) UI.panelLayer.classList.add('hidden');
+    if (!UI.panelStack.length) { UI.panelLayer.classList.add('hidden'); UI.panelLayer.classList.remove('above-title'); }
     else UI.panelLayer.classList.remove('hidden');
   };
 
@@ -11475,13 +11721,14 @@ window.SAN = window.SAN || {};
         UI.panelStack.splice(i, 1);
       }
     }
-    if (!UI.panelStack.length) UI.panelLayer.classList.add('hidden');
+    if (!UI.panelStack.length) { UI.panelLayer.classList.add('hidden'); UI.panelLayer.classList.remove('above-title'); }
   };
 
   UI.closeAll = function () {
     UI.panelStack.forEach((p) => p.el.remove());
     UI.panelStack = [];
     UI.panelLayer.classList.add('hidden');
+    UI.panelLayer.classList.remove('above-title');
     UI.closeDialogue();
   };
 
@@ -13194,6 +13441,21 @@ window.SAN = window.SAN || {};
   const U = SAN.util;
   const S = () => SAN.state.S;
 
+  /* the nine official villagers plus the player, placed around the tea table.
+     portraits come from the approved assets so identities never change. */
+  SC.TITLE_CAST = [
+    { id: 'nyssa', name: 'Nyssa', pos: 1 },
+    { id: 'rowan', name: 'Rowan', pos: 2 },
+    { id: 'celeste', name: 'Celeste', pos: 3 },
+    { id: 'finn', name: 'Finn', pos: 4 },
+    { id: 'theo', name: 'Theo', pos: 5 },
+    { id: 'elowen', name: 'Elowen', pos: 6 },
+    { id: 'liora', name: 'Liora', pos: 7 },
+    { id: 'mira', name: 'Mira', pos: 8 },
+    { id: 'aria', name: 'Aria', pos: 9 },
+    { id: 'player', name: 'You', pos: 10, pc: true, mood: 'happy' },
+  ];
+
   SC.showTitle = function () {
     SAN.ui.titleActive = true;
     SAN.ui.closeAll();
@@ -13204,56 +13466,115 @@ window.SAN = window.SAN || {};
     const touch = document.getElementById('touch-ui');
     if (touch) touch.classList.add('hidden');
     const el = document.getElementById('title-screen');
-    el.classList.remove('hidden');
-    const hasSave = SAN.save.hasAny();
+    el.className = '';
+    const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
+
+    const cast = SC.TITLE_CAST.map((c) => `
+      <figure class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" aria-hidden="true">
+        <div class="ts-frame"><img src="${SAN.render.portraitSrc(c.id, c.mood || 'neutral')}" alt="" draggable="false"></div>
+        <figcaption>${U.esc(c.name)}</figcaption>
+      </figure>`).join('');
+
     el.innerHTML = `
-      <div class="title-bg">
-        <div class="title-glow"></div>
-        <div class="title-stars">${Array.from({ length: 26 }).map((_, i) => `<i style="left:${(i * 37) % 100}%;top:${(i * 53) % 70}%;animation-delay:${i * 0.21}s"></i>`).join('')}</div>
-        <div class="title-hills"><i></i><i></i><i></i></div>
-        <div class="title-house"><div class="th-roof"></div><div class="th-body"><span></span></div></div>
-      </div>
-      <div class="title-content">
-        <div class="title-kicker">${SAN.t('title.kicker')}</div>
-        <h1 class="title-logo">Sanctuary</h1>
-        <div class="title-sub">Echoes of Self</div>
-        <div class="title-flowers">✿ ❀ ✿</div>
-        <div class="title-menu">
-          <button class="title-btn primary" id="t-new">${SAN.t('title.newGame')}</button>
-          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>${SAN.t('title.continue')}</button>
-          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>${SAN.t('title.slots')}</button>
-          <button class="title-btn" id="t-settings">${SAN.t('title.settings')}</button>
-          <button class="title-btn" id="t-about">${SAN.t('title.about')}</button>
-          <button class="title-btn ghost" id="t-quit">${SAN.t('title.quit')}</button>
+      <div class="ts-scene" aria-hidden="true">
+        <div class="ts-sun"></div>
+        <div class="ts-clouds"><i></i><i></i><i></i></div>
+        <div class="ts-mountains"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
+        <div class="ts-windmill"><span class="tower"></span><span class="blades"><i></i><i></i><i></i><i></i></span></div>
+        <div class="ts-village">
+          <div class="ts-house h1"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
+          <div class="ts-house h2"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
+          <div class="ts-house h3"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
         </div>
-        <div class="title-foot">${SAN.t('title.foot')}</div>
+        <div class="ts-garden"></div>
+        <div class="ts-wisteria left"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-wisteria right"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-glow"></div>
+      </div>
+      <div class="ts-petals" aria-hidden="true"></div>
+
+      <div class="ts-cast" aria-hidden="true">
+        ${cast}
+        <div class="ts-foreground"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-table">
+          <span class="tbl-top"></span>
+          <span class="tbl-cloth"></span>
+          <span class="tbl-book"></span>
+          <span class="tbl-teapot"><i></i></span>
+          <span class="tbl-cup c1"></span><span class="tbl-cup c2"></span><span class="tbl-cup c3"></span>
+          <span class="tbl-cake"><i></i><i></i><i></i></span>
+          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i></span>
+        </div>
+      </div>
+
+      <div class="ts-panel">
+        <div class="ts-crest" aria-hidden="true">✦ ❀ ✦</div>
+        <h1 class="ts-logo" aria-label="Sanctuary: Echoes of Self">
+          <span>Sanctuary:</span>
+          <em>Echoes of Self</em>
+        </h1>
+        <p class="ts-tagline">“A little world where your heart can rest.”</p>
+        <div class="ts-rule" aria-hidden="true"><i></i><b>❀</b><i></i></div>
+        <nav class="ts-menu" aria-label="Main menu">
+          <button type="button" class="ts-btn" id="t-new">
+            <span class="ts-btn-glyph" aria-hidden="true">✿</span><span class="ts-btn-label">${L('title.newGame', 'New Game')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-continue">
+            <span class="ts-btn-glyph" aria-hidden="true">❧</span><span class="ts-btn-label">${L('title.continue', 'Continue')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-settings">
+            <span class="ts-btn-glyph" aria-hidden="true">✾</span><span class="ts-btn-label">${L('title.settings', 'Settings')}</span>
+          </button>
+          <button type="button" class="ts-btn" id="t-credits">
+            <span class="ts-btn-glyph" aria-hidden="true">❦</span><span class="ts-btn-label">${L('title.credits', 'Credits')}</span>
+          </button>
+        </nav>
+        <div class="ts-foot">${L('title.foot', 'WASD move · E interact · ESC pause · plays fully offline')}</div>
       </div>`;
+
+    // ambient petal layer: decorative only, identities and layout untouched
+    const petalLayer = el.querySelector('.ts-petals');
+    for (let i = 0; i < 18; i++) {
+      const petal = document.createElement('i');
+      petal.className = 'ts-petal';
+      petal.style.setProperty('--x', ((i * 37) % 100) + '%');
+      petal.style.setProperty('--d', (11 + (i % 7) * 2.3).toFixed(1) + 's');
+      petal.style.setProperty('--delay', (-(i * 1.7) % 17).toFixed(1) + 's');
+      petal.style.setProperty('--s', (7 + (i % 4) * 2) + 'px');
+      petalLayer.appendChild(petal);
+    }
+
     SAN.audio.init();
     SAN.audio.playMusic('title');
     SAN.audio.ambient('birds');
 
     el.querySelector('#t-new').addEventListener('click', () => { SAN.audio.sfx('open'); SC.showCustomizer(); });
-    const cont = el.querySelector('#t-continue');
-    cont.addEventListener('click', () => {
+
+    el.querySelector('#t-continue').addEventListener('click', () => {
       const meta = SAN.save.slotMeta().filter((m) => !m.empty).sort((a, b) => b.savedAt - a.savedAt)[0];
-      if (!meta) return;
+      if (!meta) {
+        SAN.audio.sfx('close');
+        SAN.ui.toast('No saved journey yet — start a new one.', 'info');
+        const fresh = el.querySelector('#t-new');
+        fresh.classList.remove('nudge');
+        void fresh.offsetWidth;
+        fresh.classList.add('nudge');
+        return;
+      }
       SC.loadSlot(meta.slot);
     });
-    el.querySelector('#t-slots').addEventListener('click', () => SC.showSlots());
-    el.querySelector('#t-settings').addEventListener('click', () => SC.showTitleSettings());
-    el.querySelector('#t-about').addEventListener('click', () => {
+
+    el.querySelector('#t-settings').addEventListener('click', () => { SAN.audio.sfx('click'); SC.showTitleSettings(); });
+
+    // Credits reuses the existing About screen and its return behaviour
+    el.querySelector('#t-credits').addEventListener('click', () => {
+      SAN.audio.sfx('open');
       SAN.ui.panelStack = [];
       SAN.ui.titleActive = false;
       SAN.ui.PANELS.about();
       SAN.ui.titleActive = true;
-    });
-    el.querySelector('#t-quit').addEventListener('click', () => {
-      el.innerHTML = `<div class="title-quit">
-        <h2>Thank you for visiting.</h2>
-        <p>Sanctuary will be here whenever you come back. You can close this tab now.</p>
-        <button class="title-btn" id="t-back">Stay a while longer</button>
-      </div>`;
-      el.querySelector('#t-back').addEventListener('click', () => SC.showTitle());
+      // the title overlay sits above the normal panel layer; credits must stay readable
+      SAN.ui.panelLayer.classList.add('above-title');
     });
   };
 
