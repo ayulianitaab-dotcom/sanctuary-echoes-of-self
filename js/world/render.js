@@ -2102,6 +2102,10 @@
     const list = R.portraitArtFor(id);
     let m = ART_ALIAS[mood] || mood || 'neutral';
     if (list.indexOf(m) < 0) m = 'neutral';
+    // the single-file build inlines every illustration as a data URI so the
+    // game keeps working when index.html is opened straight from disk
+    const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
+    if (bundled && bundled[id + '/' + m]) return bundled[id + '/' + m];
     return 'assets/portraits/' + id + '/' + m + '.png';
   };
 

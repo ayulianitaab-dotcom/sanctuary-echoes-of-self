@@ -47,8 +47,34 @@ for f in "${FILES[@]}"; do
   fi
 done
 
+# portraits: inlined as data URIs so index.html stays self-contained and the
+# illustrations still show when the file is opened without a local server
+PORTRAITS_JS=$(mktemp)
+{
+  echo '<script>'
+  echo 'window.SAN_ASSET_PORTRAITS={'
+  sep=''
+  count=0
+  while IFS= read -r png; do
+    rel=${png#assets/portraits/}
+    id=${rel%%/*}
+    mood=$(basename "$png" .png)
+    printf '%s"%s/%s":"data:image/png;base64,%s"' "$sep" "$id" "$mood" "$(base64 -w 0 "$png")"
+    sep=$',\n'
+    count=$((count + 1))
+  done < <(find assets/portraits -type f -name '*.png' | LC_ALL=C sort)
+  echo
+  echo '};'
+  echo '</script>'
+  if [ "$count" -eq 0 ]; then
+    echo "ERROR: no portrait illustrations found in assets/portraits" >&2
+    exit 1
+  fi
+  echo "Embedded $count portrait illustrations" >&2
+} > "$PORTRAITS_JS"
+
 TMP=$(mktemp)
-trap 'rm -f "$TMP"' EXIT
+trap 'rm -f "$TMP" "$PORTRAITS_JS"' EXIT
 
 awk '
 /<!-- CSS_HERE -->/ {
@@ -63,6 +89,7 @@ awk '
 
 {
   cat "$TMP" | sed '/<!-- JS_HERE -->/q' | sed '$d'
+  cat "$PORTRAITS_JS"
   for f in "${FILES[@]}"; do
     echo "<script>"
     cat "$f"
