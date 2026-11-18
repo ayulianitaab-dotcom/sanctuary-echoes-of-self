@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2b2334">
 <title>Sanctuary: Echoes of Self</title>
 <style>
@@ -13156,17 +13156,37 @@ window.SAN = window.SAN || {};
     SAN.input.onKey(function (k) { return SAN.ui.handleKey(k); });
 
     canvas.addEventListener('click', onCanvasClick);
+    // Web layout: follow the page viewport, not a fixed device frame.
+    const relayout = function () {
+      const beforeW = SAN.render.width(), beforeH = SAN.render.height();
+      SAN.render.resize();
+      const W = SAN.world;
+      if (!W.area) return;
+      if (SAN.render.width() !== beforeW || SAN.render.height() !== beforeH) {
+        // keep the player framed instead of leaving them off-screen after a resized view
+        W.cam.x = W.player.px - SAN.render.width() / 2 + 8;
+        W.cam.y = W.player.py - SAN.render.height() / 2 + 10;
+      }
+      W.clampCam();
+    };
     let resizeTimer = 0;
-    window.addEventListener('resize', function () {
+    function scheduleLayout() {
+      // a timer, not rAF: sizing must still update when the tab is backgrounded
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        SAN.render.resize();
-        if (SAN.world.area) SAN.world.clampCam();
-      }, 60);
-    });
-    window.addEventListener('orientationchange', function () {
-      setTimeout(function () { SAN.render.resize(); if (SAN.world.area) SAN.world.clampCam(); }, 220);
-    });
+      resizeTimer = setTimeout(relayout, 60);
+    }
+    window.addEventListener('resize', scheduleLayout);
+    window.addEventListener('orientationchange', function () { setTimeout(relayout, 220); });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', scheduleLayout);
+    window.addEventListener('pageshow', scheduleLayout);
+    // container changes (dock breakpoints, panels, browser chrome) do not always fire window.resize
+    if (window.ResizeObserver) {
+      new ResizeObserver(scheduleLayout).observe(document.getElementById('canvas-wrap'));
+    }
+    SAN.relayout = scheduleLayout;
+    // safety net: observers can be deferred while the tab is occluded, so also
+    // reconcile the canvas size cheaply (layout() no-ops when nothing changed)
+    setInterval(relayout, 500);
     const resumeAudio = () => { SAN.audio.init(); };
     document.addEventListener('pointerdown', resumeAudio);
     document.addEventListener('keydown', resumeAudio);
