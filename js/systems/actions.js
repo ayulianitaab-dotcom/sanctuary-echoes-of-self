@@ -471,12 +471,18 @@
     const firstMeeting = !!(opts && opts.firstTime);
 
     const lines = [];
+    const closeFriend = SAN.rel.pts(def.id) >= 40;
     if (firstMeeting) {
-      lines.push({ speaker: def.id, text: 'You must be the one in the cottage on the hill. I heard about you.' });
-      lines.push({ speaker: 'player', text: 'All good things, I hope.' });
-      lines.push({ speaker: def.id, text: (def.greetings[0] || ['"All things."'])[0] });
+      lines.push({ speaker: def.id, text: 'You must be the one in the cottage on the hill. I heard about you.', context: 'responsibility' });
+      lines.push({ speaker: 'player', text: 'All good things, I hope.', mood: 'embarrassed' });
+      lines.push({ speaker: def.id, text: (def.greetings[0] || ['"All things."'])[0], context: 'greeting' });
     } else {
-      A.greetingFor(def).forEach((l) => lines.push({ speaker: def.id, text: l }));
+      // the greeting warms up as the friendship grows: greeting is happy, small talk is neutral
+      A.greetingFor(def).forEach((l, i) => lines.push({
+        speaker: def.id,
+        text: l,
+        context: i === 0 ? (closeFriend ? 'greeting' : 'responsibility') : undefined,
+      }));
       const reaction = {
         liora: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
         elowen: S_.flags.sat_with_elowen ? '"You sat with me by the pond. I have not forgotten, you know."' : null,
@@ -484,7 +490,7 @@
       }[def.id];
       if (reaction && !S_.dialogueSeen['react_' + def.id]) {
         S_.dialogueSeen['react_' + def.id] = true;
-        lines.push({ speaker: def.id, text: reaction });
+        lines.push({ speaker: def.id, text: reaction, context: 'memory' });
       }
     }
 
@@ -493,13 +499,14 @@
       if (SAN.rel.pts(def.id) >= t.min && !(S_.dialogueSeen[def.id + '_' + t.id])) {
         choices.push({
           label: t.min >= 41 ? 'Ask something closer' : 'Ask about them',
+          icon: '❦',
           cb: function () { A.topic(npc, t); },
         });
       }
     });
-    choices.push({ label: 'Give a gift', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
-    choices.push({ label: 'Just talk', cb: function () { A.smallTalk(npc); } });
-    choices.push({ label: 'Say goodbye', cb: function () { } });
+    choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
+    choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
+    choices.push({ label: 'Not right now', icon: '✕', cb: function () { } });
 
     SAN.ui.dialogue({ pages: lines, choices });
   };
@@ -508,10 +515,10 @@
     const def = npc.def;
     const line = U.pick(def.daily || ['"It is a good day for nothing in particular."']);
     SAN.ui.dialogue({
-      pages: [{ speaker: def.id, text: line }],
+      pages: [{ speaker: def.id, text: line, context: 'greeting' }],
       choices: [
-        { label: 'Give a gift', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } },
-        { label: 'Say goodbye', cb: function () { } },
+        { label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } },
+        { label: 'Not right now', icon: '✕', cb: function () { } },
       ],
     });
   };
@@ -521,15 +528,15 @@
     const S_ = S();
     S_.dialogueSeen[def.id + '_' + topic.id] = true;
     SAN.rel.add(def.id, 2, true);
-    const pages = topic.lines.map((l) => ({ speaker: def.id, text: l }));
-    SAN.ui.dialogue({ pages, choices: [{ label: 'Say goodbye', cb: function () { } }] });
+    const pages = topic.lines.map((l) => ({ speaker: def.id, text: l, context: 'memory' }));
+    SAN.ui.dialogue({ pages, choices: [{ label: 'Not right now', icon: '✕', cb: function () { } }] });
   };
 
   A.giveGift = function (npcId, itemId) {
     const S_ = S();
     const res = SAN.rel.gift(npcId, itemId);
     if (res.tooMany) {
-      SAN.ui.dialogue({ pages: [{ speaker: npcId, text: '"You have given me so much today already. Tomorrow, perhaps. I am not going anywhere."' }] });
+      SAN.ui.dialogue({ pages: [{ speaker: npcId, text: '"You have given me so much today already. Tomorrow, perhaps. I am not going anywhere."', mood: 'neutral' }] });
       return;
     }
     SAN.state.removeItem(itemId, 1);
@@ -537,8 +544,9 @@
     S_.world.gifts[npcId] = itemId;
     SAN.quests.notify('gift', npcId, 1, itemId);
     const def = SAN.data.npcs[npcId];
+    const giftMood = res.reaction === 'love' || res.reaction === 'like' ? 'happy' : 'neutral';
     const pages = [
-      { speaker: npcId, text: res.line || '"Thank you."' },
+      { speaker: npcId, text: res.line || '"Thank you."', mood: giftMood },
     ];
     if (res.reaction === 'love') pages.push({ speaker: 'narrator', text: 'Their whole expression changes. You remembered something real. (Friendship +' + res.pts + ')' });
     else if (res.reaction === 'like') pages.push({ speaker: 'narrator', text: 'A good choice. (Friendship +' + res.pts + ')' });

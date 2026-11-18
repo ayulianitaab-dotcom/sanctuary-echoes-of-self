@@ -772,6 +772,12 @@ img { -webkit-user-drag: none; }
 .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #5e4b3c; margin-bottom: 9px; font-family: var(--sans); }
 .toggle-row span { flex: 1; }
 .toggle-row input { accent-color: #9b86bf; width: 16px; height: 16px; }
+.select-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #5e4b3c; margin-bottom: 9px; font-family: var(--sans); }
+.select-row span { flex: 1; }
+.select-row select {
+  flex: 0 0 158px; padding: 5px 8px; border-radius: 8px; border: 1.5px solid rgba(138,101,71,.35);
+  background: rgba(255,252,244,.9); color: #4b3a2c; font-size: 12px; font-family: var(--sans);
+}
 .settings-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .settings-footer { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .controls-list { font-size: 12px; color: #5e4b3c; line-height: 1.9; font-family: var(--sans); }
@@ -1175,61 +1181,145 @@ body.hide-hints .hud-quest { opacity: .75; }
 .dlg-portrait.expr-in svg, .rel-detail-portrait svg { animation: exprIn .34s ease both; }
 @keyframes exprIn { from { opacity: .35; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 
-/* visual-novel dialogue */
+/* visual-novel dialogue: parchment panel, gold double border, portrait bust */
 #dialogue-layer {
-  padding: 0 14px 18px;
-  background: linear-gradient(0deg, rgba(24,16,30,.62), rgba(24,16,30,.12) 42%, transparent 65%);
+  padding: 0 14px 16px;
+  background: linear-gradient(0deg, rgba(24,16,30,.6), rgba(24,16,30,.1) 46%, transparent 68%);
 }
 .dlg-box {
   position: relative;
-  width: min(940px, 97vw);
-  gap: 18px;
-  padding: 16px 18px 15px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.55), transparent 26%),
-    radial-gradient(130% 120% at 15% 0%, rgba(226,211,240,.6), transparent 55%),
-    linear-gradient(180deg, #fbf4e6, #ecdcbe);
-  border: 2px solid rgba(120,88,62,.75);
-  border-radius: 18px;
-  box-shadow: 0 -8px 44px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,248,235,.65), inset 0 0 30px rgba(184,166,212,.18);
+  width: min(1020px, 97vw);
+  max-height: min(88vh, 640px);
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  animation: dlgIn .28s cubic-bezier(.2,.9,.3,1);
 }
-.dlg-box::before, .dlg-box::after {
-  content: "❀"; position: absolute; font-size: 15px; color: rgba(142,110,160,.5); pointer-events: none;
+.dlg-bust {
+  flex: 0 0 236px;
+  align-self: stretch;
+  min-height: 274px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-right: -30px;
+  z-index: 2;
+  pointer-events: none;
 }
-.dlg-box::before { left: 7px; top: 3px; }
-.dlg-box::after { right: 7px; bottom: 2px; transform: rotate(180deg); }
 .dlg-portrait {
-  width: 156px; height: 194px; flex: 0 0 156px;
-  border-radius: 14px;
-  border: 2px solid rgba(154,120,80,.75);
-  outline: 1px solid rgba(255,248,230,.7);
-  outline-offset: -5px;
-  box-shadow: 0 6px 18px rgba(60,42,56,.28), inset 0 0 26px rgba(90,60,90,.22);
-  background: linear-gradient(160deg, #e3d7ef, #bca9d6);
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  max-height: 330px;
+  border: 0;
+  border-radius: 150px 150px 24px 24px;
+  overflow: hidden;
+  background: none;
+  box-shadow: none;
+  -webkit-mask-image: radial-gradient(125% 104% at 50% 24%, #000 60%, transparent 97%);
+  mask-image: radial-gradient(125% 104% at 50% 24%, #000 60%, transparent 97%);
 }
-.dlg-name {
-  display: inline-block;
-  align-self: flex-start;
-  font-size: 15px; letter-spacing: .6px; color: #fdf6e8 !important;
-  background: linear-gradient(180deg, #8f7aa8, #6d5688);
-  border: 1px solid rgba(56,38,70,.5);
-  border-radius: 8px;
-  padding: 3px 16px 4px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(50,32,60,.28), inset 0 1px 0 rgba(255,255,255,.35);
+.dlg-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 14%; opacity: 0; transition: opacity .38s ease; }
+.dlg-portrait img.in { opacity: 1; }
+.dlg-box.narration .dlg-bust { display: none; }
+.dlg-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.dlg-topline { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding-left: 40px; }
+.dlg-nameplate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 22px 6px;
+  margin-bottom: -10px;
+  z-index: 3;
+  background: linear-gradient(180deg, #907ba9, #6b5486);
+  border: 1.5px solid #c9a86a;
+  border-radius: 10px 10px 3px 3px;
+  box-shadow: 0 3px 10px rgba(40,26,52,.35), inset 0 1px 0 rgba(255,255,255,.35), inset 0 0 0 1px rgba(56,38,70,.4);
 }
-.dlg-name:empty { display: none; }
-.dlg-role { color: rgba(255,246,230,.78); font-size: 10.5px; }
-.dlg-text { font-size: 16.5px; line-height: 1.7; color: #3d2e26; }
+.dlg-nameplate::before { content: "✿"; color: #e8cf9a; font-size: 12px; }
+.dlg-nameplate.hidden { display: none; }
+.dlg-name { font-family: var(--serif); font-size: 16px; letter-spacing: .6px; color: #fdf5e4 !important; background: none; border: 0; padding: 0; margin: 0; box-shadow: none; }
+.dlg-role { color: rgba(255,246,230,.75); font-size: 10.5px; margin-left: 8px; font-style: italic; font-family: var(--sans); }
+.dlg-controls { display: flex; gap: 6px; align-items: center; padding-bottom: 13px; }
+.dlg-ctl {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px 5px; border-radius: 999px;
+  border: 1px solid rgba(181,139,79,.8);
+  background: linear-gradient(180deg, rgba(255,250,240,.97), rgba(240,228,206,.94));
+  color: #6a5238; font-size: 11px; font-family: var(--sans); cursor: pointer;
+  box-shadow: 0 2px 6px rgba(60,40,30,.16), inset 0 1px 0 rgba(255,255,255,.75);
+  transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+}
+.dlg-ctl:hover { background: linear-gradient(180deg, #f6ecfb, #e6d7f2); border-color: #9b86bf; color: #4b3a5e; transform: translateY(-1px); }
+.dlg-ctl.on { background: linear-gradient(180deg, #907ba9, #6b5486); color: #fdf5e4; border-color: #c9a86a; }
+.ctl-ico { font-size: 11px; line-height: 1; }
+.dlg-panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 18px 24px 11px;
+  border-radius: 15px;
+  background:
+    radial-gradient(120% 130% at 8% 0%, rgba(226,211,240,.5), transparent 60%),
+    linear-gradient(180deg, #fdf7ea, #eee0c5);
+  border: 2px solid #b58b4f;
+  box-shadow: 0 10px 30px rgba(30,18,40,.45), inset 0 0 0 3px rgba(255,251,240,.9), inset 0 0 0 5px rgba(181,139,79,.5), inset 0 0 30px rgba(184,166,212,.16);
+}
+.dlg-panel::before, .dlg-panel::after {
+  content: "❀"; position: absolute; font-size: 17px; color: rgba(150,116,170,.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,.7); pointer-events: none;
+}
+.dlg-panel::before { left: 9px; top: 5px; }
+.dlg-panel::after { right: 9px; bottom: 3px; transform: rotate(180deg); }
+.dlg-text {
+  font-family: var(--serif);
+  font-size: 17px; line-height: 1.72; color: #3d2c22;
+  min-height: 78px; max-height: 30vh; overflow-y: auto;
+  white-space: pre-wrap; padding-right: 4px;
+}
+.dlg-footline { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.dlg-hint { font-size: 10.5px; color: #9a8570; font-family: var(--sans); letter-spacing: .3px; }
+.dlg-next { color: #b58b4f; font-size: 13px; line-height: 1; animation: dlgNext 1.5s ease-in-out infinite; }
+.dlg-next.off { opacity: 0; }
+@keyframes dlgNext { 0%,100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(3px); opacity: 1; } }
+.dlg-side { flex: 0 0 224px; display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; padding: 0 0 6px 14px; }
+.dlg-side:empty { display: none; }
+.dlg-choices { display: flex; flex-direction: column; gap: 8px; }
 .dlg-choice {
-  border: 1.5px solid rgba(112,86,140,.4);
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255,252,244,.95), rgba(240,230,246,.9));
-  padding: 9px 16px;
-  box-shadow: 0 2px 6px rgba(70,50,80,.08);
+  width: 100%; display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; border-radius: 12px;
+  border: 1.5px solid #b58b4f;
+  background: linear-gradient(180deg, #fdf8ee, #f0e2c8);
+  box-shadow: 0 3px 9px rgba(50,32,30,.18), inset 0 0 0 2px rgba(255,252,244,.8);
+  font-family: var(--serif); font-size: 14px; color: #44312a; text-align: left; cursor: pointer;
+  transition: transform .16s ease, background .16s ease, box-shadow .16s ease, border-color .16s ease, color .16s ease;
+  animation: choiceIn .28s ease both;
 }
-.dlg-choice:hover { background: linear-gradient(180deg, #f3e9fb, #e2d2f0); border-color: rgba(120,92,160,.75); }
+.dlg-choice:nth-child(2) { animation-delay: .05s; }
+.dlg-choice:nth-child(3) { animation-delay: .1s; }
+.dlg-choice:nth-child(4) { animation-delay: .15s; }
+.dlg-choice:hover { transform: translateX(-4px); background: linear-gradient(180deg, #f6ecfb, #e7d8f2); border-color: #9b86bf; box-shadow: 0 6px 16px rgba(70,50,90,.22), inset 0 0 0 2px rgba(255,255,255,.9); }
+.dlg-choice:focus-visible { outline: 2px solid #9b86bf; outline-offset: 2px; }
+.dlg-choice.chosen { transform: scale(.98); background: linear-gradient(180deg, #907ba9, #6b5486); color: #fdf5e4; border-color: #c9a86a; }
+.dlg-choice-ico {
+  width: 22px; height: 22px; flex: 0 0 22px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: rgba(181,139,79,.22); color: #7d5f36; font-size: 11px;
+}
+.dlg-choice.chosen .dlg-choice-ico { background: rgba(255,245,225,.25); color: #fdf5e4; }
+.dlg-choice-label { flex: 1; line-height: 1.35; }
 .dlg-num { border-radius: 50%; background: rgba(123,96,150,.18); color: #5c4670; }
+@media (max-width: 900px) {
+  .dlg-box { flex-wrap: wrap; }
+  .dlg-bust { flex-basis: 168px; min-height: 208px; margin-right: -22px; }
+  .dlg-portrait { max-height: 248px; }
+  .dlg-side { flex: 1 0 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 8px 0 0; gap: 7px; }
+}
 
 /* people of sanctuary */
 .rel-card { min-height: 106px; }
@@ -1250,16 +1340,25 @@ body.hide-hints .hud-quest { opacity: .75; }
   .dock-lbl { font-size: 8.5px; }
   .hud-energy { left: 10px; bottom: 76px; width: 150px; }
   .hud-cat { right: 10px; bottom: 76px; font-size: 10px; }
-  .dlg-box { flex-direction: row; padding: 11px 12px 10px; gap: 12px; border-radius: 14px; }
-  .dlg-portrait { width: 96px; height: 122px; flex: 0 0 96px; }
-  .dlg-text { font-size: 14.5px; line-height: 1.6; min-height: 58px; }
-  .dlg-name { font-size: 13px; padding: 2px 12px 3px; }
-  .dlg-choice { font-size: 13px; padding: 8px 12px; }
+  .dlg-bust { flex-basis: 104px; min-height: 142px; margin-right: -14px; }
+  .dlg-portrait { max-height: 168px; border-radius: 66px 66px 14px 14px; }
+  .dlg-topline { padding-left: 16px; gap: 6px; }
+  .dlg-nameplate { padding: 4px 13px 5px; }
+  .dlg-name { font-size: 13px; }
+  .dlg-panel { padding: 14px 14px 8px; }
+  .dlg-text { font-size: 14.5px; line-height: 1.6; min-height: 56px; max-height: 32vh; }
+  .dlg-ctl { padding: 3px 8px 4px; font-size: 10px; gap: 3px; }
+  .dlg-controls { padding-bottom: 11px; }
+  .dlg-side { padding: 7px 0 0; gap: 6px; }
+  .dlg-choice { flex: 1 1 138px; font-size: 13px; padding: 8px 10px; }
   .rel-detail-head { flex-direction: column; align-items: center; text-align: center; }
   .rel-detail-portrait { width: 132px; height: 166px; flex: 0 0 auto; }
 }
 @media (max-width: 430px) {
-  .dlg-portrait { width: 84px; height: 108px; flex: 0 0 84px; }
+  .dlg-bust { flex-basis: 86px; min-height: 118px; margin-right: -10px; }
+  .dlg-portrait { max-height: 138px; }
+  .dlg-ctl .ctl-lbl { display: none; }
+  .dlg-ctl { padding: 4px 9px 5px; }
   .dock-btn { min-width: 38px; }
   .dock-lbl { letter-spacing: 0; }
 }
@@ -1451,6 +1550,279 @@ window.SAN = window.SAN || {};
 
   U.dateLabel = (t) =>
     `${U.SEASONS[t.season]} ${t.day}, Year ${t.year}`;
+})();
+</script>
+<script>
+/* Sanctuary — interface language: English and Bahasa Indonesia */
+(function () {
+  const I = (SAN.i18n = {});
+
+  I.LANGS = [
+    { id: 'en', name: 'English' },
+    { id: 'id', name: 'Bahasa Indonesia' },
+  ];
+
+  // Interface chrome only: story dialogue, quests and item text stay as written.
+  const EN = {
+    'lang.label': 'Language',
+    'lang.note': 'Menus and interface text switch immediately. Story dialogue, quests and item descriptions stay in English for now.',
+
+    'dock.journal': 'Journal',
+    'dock.inventory': 'Satchel',
+    'dock.map': 'Map',
+    'dock.quests': 'Quests',
+    'dock.memories': 'Memories',
+    'dock.relations': 'People',
+    'dock.collection': 'Album',
+    'dock.pause': 'Menu',
+
+    'hud.energy': 'Energy',
+    'hud.camera': 'Camera',
+
+    'panel.inventory': 'Satchel',
+    'panel.journal': 'Journal',
+    'panel.memories': 'The Memory Vault',
+    'panel.relations': 'People of Sanctuary',
+    'panel.map': 'Map of Sanctuary',
+    'panel.quests': 'Quests',
+    'panel.board': 'Village Bulletin Board',
+    'panel.collection': 'Collections',
+    'panel.photos': 'Photo Album',
+    'panel.photoview': 'Photograph',
+    'panel.decorate': 'Decorate your home',
+    'panel.settings': 'Settings',
+    'panel.saves': 'Save Slots',
+    'panel.history': 'Dialogue History',
+    'panel.customize': 'Wardrobe',
+    'panel.about': 'About Sanctuary',
+    'panel.cook': 'Kitchen',
+    'panel.craft': 'Crafting Bench',
+    'panel.seeds': 'Plant a seed',
+
+    'pause.resume': 'Resume',
+    'pause.journal': 'Journal',
+    'pause.inventory': 'Satchel',
+    'pause.quests': 'Quests',
+    'pause.map': 'Map',
+    'pause.relations': 'People',
+    'pause.memories': 'Memory Vault',
+    'pause.collection': 'Collections',
+    'pause.photos': 'Photos',
+    'pause.decorate': 'Decorate',
+    'pause.saves': 'Save / Load',
+    'pause.settings': 'Settings',
+    'pause.quit': 'Quit to title',
+    'pause.footnote': 'Nothing here punishes you for leaving. The village waits kindly.',
+
+    'settings.audio': 'Audio',
+    'settings.music': 'Music',
+    'settings.effects': 'Effects',
+    'settings.ambience': 'Ambience',
+    'settings.textDisplay': 'Text & display',
+    'settings.textSpeed': 'Text speed',
+    'settings.hints': 'Show interaction hints',
+    'settings.reduceMotion': 'Reduce motion',
+    'settings.touch': 'Always show touch controls',
+    'settings.autosave': 'Autosave',
+    'settings.privacy': 'Privacy',
+    'settings.privacyNote': 'Journal entries and memories are stored on this device only. Sanctuary uses an offline rule-based reflection engine.',
+    'settings.ai': 'Allow optional AI reflection (offline-only unless you consent)',
+    'settings.aiNote': 'Even when enabled, nothing is uploaded automatically. The game works fully offline either way.',
+    'settings.export': 'Export save data',
+    'settings.import': 'Import save data',
+    'settings.controls': 'Controls',
+    'settings.controlMove': 'move',
+    'settings.controlRun': 'run',
+    'settings.controlInteract': 'interact',
+    'settings.controlPause': 'pause menu',
+    'settings.controlTouch': 'Touch: joystick + action button',
+    'settings.saveSlots': 'Open save slots',
+    'settings.returnTitle': 'Return to title',
+
+    'title.newGame': 'New Game',
+    'title.continue': 'Continue',
+    'title.slots': 'Save Slots',
+    'title.settings': 'Settings',
+    'title.about': 'About',
+    'title.quit': 'Quit',
+    'title.kicker': 'a cozy RPG about coming back to yourself',
+    'title.foot': 'WASD move · E interact · ESC pause · plays fully offline',
+
+    'dialogue.hint': 'click / E to continue',
+    'dialogue.history': 'History',
+    'dialogue.auto': 'Auto',
+    'dialogue.skip': 'Skip',
+
+    'confirm.yes': 'Yes',
+    'confirm.no': 'Not now',
+
+    'day.day': 'Day',
+    'day.year': 'Year',
+
+    'weather.sunny': 'sunny',
+    'weather.cloudy': 'cloudy',
+    'weather.rain': 'rain',
+    'weather.storm': 'storm',
+    'weather.fog': 'fog',
+    'weather.snow': 'snow',
+
+    'phase.morning': 'morning',
+    'phase.afternoon': 'afternoon',
+    'phase.evening': 'evening',
+    'phase.night': 'night',
+  };
+
+  const ID = {
+    'lang.label': 'Bahasa',
+    'lang.note': 'Menu dan teks antarmuka langsung berubah. Dialog cerita, misi, dan deskripsi item masih berbahasa Inggris untuk saat ini.',
+
+    'dock.journal': 'Jurnal',
+    'dock.inventory': 'Tas',
+    'dock.map': 'Peta',
+    'dock.quests': 'Misi',
+    'dock.memories': 'Kenangan',
+    'dock.relations': 'Warga',
+    'dock.collection': 'Album',
+    'dock.pause': 'Menu',
+
+    'hud.energy': 'Energi',
+    'hud.camera': 'Kamera',
+
+    'panel.inventory': 'Tas',
+    'panel.journal': 'Jurnal',
+    'panel.memories': 'Gudang Kenangan',
+    'panel.relations': 'Warga Sanctuary',
+    'panel.map': 'Peta Sanctuary',
+    'panel.quests': 'Misi',
+    'panel.board': 'Papan Pengumuman Desa',
+    'panel.collection': 'Koleksi',
+    'panel.photos': 'Album Foto',
+    'panel.photoview': 'Foto',
+    'panel.decorate': 'Hiasi rumahmu',
+    'panel.settings': 'Pengaturan',
+    'panel.saves': 'Slot Simpanan',
+    'panel.history': 'Riwayat Dialog',
+    'panel.customize': 'Lemari Pakaian',
+    'panel.about': 'Tentang Sanctuary',
+    'panel.cook': 'Dapur',
+    'panel.craft': 'Meja Kerajinan',
+    'panel.seeds': 'Tanam benih',
+
+    'pause.resume': 'Lanjutkan',
+    'pause.journal': 'Jurnal',
+    'pause.inventory': 'Tas',
+    'pause.quests': 'Misi',
+    'pause.map': 'Peta',
+    'pause.relations': 'Warga',
+    'pause.memories': 'Gudang Kenangan',
+    'pause.collection': 'Koleksi',
+    'pause.photos': 'Foto',
+    'pause.decorate': 'Hiasi',
+    'pause.saves': 'Simpan / Muat',
+    'pause.settings': 'Pengaturan',
+    'pause.quit': 'Keluar ke judul',
+    'pause.footnote': 'Tidak ada di sini yang menghukummu karena pergi. Desa ini menunggu dengan sabar.',
+
+    'settings.audio': 'Audio',
+    'settings.music': 'Musik',
+    'settings.effects': 'Efek',
+    'settings.ambience': 'Suara sekitar',
+    'settings.textDisplay': 'Teks & tampilan',
+    'settings.textSpeed': 'Kecepatan teks',
+    'settings.hints': 'Tampilkan petunjuk interaksi',
+    'settings.reduceMotion': 'Kurangi animasi',
+    'settings.touch': 'Selalu tampilkan kontrol sentuh',
+    'settings.autosave': 'Simpan otomatis',
+    'settings.privacy': 'Privasi',
+    'settings.privacyNote': 'Catatan jurnal dan kenangan hanya tersimpan di perangkat ini. Sanctuary memakai mesin refleksi berbasis aturan yang berjalan offline.',
+    'settings.ai': 'Izinkan refleksi AI opsional (hanya offline kecuali kamu setuju)',
+    'settings.aiNote': 'Walau diaktifkan, tidak ada yang diunggah otomatis. Game tetap bisa dimainkan sepenuhnya offline.',
+    'settings.export': 'Ekspor data simpanan',
+    'settings.import': 'Impor data simpanan',
+    'settings.controls': 'Kontrol',
+    'settings.controlMove': 'bergerak',
+    'settings.controlRun': 'berlari',
+    'settings.controlInteract': 'berinteraksi',
+    'settings.controlPause': 'menu jeda',
+    'settings.controlTouch': 'Sentuh: joystick + tombol aksi',
+    'settings.saveSlots': 'Buka slot simpanan',
+    'settings.returnTitle': 'Kembali ke judul',
+
+    'title.newGame': 'Mulai Baru',
+    'title.continue': 'Lanjutkan',
+    'title.slots': 'Slot Simpanan',
+    'title.settings': 'Pengaturan',
+    'title.about': 'Tentang',
+    'title.quit': 'Keluar',
+    'title.kicker': 'RPG santai tentang kembali pada dirimu sendiri',
+    'title.foot': 'WASD bergerak · E berinteraksi · ESC jeda · bisa dimainkan sepenuhnya offline',
+
+    'dialogue.hint': 'klik / E untuk lanjut',
+    'dialogue.history': 'Riwayat',
+    'dialogue.auto': 'Otomatis',
+    'dialogue.skip': 'Lewati',
+
+    'confirm.yes': 'Ya',
+    'confirm.no': 'Nanti saja',
+
+    'day.day': 'Hari',
+    'day.year': 'Tahun',
+
+    'weather.sunny': 'cerah',
+    'weather.cloudy': 'berawan',
+    'weather.rain': 'hujan',
+    'weather.storm': 'badai',
+    'weather.fog': 'berkabut',
+    'weather.snow': 'salju',
+
+    'phase.morning': 'pagi',
+    'phase.afternoon': 'siang',
+    'phase.evening': 'sore',
+    'phase.night': 'malam',
+  };
+
+  const DICT = { en: EN, id: ID };
+  const DOCK_KEYS = {
+    journal: 'dock.journal', inventory: 'dock.inventory', map: 'dock.map',
+    quests: 'dock.quests', memories: 'dock.memories', relations: 'dock.relations',
+    collection: 'dock.collection', pause: 'dock.pause',
+  };
+  let lang = 'en';
+
+  I.normalize = (v) => (DICT[v] ? v : 'en');
+  I.get = () => lang;
+
+  I.t = function (key, fallback) {
+    const table = DICT[lang] || EN;
+    if (table[key] != null) return table[key];
+    if (EN[key] != null) return EN[key];
+    return fallback != null ? fallback : key;
+  };
+  SAN.t = function (key, fallback) { return SAN.i18n.t(key, fallback); };
+
+  // static markup that lives in index.html: dock labels, HUD captions
+  I.apply = function () {
+    if (typeof document === 'undefined') return;
+    document.querySelectorAll('#dock [data-panel]').forEach((btn) => {
+      const label = btn.querySelector('.dock-lbl');
+      const key = DOCK_KEYS[btn.getAttribute('data-panel')];
+      if (label && key) label.textContent = I.t(key);
+    });
+    const energy = document.querySelector('.energy-label');
+    if (energy) energy.textContent = I.t('hud.energy');
+    const cam = document.getElementById('hud-camera');
+    if (cam) {
+      cam.title = I.t('hud.camera') + ' (P)';
+      cam.setAttribute('aria-label', I.t('hud.camera'));
+    }
+  };
+
+  I.set = function (next) {
+    lang = I.normalize(next);
+    if (typeof document !== 'undefined') document.documentElement.lang = lang;
+    I.apply();
+    return lang;
+  };
 })();
 </script>
 <script>
@@ -6264,11 +6636,42 @@ window.SAN = window.SAN || {};
      above is only the fallback when an illustration is missing.
      ========================================================= */
   R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry'];
+  R.MOODS = R.PLAYER_MOODS.slice();
   // dialogue returns 'thoughtful'; the sheets label that expression 'thinking'
   const ART_ALIAS = { thoughtful: 'thinking' };
 
+  // dialogue data can name the expression it needs; anything unknown falls back
+  R.resolveMood = function (mood) {
+    const m = ART_ALIAS[mood] || mood || 'neutral';
+    return R.MOODS.indexOf(m) >= 0 ? m : 'neutral';
+  };
+
+  // scene context → expression, so writers can tag a line instead of a face
+  R.CONTEXT_MOODS = {
+    greeting: 'happy',
+    compliment: 'embarrassed',
+    gift: 'surprised',
+    giftReceived: 'surprised',
+    badNews: 'sad',
+    grief: 'sad',
+    conflict: 'angry',
+    scolding: 'angry',
+    advice: 'thinking',
+    memory: 'thinking',
+    festival: 'happy',
+    quest: 'neutral',
+    responsibility: 'neutral',
+    farewell: 'sad',
+  };
+  R.moodForContext = function (kind) {
+    return R.resolveMood(R.CONTEXT_MOODS[kind] || 'neutral');
+  };
+
+  // an NPC ships only the expressions declared in its data; the rest fall back
   R.portraitArtFor = function (who) {
-    return who === 'player' ? R.PLAYER_MOODS.slice() : ['neutral'];
+    if (who === 'player') return R.PLAYER_MOODS.slice();
+    const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
   };
 
   R.portraitSrc = function (who, mood) {
@@ -6870,7 +7273,7 @@ window.SAN = window.SAN || {};
     const defaultSettings = {
       musicVol: 0.5, sfxVol: 0.7, ambVol: 0.5, textSpeed: 1,
       showHints: true, reduceMotion: false, autosave: true,
-      privacyConsent: false, useAI: false,
+      privacyConsent: false, useAI: false, lang: 'en',
     };
     const savedSettings = SAN.save.loadSettings();
     const settings = Object.assign(defaultSettings, savedSettings || {}, (opts && opts.settings) || {});
@@ -9724,12 +10127,18 @@ window.SAN = window.SAN || {};
     const firstMeeting = !!(opts && opts.firstTime);
 
     const lines = [];
+    const closeFriend = SAN.rel.pts(def.id) >= 40;
     if (firstMeeting) {
-      lines.push({ speaker: def.id, text: 'You must be the one in the cottage on the hill. I heard about you.' });
-      lines.push({ speaker: 'player', text: 'All good things, I hope.' });
-      lines.push({ speaker: def.id, text: (def.greetings[0] || ['"All things."'])[0] });
+      lines.push({ speaker: def.id, text: 'You must be the one in the cottage on the hill. I heard about you.', context: 'responsibility' });
+      lines.push({ speaker: 'player', text: 'All good things, I hope.', mood: 'embarrassed' });
+      lines.push({ speaker: def.id, text: (def.greetings[0] || ['"All things."'])[0], context: 'greeting' });
     } else {
-      A.greetingFor(def).forEach((l) => lines.push({ speaker: def.id, text: l }));
+      // the greeting warms up as the friendship grows: greeting is happy, small talk is neutral
+      A.greetingFor(def).forEach((l, i) => lines.push({
+        speaker: def.id,
+        text: l,
+        context: i === 0 ? (closeFriend ? 'greeting' : 'responsibility') : undefined,
+      }));
       const reaction = {
         liora: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
         elowen: S_.flags.sat_with_elowen ? '"You sat with me by the pond. I have not forgotten, you know."' : null,
@@ -9737,7 +10146,7 @@ window.SAN = window.SAN || {};
       }[def.id];
       if (reaction && !S_.dialogueSeen['react_' + def.id]) {
         S_.dialogueSeen['react_' + def.id] = true;
-        lines.push({ speaker: def.id, text: reaction });
+        lines.push({ speaker: def.id, text: reaction, context: 'memory' });
       }
     }
 
@@ -9746,13 +10155,14 @@ window.SAN = window.SAN || {};
       if (SAN.rel.pts(def.id) >= t.min && !(S_.dialogueSeen[def.id + '_' + t.id])) {
         choices.push({
           label: t.min >= 41 ? 'Ask something closer' : 'Ask about them',
+          icon: '❦',
           cb: function () { A.topic(npc, t); },
         });
       }
     });
-    choices.push({ label: 'Give a gift', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
-    choices.push({ label: 'Just talk', cb: function () { A.smallTalk(npc); } });
-    choices.push({ label: 'Say goodbye', cb: function () { } });
+    choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
+    choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
+    choices.push({ label: 'Not right now', icon: '✕', cb: function () { } });
 
     SAN.ui.dialogue({ pages: lines, choices });
   };
@@ -9761,10 +10171,10 @@ window.SAN = window.SAN || {};
     const def = npc.def;
     const line = U.pick(def.daily || ['"It is a good day for nothing in particular."']);
     SAN.ui.dialogue({
-      pages: [{ speaker: def.id, text: line }],
+      pages: [{ speaker: def.id, text: line, context: 'greeting' }],
       choices: [
-        { label: 'Give a gift', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } },
-        { label: 'Say goodbye', cb: function () { } },
+        { label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } },
+        { label: 'Not right now', icon: '✕', cb: function () { } },
       ],
     });
   };
@@ -9774,15 +10184,15 @@ window.SAN = window.SAN || {};
     const S_ = S();
     S_.dialogueSeen[def.id + '_' + topic.id] = true;
     SAN.rel.add(def.id, 2, true);
-    const pages = topic.lines.map((l) => ({ speaker: def.id, text: l }));
-    SAN.ui.dialogue({ pages, choices: [{ label: 'Say goodbye', cb: function () { } }] });
+    const pages = topic.lines.map((l) => ({ speaker: def.id, text: l, context: 'memory' }));
+    SAN.ui.dialogue({ pages, choices: [{ label: 'Not right now', icon: '✕', cb: function () { } }] });
   };
 
   A.giveGift = function (npcId, itemId) {
     const S_ = S();
     const res = SAN.rel.gift(npcId, itemId);
     if (res.tooMany) {
-      SAN.ui.dialogue({ pages: [{ speaker: npcId, text: '"You have given me so much today already. Tomorrow, perhaps. I am not going anywhere."' }] });
+      SAN.ui.dialogue({ pages: [{ speaker: npcId, text: '"You have given me so much today already. Tomorrow, perhaps. I am not going anywhere."', mood: 'neutral' }] });
       return;
     }
     SAN.state.removeItem(itemId, 1);
@@ -9790,8 +10200,9 @@ window.SAN = window.SAN || {};
     S_.world.gifts[npcId] = itemId;
     SAN.quests.notify('gift', npcId, 1, itemId);
     const def = SAN.data.npcs[npcId];
+    const giftMood = res.reaction === 'love' || res.reaction === 'like' ? 'happy' : 'neutral';
     const pages = [
-      { speaker: npcId, text: res.line || '"Thank you."' },
+      { speaker: npcId, text: res.line || '"Thank you."', mood: giftMood },
     ];
     if (res.reaction === 'love') pages.push({ speaker: 'narrator', text: 'Their whole expression changes. You remembered something real. (Friendship +' + res.pts + ')' });
     else if (res.reaction === 'like') pages.push({ speaker: 'narrator', text: 'A good choice. (Friendship +' + res.pts + ')' });
@@ -10203,6 +10614,7 @@ window.SAN = window.SAN || {};
   const U = SAN.util;
   const S = () => SAN.state.S;
 
+  const CHOICE_ICONS = ['✦', '❁', '❦', '✧', '❧', '✿'];
   UI.panelStack = [];
   UI.dialogueState = null;
   UI.titleActive = true;
@@ -10247,6 +10659,7 @@ window.SAN = window.SAN || {};
     document.documentElement.style.setProperty('--text-speed', s.textSpeed || 1);
     document.body.classList.toggle('reduce-motion', !!s.reduceMotion);
     document.body.classList.toggle('hide-hints', s.showHints === false);
+    if (SAN.i18n) SAN.i18n.set(s.lang || 'en');
     const tc = document.getElementById('touch-ui');
     if (tc) tc.classList.toggle('force-show', !!s.alwaysShowTouch);
   };
@@ -10295,9 +10708,9 @@ window.SAN = window.SAN || {};
     el.innerHTML = `
       <div class="day-card-inner">
         <div class="day-season">${U.SEASONS[S_.time.season]}</div>
-        <div class="day-num">Day ${S_.time.day}</div>
-        <div class="day-year">Year ${S_.time.year}</div>
-        <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${S_.time.weather}</div>
+        <div class="day-num">${SAN.t('day.day')} ${S_.time.day}</div>
+        <div class="day-year">${SAN.t('day.year')} ${S_.time.year}</div>
+        <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${SAN.t('weather.' + S_.time.weather, S_.time.weather)}</div>
         ${ev ? `<div class="day-event">${U.esc(ev.name)}</div>` : ''}
       </div>`;
     el.classList.add('show');
@@ -10313,11 +10726,12 @@ window.SAN = window.SAN || {};
     set('hud-date', U.SEASONS[S_.time.season] + ' ' + S_.time.day);
     set('hud-time', U.fmtClock(S_.time.minutes));
     set('hud-weather-icon', weatherIcons[S_.time.weather] || '☀');
-    set('hud-weather-label', S_.time.weather);
+    set('hud-weather-label', SAN.t('weather.' + S_.time.weather, S_.time.weather));
     set('hud-money', S_.money.toLocaleString());
     set('hud-energy-text', Math.round(S_.energy) + '/' + S_.maxEnergy);
     set('hud-location', SAN.world.area ? SAN.world.area.name : '');
-    set('hud-phase', U.phase(S_.time.minutes));
+    const phase = U.phase(S_.time.minutes);
+    set('hud-phase', SAN.t('phase.' + phase, phase));
     const fill = document.getElementById('hud-energy-fill');
     if (fill) {
       const pct = Math.max(0, Math.min(100, (S_.energy / S_.maxEnergy) * 100));
@@ -10364,26 +10778,109 @@ window.SAN = window.SAN || {};
       choices: o.choices || [],
       onClose: o.onClose,
       idx: 0, charIdx: 0, typing: true, acc: 0, chosen: false,
+      auto: false, skip: false, wait: 0,
     };
     UI.dialogueLayer.classList.remove('hidden');
     UI.dialogueLayer.innerHTML = `<div class="dlg-box">
-      <div class="dlg-portrait" id="dlg-portrait"></div>
-      <div class="dlg-main">
-        <div class="dlg-name" id="dlg-name"></div>
-        <div class="dlg-text" id="dlg-text"></div>
-        <div class="dlg-footer">
-          <span class="dlg-hint" id="dlg-hint">click / E to continue</span>
-          <button class="dlg-btn dlg-history" id="dlg-history" title="Dialogue history">History</button>
-        </div>
-        <div class="dlg-choices" id="dlg-choices"></div>
+      <div class="dlg-bust">
+        <div class="dlg-portrait" id="dlg-portrait"></div>
       </div>
+      <div class="dlg-main">
+        <div class="dlg-topline">
+          <div class="dlg-nameplate" id="dlg-nameplate"><span class="dlg-name" id="dlg-name"></span></div>
+          <div class="dlg-controls">
+            <button class="dlg-ctl" id="dlg-history" title="${SAN.t('panel.history')}"><span class="ctl-ico">🕘</span><span class="ctl-lbl">${SAN.t('dialogue.history')}</span></button>
+            <button class="dlg-ctl" id="dlg-auto"><span class="ctl-ico">▷</span><span class="ctl-lbl">${SAN.t('dialogue.auto')}</span></button>
+            <button class="dlg-ctl" id="dlg-skip"><span class="ctl-ico">»</span><span class="ctl-lbl">${SAN.t('dialogue.skip')}</span></button>
+          </div>
+        </div>
+        <div class="dlg-panel">
+          <div class="dlg-text" id="dlg-text"></div>
+          <div class="dlg-footline">
+            <span class="dlg-hint" id="dlg-hint">${SAN.t('dialogue.hint')}</span>
+            <span class="dlg-next" id="dlg-next">▼</span>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-side" id="dlg-choices"></div>
     </div>`;
     document.getElementById('dlg-history').addEventListener('click', (e) => {
       e.stopPropagation();
       UI.openPanel('history');
     });
+    document.getElementById('dlg-auto').addEventListener('click', (e) => { e.stopPropagation(); UI.toggleDialogueAuto(); });
+    document.getElementById('dlg-skip').addEventListener('click', (e) => { e.stopPropagation(); UI.toggleDialogueSkip(); });
     SAN.audio.sfx('open');
     UI.renderDialoguePage();
+  };
+
+  UI.syncDialogueControls = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    const auto = document.getElementById('dlg-auto');
+    const skip = document.getElementById('dlg-skip');
+    if (auto) auto.classList.toggle('on', !!d.auto);
+    if (skip) skip.classList.toggle('on', !!d.skip);
+  };
+
+  UI.toggleDialogueAuto = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    d.auto = !d.auto;
+    d.wait = 0;
+    if (d.auto) d.skip = false;
+    UI.syncDialogueControls();
+    SAN.audio.sfx('click');
+  };
+
+  UI.toggleDialogueSkip = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    d.skip = !d.skip;
+    d.wait = 0;
+    if (d.skip) {
+      d.auto = false;
+      d.typing = false;
+      const page = d.pages[d.idx];
+      d.charIdx = page ? page.text.length : 0;
+      const el = document.getElementById('dlg-text');
+      if (el && page) el.textContent = page.text;
+      UI.showChoicesIfNeeded();
+    }
+    UI.syncDialogueControls();
+    SAN.audio.sfx('click');
+  };
+
+  // the portrait is swapped underneath a crossfade so expressions never pop
+  UI.setDialoguePortrait = function (who, mood, narr) {
+    const el = document.getElementById('dlg-portrait');
+    if (!el) return;
+    el.querySelectorAll('img').forEach((img) => {
+      img.classList.remove('in');
+      setTimeout(() => img.remove(), 420);
+    });
+    if (narr || !who) return;
+    const src = SAN.render.portraitSrc(who, mood);
+    if (!src) return;
+    const img = document.createElement('img');
+    img.className = 'portrait-img';
+    img.src = src;
+    img.alt = '';
+    img.draggable = false;
+    img.setAttribute('data-who', who);
+    img.setAttribute('data-mood', mood);
+    el.appendChild(img);
+    void img.offsetWidth;
+    img.classList.add('in');
+  };
+
+  // an entry may name its expression (mood/expr) or tag a scene (context)
+  UI.pageMood = function (page) {
+    if (!page) return 'neutral';
+    const explicit = page.mood || page.expr || page.expression;
+    if (explicit) return SAN.render.resolveMood(explicit);
+    if (page.context) return SAN.render.moodForContext(page.context);
+    return SAN.render.moodFor(page.text);
   };
 
   UI.dialogueSpeaker = function (speakerId) {
@@ -10405,33 +10902,33 @@ window.SAN = window.SAN || {};
     const sp = UI.dialogueSpeaker(page.speaker);
     const box = UI.dialogueLayer.querySelector('.dlg-box');
     if (box) box.classList.toggle('narration', sp.narr);
-    const portraitEl = document.getElementById('dlg-portrait');
-    if (portraitEl) {
-      const who = page.speaker === 'player' ? 'player' : page.speaker;
-      const mood = SAN.render.moodFor(page.text);
-      portraitEl.innerHTML = sp.narr ? '' : SAN.render.portraitImg(who, { mood });
-      portraitEl.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.7) : '';
-      portraitEl.classList.remove('expr-in');
-      void portraitEl.offsetWidth;
-      portraitEl.classList.add('expr-in');
-      portraitEl.dataset.mood = mood;
-    }
+    const who = page.speaker === 'player' ? 'player' : page.speaker;
+    const mood = sp.narr ? 'neutral' : UI.pageMood(page);
+    UI.setDialoguePortrait(who, mood, sp.narr);
+    const plate = document.getElementById('dlg-nameplate');
     const nameEl = document.getElementById('dlg-name');
     if (nameEl) {
       nameEl.innerHTML = sp.narr ? '' : U.esc(sp.name) + (sp.title ? `<span class="dlg-role">${U.esc(sp.title)}</span>` : '');
       nameEl.style.color = sp.accent || '';
     }
-    d.typing = true; d.charIdx = 0; d.acc = 0;
+    if (plate) {
+      plate.classList.toggle('hidden', !!sp.narr);
+      plate.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.6) : '';
+    }
+    d.typing = true; d.charIdx = 0; d.acc = 0; d.wait = 0;
     const textEl = document.getElementById('dlg-text');
-    if (textEl) textEl.textContent = '';
+    if (textEl) { textEl.textContent = ''; textEl.scrollTop = 0; }
     const hint = document.getElementById('dlg-hint');
-    if (hint) hint.textContent = 'click / E to continue';
+    if (hint) hint.textContent = SAN.t('dialogue.hint');
+    const next = document.getElementById('dlg-next');
+    if (next) next.classList.add('off');
     const ch = document.getElementById('dlg-choices');
     if (ch) ch.innerHTML = '';
     if (page.speaker !== 'narrator') {
       UI.history.unshift({ name: sp.name, text: page.text });
       if (UI.history.length > 120) UI.history.pop();
     }
+    UI.syncDialogueControls();
   };
 
   UI.advanceDialogue = function () {
@@ -10441,13 +10938,17 @@ window.SAN = window.SAN || {};
     if (d.typing) {
       d.charIdx = page.text.length;
       d.typing = false;
+      d.wait = 0;
       const el = document.getElementById('dlg-text');
       if (el) el.textContent = page.text;
+      const next = document.getElementById('dlg-next');
+      if (next && d.idx >= d.pages.length - 1 && !d.choices.length) next.classList.remove('off');
       UI.showChoicesIfNeeded();
       return;
     }
     if (d.idx < d.pages.length - 1) {
       d.idx++;
+      d.wait = 0;
       UI.renderDialoguePage();
       SAN.audio.sfx('page');
       return;
@@ -10466,13 +10967,18 @@ window.SAN = window.SAN || {};
     d.choices.forEach((c, i) => {
       const b = document.createElement('button');
       b.className = 'dlg-choice';
-      b.innerHTML = `<span class="dlg-num">${i + 1}</span>${U.esc(c.label)}`;
+      b.setAttribute('data-choice', String(i));
+      b.innerHTML = `<span class="dlg-choice-ico">${c.icon || CHOICE_ICONS[i % CHOICE_ICONS.length]}</span>` +
+        `<span class="dlg-choice-label">${U.esc(c.label)}</span>`;
       b.addEventListener('click', (e) => {
         e.stopPropagation();
+        b.classList.add('chosen');
         UI.chooseDialogue(i);
       });
       el.appendChild(b);
     });
+    const next = document.getElementById('dlg-next');
+    if (next) next.classList.add('off');
   };
 
   UI.chooseDialogue = function (i) {
@@ -10501,20 +11007,37 @@ window.SAN = window.SAN || {};
 
   UI.updateDialogue = function (dt) {
     const d = UI.dialogueState;
-    if (!d || !d.typing) return;
+    if (!d) return;
     const page = d.pages[d.idx];
-    const speed = 26 * ((S() && S().settings.textSpeed) || 1);
-    d.acc += dt * speed;
-    const target = Math.min(page.text.length, Math.floor(d.acc));
-    if (target !== d.charIdx) {
-      d.charIdx = target;
-      const el = document.getElementById('dlg-text');
-      if (el) el.textContent = page.text.slice(0, d.charIdx);
-      if (d.charIdx % 3 === 0) SAN.audio.sfx('click');
+    if (d.typing) {
+      const speed = 26 * ((S() && S().settings.textSpeed) || 1) * (d.skip ? 7 : 1);
+      d.acc += dt * speed;
+      const target = Math.min(page.text.length, Math.floor(d.acc));
+      if (target !== d.charIdx) {
+        d.charIdx = target;
+        const el = document.getElementById('dlg-text');
+        if (el) el.textContent = page.text.slice(0, d.charIdx);
+        if (d.charIdx % 3 === 0) SAN.audio.sfx('click');
+      }
+      if (d.charIdx >= page.text.length) {
+        d.typing = false;
+        d.wait = 0;
+        const next = document.getElementById('dlg-next');
+        if (next && d.idx >= d.pages.length - 1 && !d.choices.length) next.classList.remove('off');
+        UI.showChoicesIfNeeded();
+      }
+      return;
     }
-    if (d.charIdx >= page.text.length) {
-      d.typing = false;
-      UI.showChoicesIfNeeded();
+    // auto and skip never run past a set of choices: the reader still picks one
+    if (d.choices.length && d.idx >= d.pages.length - 1) return;
+    if (d.skip) {
+      d.wait += dt;
+      if (d.wait > 0.16) { d.wait = 0; UI.advanceDialogue(); }
+      return;
+    }
+    if (d.auto) {
+      d.wait += dt;
+      if (d.wait > 1.1 + page.text.length * 0.018) { d.wait = 0; UI.advanceDialogue(); }
     }
   };
 
@@ -10524,10 +11047,11 @@ window.SAN = window.SAN || {};
     const el = document.createElement('div');
     el.className = 'panel-wrap';
     el.dataset.panel = name;
+    const heading = SAN.i18n ? SAN.i18n.t('panel.' + name, title) : title;
     el.innerHTML = `
       <div class="panel-card ${o.wide ? 'wide' : ''} ${o.className || ''}">
         <div class="panel-head">
-          <div class="panel-title">${U.esc(title)}</div>
+          <div class="panel-title">${U.esc(heading)}</div>
           ${o.noClose ? '' : '<button class="panel-close" aria-label="Close">✕</button>'}
         </div>
         <div class="panel-body">${bodyHTML}</div>
@@ -10586,8 +11110,8 @@ window.SAN = window.SAN || {};
     const el = UI.panel('confirm', title,
       `<p class="confirm-body">${U.esc(body)}</p>
        <div class="confirm-actions">
-         <button class="btn btn-primary" id="cf-yes">Yes</button>
-         <button class="btn btn-ghost" id="cf-no">Not now</button>
+         <button class="btn btn-primary" id="cf-yes">${SAN.t('confirm.yes')}</button>
+         <button class="btn btn-ghost" id="cf-no">${SAN.t('confirm.no')}</button>
        </div>`, { className: 'small-panel' });
     el.querySelector('#cf-yes').addEventListener('click', () => {
       UI.closePanel('confirm');
@@ -11758,45 +12282,52 @@ window.SAN = window.SAN || {};
     const el = UI.panel('settings', 'Settings', `
       <div class="settings-grid">
         <div class="settings-group">
-          <div class="settings-title">Audio</div>
-          <label class="slider-row"><span>Music</span><input type="range" id="set-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
-          <label class="slider-row"><span>Effects</span><input type="range" id="set-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
-          <label class="slider-row"><span>Ambience</span><input type="range" id="set-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
+          <div class="settings-title">${SAN.t('lang.label')}</div>
+          <label class="select-row"><select id="set-lang" aria-label="${SAN.t('lang.label')}">
+            ${SAN.i18n.LANGS.map((l) => `<option value="${l.id}" ${l.id === SAN.i18n.get() ? 'selected' : ''}>${U.esc(l.name)}</option>`).join('')}
+          </select></label>
+          <p class="fineprint">${SAN.t('lang.note')}</p>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Text & display</div>
-          <label class="slider-row"><span>Text speed</span><input type="range" id="set-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
-          <label class="toggle-row"><span>Show interaction hints</span><input type="checkbox" id="set-hints" ${st.showHints ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Reduce motion</span><input type="checkbox" id="set-motion" ${st.reduceMotion ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Always show touch controls</span><input type="checkbox" id="set-touch" ${st.alwaysShowTouch ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Autosave</span><input type="checkbox" id="set-auto" ${st.autosave ? 'checked' : ''}></label>
+          <div class="settings-title">${SAN.t('settings.audio')}</div>
+          <label class="slider-row"><span>${SAN.t('settings.music')}</span><input type="range" id="set-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
+          <label class="slider-row"><span>${SAN.t('settings.effects')}</span><input type="range" id="set-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
+          <label class="slider-row"><span>${SAN.t('settings.ambience')}</span><input type="range" id="set-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Privacy</div>
-          <p class="fineprint">Journal entries and memories are stored on this device only. Sanctuary uses an offline rule-based reflection engine.</p>
-          <label class="toggle-row"><span>Allow optional AI reflection (offline-only unless you consent)</span><input type="checkbox" id="set-ai" ${st.useAI ? 'checked' : ''}></label>
-          <p class="fineprint">Even when enabled, nothing is uploaded automatically. The game works fully offline either way.</p>
+          <div class="settings-title">${SAN.t('settings.textDisplay')}</div>
+          <label class="slider-row"><span>${SAN.t('settings.textSpeed')}</span><input type="range" id="set-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
+          <label class="toggle-row"><span>${SAN.t('settings.hints')}</span><input type="checkbox" id="set-hints" ${st.showHints ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.reduceMotion')}</span><input type="checkbox" id="set-motion" ${st.reduceMotion ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.touch')}</span><input type="checkbox" id="set-touch" ${st.alwaysShowTouch ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.autosave')}</span><input type="checkbox" id="set-auto" ${st.autosave ? 'checked' : ''}></label>
+        </div>
+        <div class="settings-group">
+          <div class="settings-title">${SAN.t('settings.privacy')}</div>
+          <p class="fineprint">${SAN.t('settings.privacyNote')}</p>
+          <label class="toggle-row"><span>${SAN.t('settings.ai')}</span><input type="checkbox" id="set-ai" ${st.useAI ? 'checked' : ''}></label>
+          <p class="fineprint">${SAN.t('settings.aiNote')}</p>
           <div class="settings-actions">
-            <button class="btn btn-small btn-ghost" id="set-export">Export save data</button>
-            <button class="btn btn-small btn-ghost" id="set-import">Import save data</button>
+            <button class="btn btn-small btn-ghost" id="set-export">${SAN.t('settings.export')}</button>
+            <button class="btn btn-small btn-ghost" id="set-import">${SAN.t('settings.import')}</button>
           </div>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Controls</div>
+          <div class="settings-title">${SAN.t('settings.controls')}</div>
           <div class="controls-list">
-            <div><kbd>WASD</kbd> / <kbd>Arrows</kbd> move</div>
-            <div><kbd>Shift</kbd> run</div>
-            <div><kbd>E</kbd> / <kbd>Space</kbd> interact</div>
-            <div><kbd>Esc</kbd> pause menu</div>
+            <div><kbd>WASD</kbd> / <kbd>Arrows</kbd> ${SAN.t('settings.controlMove')}</div>
+            <div><kbd>Shift</kbd> ${SAN.t('settings.controlRun')}</div>
+            <div><kbd>E</kbd> / <kbd>Space</kbd> ${SAN.t('settings.controlInteract')}</div>
+            <div><kbd>Esc</kbd> ${SAN.t('settings.controlPause')}</div>
             <div><kbd>I</kbd> inventory · <kbd>J</kbd> journal · <kbd>M</kbd> map</div>
             <div><kbd>Q</kbd> quests · <kbd>V</kbd> memories · <kbd>R</kbd> relationships</div>
-            <div>Touch: joystick + action button</div>
+            <div>${SAN.t('settings.controlTouch')}</div>
           </div>
         </div>
       </div>
       <div class="settings-footer">
-        <button class="btn" id="set-save">Open save slots</button>
-        <button class="btn btn-ghost" id="set-title">Return to title</button>
+        <button class="btn" id="set-save">${SAN.t('settings.saveSlots')}</button>
+        <button class="btn btn-ghost" id="set-title">${SAN.t('settings.returnTitle')}</button>
       </div>`, { wide: true });
 
     const bindRange = (id, key, cb) => {
@@ -11834,6 +12365,15 @@ window.SAN = window.SAN || {};
     bindToggle('set-ai', 'useAI', () => {
       if (st.useAI) UI.toast('AI reflections are opt-in per entry. Your journal remains on this device.', 'info');
     });
+    const langSel = el.querySelector('#set-lang');
+    if (langSel) {
+      langSel.addEventListener('change', () => {
+        st.lang = SAN.i18n.set(langSel.value);
+        SAN.save.saveSettings(st);
+        UI.refreshHUD();
+        UI.refreshPanel('settings');
+      });
+    }
     el.querySelector('#set-export').addEventListener('click', () => {
       const data = SAN.save.exportData();
       const blob = new Blob([data], { type: 'application/json' });
@@ -11937,21 +12477,21 @@ window.SAN = window.SAN || {};
       <div class="pause-menu">
         <p class="pause-sub">${SAN.time.dateLabel()} · ${U.fmtTime(S().time.minutes)} · ${SAN.world.area ? SAN.world.area.name : ''}</p>
         <div class="pause-grid">
-          <button class="btn btn-primary" data-p="resume">Resume</button>
-          <button class="btn" data-p="journal">Journal</button>
-          <button class="btn" data-p="inventory">Satchel</button>
-          <button class="btn" data-p="quests">Quests</button>
-          <button class="btn" data-p="map">Map</button>
-          <button class="btn" data-p="relations">People</button>
-          <button class="btn" data-p="memories">Memory Vault</button>
-          <button class="btn" data-p="collection">Collections</button>
-          <button class="btn" data-p="photos">Photos</button>
-          <button class="btn" data-p="decorate">Decorate</button>
-          <button class="btn" data-p="saves">Save / Load</button>
-          <button class="btn" data-p="settings">Settings</button>
-          <button class="btn btn-ghost" data-p="title">Quit to title</button>
+          <button class="btn btn-primary" data-p="resume">${SAN.t('pause.resume')}</button>
+          <button class="btn" data-p="journal">${SAN.t('pause.journal')}</button>
+          <button class="btn" data-p="inventory">${SAN.t('pause.inventory')}</button>
+          <button class="btn" data-p="quests">${SAN.t('pause.quests')}</button>
+          <button class="btn" data-p="map">${SAN.t('pause.map')}</button>
+          <button class="btn" data-p="relations">${SAN.t('pause.relations')}</button>
+          <button class="btn" data-p="memories">${SAN.t('pause.memories')}</button>
+          <button class="btn" data-p="collection">${SAN.t('pause.collection')}</button>
+          <button class="btn" data-p="photos">${SAN.t('pause.photos')}</button>
+          <button class="btn" data-p="decorate">${SAN.t('pause.decorate')}</button>
+          <button class="btn" data-p="saves">${SAN.t('pause.saves')}</button>
+          <button class="btn" data-p="settings">${SAN.t('pause.settings')}</button>
+          <button class="btn btn-ghost" data-p="title">${SAN.t('pause.quit')}</button>
         </div>
-        <p class="fineprint">Nothing here punishes you for leaving. The village waits kindly.</p>
+        <p class="fineprint">${SAN.t('pause.footnote')}</p>
       </div>`, { className: 'pause-panel' });
     el.querySelectorAll('[data-p]').forEach((b) => {
       b.addEventListener('click', () => {
@@ -12149,19 +12689,19 @@ window.SAN = window.SAN || {};
         <div class="title-house"><div class="th-roof"></div><div class="th-body"><span></span></div></div>
       </div>
       <div class="title-content">
-        <div class="title-kicker">a cozy RPG about coming back to yourself</div>
+        <div class="title-kicker">${SAN.t('title.kicker')}</div>
         <h1 class="title-logo">Sanctuary</h1>
         <div class="title-sub">Echoes of Self</div>
         <div class="title-flowers">✿ ❀ ✿</div>
         <div class="title-menu">
-          <button class="title-btn primary" id="t-new">New Game</button>
-          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>Continue</button>
-          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>Save Slots</button>
-          <button class="title-btn" id="t-settings">Settings</button>
-          <button class="title-btn" id="t-about">About</button>
-          <button class="title-btn ghost" id="t-quit">Quit</button>
+          <button class="title-btn primary" id="t-new">${SAN.t('title.newGame')}</button>
+          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>${SAN.t('title.continue')}</button>
+          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>${SAN.t('title.slots')}</button>
+          <button class="title-btn" id="t-settings">${SAN.t('title.settings')}</button>
+          <button class="title-btn" id="t-about">${SAN.t('title.about')}</button>
+          <button class="title-btn ghost" id="t-quit">${SAN.t('title.quit')}</button>
         </div>
-        <div class="title-foot">WASD move · E interact · ESC pause · plays fully offline</div>
+        <div class="title-foot">${SAN.t('title.foot')}</div>
       </div>`;
     SAN.audio.init();
     SAN.audio.playMusic('title');
@@ -12225,12 +12765,15 @@ window.SAN = window.SAN || {};
     const el = document.getElementById('title-screen');
     const wrap = document.createElement('div');
     wrap.className = 'title-modal';
-    wrap.innerHTML = `<h2>Settings</h2>
-      <label class="slider-row"><span>Music</span><input type="range" id="ts-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
-      <label class="slider-row"><span>Effects</span><input type="range" id="ts-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
-      <label class="slider-row"><span>Ambience</span><input type="range" id="ts-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
-      <label class="slider-row"><span>Text speed</span><input type="range" id="ts-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
-      <label class="toggle-row"><span>Reduce motion</span><input type="checkbox" id="ts-motion" ${st.reduceMotion ? 'checked' : ''}></label>
+    wrap.innerHTML = `<h2>${SAN.t('title.settings')}</h2>
+      <label class="select-row"><span>${SAN.t('lang.label')}</span><select id="ts-lang">
+        ${SAN.i18n.LANGS.map((l) => `<option value="${l.id}" ${l.id === (st.lang || 'en') ? 'selected' : ''}>${U.esc(l.name)}</option>`).join('')}
+      </select></label>
+      <label class="slider-row"><span>${SAN.t('settings.music')}</span><input type="range" id="ts-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.effects')}</span><input type="range" id="ts-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.ambience')}</span><input type="range" id="ts-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.textSpeed')}</span><input type="range" id="ts-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
+      <label class="toggle-row"><span>${SAN.t('settings.reduceMotion')}</span><input type="checkbox" id="ts-motion" ${st.reduceMotion ? 'checked' : ''}></label>
       <p class="fineprint">All audio is generated in the browser. No files are downloaded.</p>
       <button class="title-btn" id="ts-close">Back</button>`;
     el.appendChild(wrap);
@@ -12244,6 +12787,15 @@ window.SAN = window.SAN || {};
       });
     };
     bind('ts-music', 'musicVol'); bind('ts-sfx', 'sfxVol'); bind('ts-amb', 'ambVol'); bind('ts-speed', 'textSpeed'); bind('ts-motion', 'reduceMotion');
+    const langSel = wrap.querySelector('#ts-lang');
+    if (langSel) langSel.addEventListener('change', () => {
+      st.lang = SAN.i18n.set(langSel.value);
+      save();
+      wrap.remove();
+      el.classList.remove('title-subpanel');
+      SC.showTitle();
+      SC.showTitleSettings();
+    });
     wrap.querySelector('#ts-close').addEventListener('click', () => { wrap.remove(); });
   };
 

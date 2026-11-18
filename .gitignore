@@ -1,2 +1,5 @@
 shots/
 .tmp-crops/
+deploy/public/
+
+threads/

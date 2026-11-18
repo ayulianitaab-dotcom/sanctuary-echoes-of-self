@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 
 FILES=(
   js/core/util.js
+  js/core/i18n.js
   js/core/audio.js
   js/core/input.js
   js/core/save.js
@@ -108,3 +109,8 @@ awk '
 } > index.html
 
 echo "Built index.html ($(wc -c < index.html) bytes)"
+
+# deploy/ holds the Worker + static assets used when publishing to the web
+mkdir -p deploy/public
+cp index.html deploy/public/index.html
+echo "Staged deploy/public/index.html"

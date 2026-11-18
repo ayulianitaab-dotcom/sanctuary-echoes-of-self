@@ -108,7 +108,7 @@
     const defaultSettings = {
       musicVol: 0.5, sfxVol: 0.7, ambVol: 0.5, textSpeed: 1,
       showHints: true, reduceMotion: false, autosave: true,
-      privacyConsent: false, useAI: false,
+      privacyConsent: false, useAI: false, lang: 'en',
     };
     const savedSettings = SAN.save.loadSettings();
     const settings = Object.assign(defaultSettings, savedSettings || {}, (opts && opts.settings) || {});

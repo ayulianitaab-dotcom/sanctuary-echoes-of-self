@@ -4,6 +4,7 @@
   const U = SAN.util;
   const S = () => SAN.state.S;
 
+  const CHOICE_ICONS = ['✦', '❁', '❦', '✧', '❧', '✿'];
   UI.panelStack = [];
   UI.dialogueState = null;
   UI.titleActive = true;
@@ -48,6 +49,7 @@
     document.documentElement.style.setProperty('--text-speed', s.textSpeed || 1);
     document.body.classList.toggle('reduce-motion', !!s.reduceMotion);
     document.body.classList.toggle('hide-hints', s.showHints === false);
+    if (SAN.i18n) SAN.i18n.set(s.lang || 'en');
     const tc = document.getElementById('touch-ui');
     if (tc) tc.classList.toggle('force-show', !!s.alwaysShowTouch);
   };
@@ -96,9 +98,9 @@
     el.innerHTML = `
       <div class="day-card-inner">
         <div class="day-season">${U.SEASONS[S_.time.season]}</div>
-        <div class="day-num">Day ${S_.time.day}</div>
-        <div class="day-year">Year ${S_.time.year}</div>
-        <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${S_.time.weather}</div>
+        <div class="day-num">${SAN.t('day.day')} ${S_.time.day}</div>
+        <div class="day-year">${SAN.t('day.year')} ${S_.time.year}</div>
+        <div class="day-weather">${weatherIcons[S_.time.weather] || '☀'} ${SAN.t('weather.' + S_.time.weather, S_.time.weather)}</div>
         ${ev ? `<div class="day-event">${U.esc(ev.name)}</div>` : ''}
       </div>`;
     el.classList.add('show');
@@ -114,11 +116,12 @@
     set('hud-date', U.SEASONS[S_.time.season] + ' ' + S_.time.day);
     set('hud-time', U.fmtClock(S_.time.minutes));
     set('hud-weather-icon', weatherIcons[S_.time.weather] || '☀');
-    set('hud-weather-label', S_.time.weather);
+    set('hud-weather-label', SAN.t('weather.' + S_.time.weather, S_.time.weather));
     set('hud-money', S_.money.toLocaleString());
     set('hud-energy-text', Math.round(S_.energy) + '/' + S_.maxEnergy);
     set('hud-location', SAN.world.area ? SAN.world.area.name : '');
-    set('hud-phase', U.phase(S_.time.minutes));
+    const phase = U.phase(S_.time.minutes);
+    set('hud-phase', SAN.t('phase.' + phase, phase));
     const fill = document.getElementById('hud-energy-fill');
     if (fill) {
       const pct = Math.max(0, Math.min(100, (S_.energy / S_.maxEnergy) * 100));
@@ -165,26 +168,109 @@
       choices: o.choices || [],
       onClose: o.onClose,
       idx: 0, charIdx: 0, typing: true, acc: 0, chosen: false,
+      auto: false, skip: false, wait: 0,
     };
     UI.dialogueLayer.classList.remove('hidden');
     UI.dialogueLayer.innerHTML = `<div class="dlg-box">
-      <div class="dlg-portrait" id="dlg-portrait"></div>
-      <div class="dlg-main">
-        <div class="dlg-name" id="dlg-name"></div>
-        <div class="dlg-text" id="dlg-text"></div>
-        <div class="dlg-footer">
-          <span class="dlg-hint" id="dlg-hint">click / E to continue</span>
-          <button class="dlg-btn dlg-history" id="dlg-history" title="Dialogue history">History</button>
-        </div>
-        <div class="dlg-choices" id="dlg-choices"></div>
+      <div class="dlg-bust">
+        <div class="dlg-portrait" id="dlg-portrait"></div>
       </div>
+      <div class="dlg-main">
+        <div class="dlg-topline">
+          <div class="dlg-nameplate" id="dlg-nameplate"><span class="dlg-name" id="dlg-name"></span></div>
+          <div class="dlg-controls">
+            <button class="dlg-ctl" id="dlg-history" title="${SAN.t('panel.history')}"><span class="ctl-ico">🕘</span><span class="ctl-lbl">${SAN.t('dialogue.history')}</span></button>
+            <button class="dlg-ctl" id="dlg-auto"><span class="ctl-ico">▷</span><span class="ctl-lbl">${SAN.t('dialogue.auto')}</span></button>
+            <button class="dlg-ctl" id="dlg-skip"><span class="ctl-ico">»</span><span class="ctl-lbl">${SAN.t('dialogue.skip')}</span></button>
+          </div>
+        </div>
+        <div class="dlg-panel">
+          <div class="dlg-text" id="dlg-text"></div>
+          <div class="dlg-footline">
+            <span class="dlg-hint" id="dlg-hint">${SAN.t('dialogue.hint')}</span>
+            <span class="dlg-next" id="dlg-next">▼</span>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-side" id="dlg-choices"></div>
     </div>`;
     document.getElementById('dlg-history').addEventListener('click', (e) => {
       e.stopPropagation();
       UI.openPanel('history');
     });
+    document.getElementById('dlg-auto').addEventListener('click', (e) => { e.stopPropagation(); UI.toggleDialogueAuto(); });
+    document.getElementById('dlg-skip').addEventListener('click', (e) => { e.stopPropagation(); UI.toggleDialogueSkip(); });
     SAN.audio.sfx('open');
     UI.renderDialoguePage();
+  };
+
+  UI.syncDialogueControls = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    const auto = document.getElementById('dlg-auto');
+    const skip = document.getElementById('dlg-skip');
+    if (auto) auto.classList.toggle('on', !!d.auto);
+    if (skip) skip.classList.toggle('on', !!d.skip);
+  };
+
+  UI.toggleDialogueAuto = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    d.auto = !d.auto;
+    d.wait = 0;
+    if (d.auto) d.skip = false;
+    UI.syncDialogueControls();
+    SAN.audio.sfx('click');
+  };
+
+  UI.toggleDialogueSkip = function () {
+    const d = UI.dialogueState;
+    if (!d) return;
+    d.skip = !d.skip;
+    d.wait = 0;
+    if (d.skip) {
+      d.auto = false;
+      d.typing = false;
+      const page = d.pages[d.idx];
+      d.charIdx = page ? page.text.length : 0;
+      const el = document.getElementById('dlg-text');
+      if (el && page) el.textContent = page.text;
+      UI.showChoicesIfNeeded();
+    }
+    UI.syncDialogueControls();
+    SAN.audio.sfx('click');
+  };
+
+  // the portrait is swapped underneath a crossfade so expressions never pop
+  UI.setDialoguePortrait = function (who, mood, narr) {
+    const el = document.getElementById('dlg-portrait');
+    if (!el) return;
+    el.querySelectorAll('img').forEach((img) => {
+      img.classList.remove('in');
+      setTimeout(() => img.remove(), 420);
+    });
+    if (narr || !who) return;
+    const src = SAN.render.portraitSrc(who, mood);
+    if (!src) return;
+    const img = document.createElement('img');
+    img.className = 'portrait-img';
+    img.src = src;
+    img.alt = '';
+    img.draggable = false;
+    img.setAttribute('data-who', who);
+    img.setAttribute('data-mood', mood);
+    el.appendChild(img);
+    void img.offsetWidth;
+    img.classList.add('in');
+  };
+
+  // an entry may name its expression (mood/expr) or tag a scene (context)
+  UI.pageMood = function (page) {
+    if (!page) return 'neutral';
+    const explicit = page.mood || page.expr || page.expression;
+    if (explicit) return SAN.render.resolveMood(explicit);
+    if (page.context) return SAN.render.moodForContext(page.context);
+    return SAN.render.moodFor(page.text);
   };
 
   UI.dialogueSpeaker = function (speakerId) {
@@ -206,33 +292,33 @@
     const sp = UI.dialogueSpeaker(page.speaker);
     const box = UI.dialogueLayer.querySelector('.dlg-box');
     if (box) box.classList.toggle('narration', sp.narr);
-    const portraitEl = document.getElementById('dlg-portrait');
-    if (portraitEl) {
-      const who = page.speaker === 'player' ? 'player' : page.speaker;
-      const mood = SAN.render.moodFor(page.text);
-      portraitEl.innerHTML = sp.narr ? '' : SAN.render.portraitImg(who, { mood });
-      portraitEl.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.7) : '';
-      portraitEl.classList.remove('expr-in');
-      void portraitEl.offsetWidth;
-      portraitEl.classList.add('expr-in');
-      portraitEl.dataset.mood = mood;
-    }
+    const who = page.speaker === 'player' ? 'player' : page.speaker;
+    const mood = sp.narr ? 'neutral' : UI.pageMood(page);
+    UI.setDialoguePortrait(who, mood, sp.narr);
+    const plate = document.getElementById('dlg-nameplate');
     const nameEl = document.getElementById('dlg-name');
     if (nameEl) {
       nameEl.innerHTML = sp.narr ? '' : U.esc(sp.name) + (sp.title ? `<span class="dlg-role">${U.esc(sp.title)}</span>` : '');
       nameEl.style.color = sp.accent || '';
     }
-    d.typing = true; d.charIdx = 0; d.acc = 0;
+    if (plate) {
+      plate.classList.toggle('hidden', !!sp.narr);
+      plate.style.borderColor = sp.accent ? U.rgba(sp.accent, 0.6) : '';
+    }
+    d.typing = true; d.charIdx = 0; d.acc = 0; d.wait = 0;
     const textEl = document.getElementById('dlg-text');
-    if (textEl) textEl.textContent = '';
+    if (textEl) { textEl.textContent = ''; textEl.scrollTop = 0; }
     const hint = document.getElementById('dlg-hint');
-    if (hint) hint.textContent = 'click / E to continue';
+    if (hint) hint.textContent = SAN.t('dialogue.hint');
+    const next = document.getElementById('dlg-next');
+    if (next) next.classList.add('off');
     const ch = document.getElementById('dlg-choices');
     if (ch) ch.innerHTML = '';
     if (page.speaker !== 'narrator') {
       UI.history.unshift({ name: sp.name, text: page.text });
       if (UI.history.length > 120) UI.history.pop();
     }
+    UI.syncDialogueControls();
   };
 
   UI.advanceDialogue = function () {
@@ -242,13 +328,17 @@
     if (d.typing) {
       d.charIdx = page.text.length;
       d.typing = false;
+      d.wait = 0;
       const el = document.getElementById('dlg-text');
       if (el) el.textContent = page.text;
+      const next = document.getElementById('dlg-next');
+      if (next && d.idx >= d.pages.length - 1 && !d.choices.length) next.classList.remove('off');
       UI.showChoicesIfNeeded();
       return;
     }
     if (d.idx < d.pages.length - 1) {
       d.idx++;
+      d.wait = 0;
       UI.renderDialoguePage();
       SAN.audio.sfx('page');
       return;
@@ -267,13 +357,18 @@
     d.choices.forEach((c, i) => {
       const b = document.createElement('button');
       b.className = 'dlg-choice';
-      b.innerHTML = `<span class="dlg-num">${i + 1}</span>${U.esc(c.label)}`;
+      b.setAttribute('data-choice', String(i));
+      b.innerHTML = `<span class="dlg-choice-ico">${c.icon || CHOICE_ICONS[i % CHOICE_ICONS.length]}</span>` +
+        `<span class="dlg-choice-label">${U.esc(c.label)}</span>`;
       b.addEventListener('click', (e) => {
         e.stopPropagation();
+        b.classList.add('chosen');
         UI.chooseDialogue(i);
       });
       el.appendChild(b);
     });
+    const next = document.getElementById('dlg-next');
+    if (next) next.classList.add('off');
   };
 
   UI.chooseDialogue = function (i) {
@@ -302,20 +397,37 @@
 
   UI.updateDialogue = function (dt) {
     const d = UI.dialogueState;
-    if (!d || !d.typing) return;
+    if (!d) return;
     const page = d.pages[d.idx];
-    const speed = 26 * ((S() && S().settings.textSpeed) || 1);
-    d.acc += dt * speed;
-    const target = Math.min(page.text.length, Math.floor(d.acc));
-    if (target !== d.charIdx) {
-      d.charIdx = target;
-      const el = document.getElementById('dlg-text');
-      if (el) el.textContent = page.text.slice(0, d.charIdx);
-      if (d.charIdx % 3 === 0) SAN.audio.sfx('click');
+    if (d.typing) {
+      const speed = 26 * ((S() && S().settings.textSpeed) || 1) * (d.skip ? 7 : 1);
+      d.acc += dt * speed;
+      const target = Math.min(page.text.length, Math.floor(d.acc));
+      if (target !== d.charIdx) {
+        d.charIdx = target;
+        const el = document.getElementById('dlg-text');
+        if (el) el.textContent = page.text.slice(0, d.charIdx);
+        if (d.charIdx % 3 === 0) SAN.audio.sfx('click');
+      }
+      if (d.charIdx >= page.text.length) {
+        d.typing = false;
+        d.wait = 0;
+        const next = document.getElementById('dlg-next');
+        if (next && d.idx >= d.pages.length - 1 && !d.choices.length) next.classList.remove('off');
+        UI.showChoicesIfNeeded();
+      }
+      return;
     }
-    if (d.charIdx >= page.text.length) {
-      d.typing = false;
-      UI.showChoicesIfNeeded();
+    // auto and skip never run past a set of choices: the reader still picks one
+    if (d.choices.length && d.idx >= d.pages.length - 1) return;
+    if (d.skip) {
+      d.wait += dt;
+      if (d.wait > 0.16) { d.wait = 0; UI.advanceDialogue(); }
+      return;
+    }
+    if (d.auto) {
+      d.wait += dt;
+      if (d.wait > 1.1 + page.text.length * 0.018) { d.wait = 0; UI.advanceDialogue(); }
     }
   };
 
@@ -325,10 +437,11 @@
     const el = document.createElement('div');
     el.className = 'panel-wrap';
     el.dataset.panel = name;
+    const heading = SAN.i18n ? SAN.i18n.t('panel.' + name, title) : title;
     el.innerHTML = `
       <div class="panel-card ${o.wide ? 'wide' : ''} ${o.className || ''}">
         <div class="panel-head">
-          <div class="panel-title">${U.esc(title)}</div>
+          <div class="panel-title">${U.esc(heading)}</div>
           ${o.noClose ? '' : '<button class="panel-close" aria-label="Close">✕</button>'}
         </div>
         <div class="panel-body">${bodyHTML}</div>
@@ -387,8 +500,8 @@
     const el = UI.panel('confirm', title,
       `<p class="confirm-body">${U.esc(body)}</p>
        <div class="confirm-actions">
-         <button class="btn btn-primary" id="cf-yes">Yes</button>
-         <button class="btn btn-ghost" id="cf-no">Not now</button>
+         <button class="btn btn-primary" id="cf-yes">${SAN.t('confirm.yes')}</button>
+         <button class="btn btn-ghost" id="cf-no">${SAN.t('confirm.no')}</button>
        </div>`, { className: 'small-panel' });
     el.querySelector('#cf-yes').addEventListener('click', () => {
       UI.closePanel('confirm');

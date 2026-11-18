@@ -2090,11 +2090,42 @@
      above is only the fallback when an illustration is missing.
      ========================================================= */
   R.PLAYER_MOODS = ['neutral', 'happy', 'sad', 'surprised', 'embarrassed', 'thinking', 'angry'];
+  R.MOODS = R.PLAYER_MOODS.slice();
   // dialogue returns 'thoughtful'; the sheets label that expression 'thinking'
   const ART_ALIAS = { thoughtful: 'thinking' };
 
+  // dialogue data can name the expression it needs; anything unknown falls back
+  R.resolveMood = function (mood) {
+    const m = ART_ALIAS[mood] || mood || 'neutral';
+    return R.MOODS.indexOf(m) >= 0 ? m : 'neutral';
+  };
+
+  // scene context → expression, so writers can tag a line instead of a face
+  R.CONTEXT_MOODS = {
+    greeting: 'happy',
+    compliment: 'embarrassed',
+    gift: 'surprised',
+    giftReceived: 'surprised',
+    badNews: 'sad',
+    grief: 'sad',
+    conflict: 'angry',
+    scolding: 'angry',
+    advice: 'thinking',
+    memory: 'thinking',
+    festival: 'happy',
+    quest: 'neutral',
+    responsibility: 'neutral',
+    farewell: 'sad',
+  };
+  R.moodForContext = function (kind) {
+    return R.resolveMood(R.CONTEXT_MOODS[kind] || 'neutral');
+  };
+
+  // an NPC ships only the expressions declared in its data; the rest fall back
   R.portraitArtFor = function (who) {
-    return who === 'player' ? R.PLAYER_MOODS.slice() : ['neutral'];
+    if (who === 'player') return R.PLAYER_MOODS.slice();
+    const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    return npc && npc.expressions ? npc.expressions.slice() : ['neutral'];
   };
 
   R.portraitSrc = function (who, mood) {

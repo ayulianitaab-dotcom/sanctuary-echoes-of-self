@@ -1092,45 +1092,52 @@
     const el = UI.panel('settings', 'Settings', `
       <div class="settings-grid">
         <div class="settings-group">
-          <div class="settings-title">Audio</div>
-          <label class="slider-row"><span>Music</span><input type="range" id="set-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
-          <label class="slider-row"><span>Effects</span><input type="range" id="set-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
-          <label class="slider-row"><span>Ambience</span><input type="range" id="set-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
+          <div class="settings-title">${SAN.t('lang.label')}</div>
+          <label class="select-row"><select id="set-lang" aria-label="${SAN.t('lang.label')}">
+            ${SAN.i18n.LANGS.map((l) => `<option value="${l.id}" ${l.id === SAN.i18n.get() ? 'selected' : ''}>${U.esc(l.name)}</option>`).join('')}
+          </select></label>
+          <p class="fineprint">${SAN.t('lang.note')}</p>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Text & display</div>
-          <label class="slider-row"><span>Text speed</span><input type="range" id="set-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
-          <label class="toggle-row"><span>Show interaction hints</span><input type="checkbox" id="set-hints" ${st.showHints ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Reduce motion</span><input type="checkbox" id="set-motion" ${st.reduceMotion ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Always show touch controls</span><input type="checkbox" id="set-touch" ${st.alwaysShowTouch ? 'checked' : ''}></label>
-          <label class="toggle-row"><span>Autosave</span><input type="checkbox" id="set-auto" ${st.autosave ? 'checked' : ''}></label>
+          <div class="settings-title">${SAN.t('settings.audio')}</div>
+          <label class="slider-row"><span>${SAN.t('settings.music')}</span><input type="range" id="set-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
+          <label class="slider-row"><span>${SAN.t('settings.effects')}</span><input type="range" id="set-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
+          <label class="slider-row"><span>${SAN.t('settings.ambience')}</span><input type="range" id="set-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Privacy</div>
-          <p class="fineprint">Journal entries and memories are stored on this device only. Sanctuary uses an offline rule-based reflection engine.</p>
-          <label class="toggle-row"><span>Allow optional AI reflection (offline-only unless you consent)</span><input type="checkbox" id="set-ai" ${st.useAI ? 'checked' : ''}></label>
-          <p class="fineprint">Even when enabled, nothing is uploaded automatically. The game works fully offline either way.</p>
+          <div class="settings-title">${SAN.t('settings.textDisplay')}</div>
+          <label class="slider-row"><span>${SAN.t('settings.textSpeed')}</span><input type="range" id="set-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
+          <label class="toggle-row"><span>${SAN.t('settings.hints')}</span><input type="checkbox" id="set-hints" ${st.showHints ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.reduceMotion')}</span><input type="checkbox" id="set-motion" ${st.reduceMotion ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.touch')}</span><input type="checkbox" id="set-touch" ${st.alwaysShowTouch ? 'checked' : ''}></label>
+          <label class="toggle-row"><span>${SAN.t('settings.autosave')}</span><input type="checkbox" id="set-auto" ${st.autosave ? 'checked' : ''}></label>
+        </div>
+        <div class="settings-group">
+          <div class="settings-title">${SAN.t('settings.privacy')}</div>
+          <p class="fineprint">${SAN.t('settings.privacyNote')}</p>
+          <label class="toggle-row"><span>${SAN.t('settings.ai')}</span><input type="checkbox" id="set-ai" ${st.useAI ? 'checked' : ''}></label>
+          <p class="fineprint">${SAN.t('settings.aiNote')}</p>
           <div class="settings-actions">
-            <button class="btn btn-small btn-ghost" id="set-export">Export save data</button>
-            <button class="btn btn-small btn-ghost" id="set-import">Import save data</button>
+            <button class="btn btn-small btn-ghost" id="set-export">${SAN.t('settings.export')}</button>
+            <button class="btn btn-small btn-ghost" id="set-import">${SAN.t('settings.import')}</button>
           </div>
         </div>
         <div class="settings-group">
-          <div class="settings-title">Controls</div>
+          <div class="settings-title">${SAN.t('settings.controls')}</div>
           <div class="controls-list">
-            <div><kbd>WASD</kbd> / <kbd>Arrows</kbd> move</div>
-            <div><kbd>Shift</kbd> run</div>
-            <div><kbd>E</kbd> / <kbd>Space</kbd> interact</div>
-            <div><kbd>Esc</kbd> pause menu</div>
+            <div><kbd>WASD</kbd> / <kbd>Arrows</kbd> ${SAN.t('settings.controlMove')}</div>
+            <div><kbd>Shift</kbd> ${SAN.t('settings.controlRun')}</div>
+            <div><kbd>E</kbd> / <kbd>Space</kbd> ${SAN.t('settings.controlInteract')}</div>
+            <div><kbd>Esc</kbd> ${SAN.t('settings.controlPause')}</div>
             <div><kbd>I</kbd> inventory · <kbd>J</kbd> journal · <kbd>M</kbd> map</div>
             <div><kbd>Q</kbd> quests · <kbd>V</kbd> memories · <kbd>R</kbd> relationships</div>
-            <div>Touch: joystick + action button</div>
+            <div>${SAN.t('settings.controlTouch')}</div>
           </div>
         </div>
       </div>
       <div class="settings-footer">
-        <button class="btn" id="set-save">Open save slots</button>
-        <button class="btn btn-ghost" id="set-title">Return to title</button>
+        <button class="btn" id="set-save">${SAN.t('settings.saveSlots')}</button>
+        <button class="btn btn-ghost" id="set-title">${SAN.t('settings.returnTitle')}</button>
       </div>`, { wide: true });
 
     const bindRange = (id, key, cb) => {
@@ -1168,6 +1175,15 @@
     bindToggle('set-ai', 'useAI', () => {
       if (st.useAI) UI.toast('AI reflections are opt-in per entry. Your journal remains on this device.', 'info');
     });
+    const langSel = el.querySelector('#set-lang');
+    if (langSel) {
+      langSel.addEventListener('change', () => {
+        st.lang = SAN.i18n.set(langSel.value);
+        SAN.save.saveSettings(st);
+        UI.refreshHUD();
+        UI.refreshPanel('settings');
+      });
+    }
     el.querySelector('#set-export').addEventListener('click', () => {
       const data = SAN.save.exportData();
       const blob = new Blob([data], { type: 'application/json' });
@@ -1271,21 +1287,21 @@
       <div class="pause-menu">
         <p class="pause-sub">${SAN.time.dateLabel()} · ${U.fmtTime(S().time.minutes)} · ${SAN.world.area ? SAN.world.area.name : ''}</p>
         <div class="pause-grid">
-          <button class="btn btn-primary" data-p="resume">Resume</button>
-          <button class="btn" data-p="journal">Journal</button>
-          <button class="btn" data-p="inventory">Satchel</button>
-          <button class="btn" data-p="quests">Quests</button>
-          <button class="btn" data-p="map">Map</button>
-          <button class="btn" data-p="relations">People</button>
-          <button class="btn" data-p="memories">Memory Vault</button>
-          <button class="btn" data-p="collection">Collections</button>
-          <button class="btn" data-p="photos">Photos</button>
-          <button class="btn" data-p="decorate">Decorate</button>
-          <button class="btn" data-p="saves">Save / Load</button>
-          <button class="btn" data-p="settings">Settings</button>
-          <button class="btn btn-ghost" data-p="title">Quit to title</button>
+          <button class="btn btn-primary" data-p="resume">${SAN.t('pause.resume')}</button>
+          <button class="btn" data-p="journal">${SAN.t('pause.journal')}</button>
+          <button class="btn" data-p="inventory">${SAN.t('pause.inventory')}</button>
+          <button class="btn" data-p="quests">${SAN.t('pause.quests')}</button>
+          <button class="btn" data-p="map">${SAN.t('pause.map')}</button>
+          <button class="btn" data-p="relations">${SAN.t('pause.relations')}</button>
+          <button class="btn" data-p="memories">${SAN.t('pause.memories')}</button>
+          <button class="btn" data-p="collection">${SAN.t('pause.collection')}</button>
+          <button class="btn" data-p="photos">${SAN.t('pause.photos')}</button>
+          <button class="btn" data-p="decorate">${SAN.t('pause.decorate')}</button>
+          <button class="btn" data-p="saves">${SAN.t('pause.saves')}</button>
+          <button class="btn" data-p="settings">${SAN.t('pause.settings')}</button>
+          <button class="btn btn-ghost" data-p="title">${SAN.t('pause.quit')}</button>
         </div>
-        <p class="fineprint">Nothing here punishes you for leaving. The village waits kindly.</p>
+        <p class="fineprint">${SAN.t('pause.footnote')}</p>
       </div>`, { className: 'pause-panel' });
     el.querySelectorAll('[data-p]').forEach((b) => {
       b.addEventListener('click', () => {

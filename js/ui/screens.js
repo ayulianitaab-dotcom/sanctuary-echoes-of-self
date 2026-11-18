@@ -24,19 +24,19 @@
         <div class="title-house"><div class="th-roof"></div><div class="th-body"><span></span></div></div>
       </div>
       <div class="title-content">
-        <div class="title-kicker">a cozy RPG about coming back to yourself</div>
+        <div class="title-kicker">${SAN.t('title.kicker')}</div>
         <h1 class="title-logo">Sanctuary</h1>
         <div class="title-sub">Echoes of Self</div>
         <div class="title-flowers">✿ ❀ ✿</div>
         <div class="title-menu">
-          <button class="title-btn primary" id="t-new">New Game</button>
-          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>Continue</button>
-          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>Save Slots</button>
-          <button class="title-btn" id="t-settings">Settings</button>
-          <button class="title-btn" id="t-about">About</button>
-          <button class="title-btn ghost" id="t-quit">Quit</button>
+          <button class="title-btn primary" id="t-new">${SAN.t('title.newGame')}</button>
+          <button class="title-btn" id="t-continue" ${hasSave ? '' : 'disabled'}>${SAN.t('title.continue')}</button>
+          <button class="title-btn" id="t-slots" ${hasSave ? '' : 'disabled'}>${SAN.t('title.slots')}</button>
+          <button class="title-btn" id="t-settings">${SAN.t('title.settings')}</button>
+          <button class="title-btn" id="t-about">${SAN.t('title.about')}</button>
+          <button class="title-btn ghost" id="t-quit">${SAN.t('title.quit')}</button>
         </div>
-        <div class="title-foot">WASD move · E interact · ESC pause · plays fully offline</div>
+        <div class="title-foot">${SAN.t('title.foot')}</div>
       </div>`;
     SAN.audio.init();
     SAN.audio.playMusic('title');
@@ -100,12 +100,15 @@
     const el = document.getElementById('title-screen');
     const wrap = document.createElement('div');
     wrap.className = 'title-modal';
-    wrap.innerHTML = `<h2>Settings</h2>
-      <label class="slider-row"><span>Music</span><input type="range" id="ts-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
-      <label class="slider-row"><span>Effects</span><input type="range" id="ts-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
-      <label class="slider-row"><span>Ambience</span><input type="range" id="ts-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
-      <label class="slider-row"><span>Text speed</span><input type="range" id="ts-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
-      <label class="toggle-row"><span>Reduce motion</span><input type="checkbox" id="ts-motion" ${st.reduceMotion ? 'checked' : ''}></label>
+    wrap.innerHTML = `<h2>${SAN.t('title.settings')}</h2>
+      <label class="select-row"><span>${SAN.t('lang.label')}</span><select id="ts-lang">
+        ${SAN.i18n.LANGS.map((l) => `<option value="${l.id}" ${l.id === (st.lang || 'en') ? 'selected' : ''}>${U.esc(l.name)}</option>`).join('')}
+      </select></label>
+      <label class="slider-row"><span>${SAN.t('settings.music')}</span><input type="range" id="ts-music" min="0" max="1" step="0.05" value="${st.musicVol}"><b>${Math.round(st.musicVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.effects')}</span><input type="range" id="ts-sfx" min="0" max="1" step="0.05" value="${st.sfxVol}"><b>${Math.round(st.sfxVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.ambience')}</span><input type="range" id="ts-amb" min="0" max="1" step="0.05" value="${st.ambVol}"><b>${Math.round(st.ambVol * 100)}%</b></label>
+      <label class="slider-row"><span>${SAN.t('settings.textSpeed')}</span><input type="range" id="ts-speed" min="0.5" max="2.5" step="0.25" value="${st.textSpeed}"><b>${st.textSpeed}×</b></label>
+      <label class="toggle-row"><span>${SAN.t('settings.reduceMotion')}</span><input type="checkbox" id="ts-motion" ${st.reduceMotion ? 'checked' : ''}></label>
       <p class="fineprint">All audio is generated in the browser. No files are downloaded.</p>
       <button class="title-btn" id="ts-close">Back</button>`;
     el.appendChild(wrap);
@@ -119,6 +122,15 @@
       });
     };
     bind('ts-music', 'musicVol'); bind('ts-sfx', 'sfxVol'); bind('ts-amb', 'ambVol'); bind('ts-speed', 'textSpeed'); bind('ts-motion', 'reduceMotion');
+    const langSel = wrap.querySelector('#ts-lang');
+    if (langSel) langSel.addEventListener('change', () => {
+      st.lang = SAN.i18n.set(langSel.value);
+      save();
+      wrap.remove();
+      el.classList.remove('title-subpanel');
+      SC.showTitle();
+      SC.showTitleSettings();
+    });
     wrap.querySelector('#ts-close').addEventListener('click', () => { wrap.remove(); });
   };
 
