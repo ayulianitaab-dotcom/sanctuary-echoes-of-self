@@ -10460,7 +10460,7 @@ window.SAN = window.SAN || {};
     SAN.quests.notify('talk', def.id, 1);
     SAN.quests.notify('talk', 'any_npc', 1);
     // story scenes that belong to this exact moment
-    if (def.id === 'rowan' && S_.quests.active.wm_3 && !S_.flags.wm_quiet && S_.quests.progressOf('wm_3', 0).done) {
+    if (def.id === 'rowan' && S_.quests.active.wm_3 && !S_.flags.wm_quiet && SAN.quests.progressOf('wm_3', 0).done) {
       S_.flags.wm_quiet = true;
       A.windmillScene();
       return;
