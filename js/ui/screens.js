@@ -55,6 +55,9 @@
     if (touch) touch.classList.add('hidden');
     const el = document.getElementById('title-screen');
     el.className = '';
+    // the painted village behind the scene. The local build asks for the PNG,
+    // the published copy for the WebP of the same artwork.
+    el.style.setProperty('--ts-bg-img', 'url("' + SAN.render.withAssetExt('assets/backgrounds/title-village.png') + '")');
     const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
 
     const roleOf = (c) => (c.pc ? 'Newly arrived' : ((SAN.data.npcs[c.id] || {}).title || ''));
@@ -76,18 +79,7 @@
 
     el.innerHTML = `
       <div class="ts-scene" aria-hidden="true">
-        <div class="ts-sun"></div>
-        <div class="ts-clouds"><i></i><i></i><i></i></div>
-        <div class="ts-mountains"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
-        <div class="ts-windmill"><span class="tower"></span><span class="blades"><i></i><i></i><i></i><i></i></span></div>
-        <div class="ts-village">
-          <div class="ts-house h1"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
-          <div class="ts-house h2"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
-          <div class="ts-house h3"><span class="roof"></span><span class="body"><i></i><i></i></span></div>
-        </div>
-        <div class="ts-garden"></div>
-        <div class="ts-wisteria left"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="ts-wisteria right"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ts-bg"></div>
         <div class="ts-glow"></div>
       </div>
       <div class="ts-petals" aria-hidden="true"></div>
@@ -97,12 +89,6 @@
         ${cast}
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="ts-table" aria-hidden="true">
-          <span class="tbl-top"></span>
-          <span class="tbl-cloth"></span>
-          <span class="tbl-book"></span>
-          <span class="tbl-teapot"><i></i></span>
-          <span class="tbl-cup c1"></span><span class="tbl-cup c2"></span><span class="tbl-cup c3"></span>
-          <span class="tbl-cake"><i></i><i></i><i></i></span>
           <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i></span>
         </div>
       </div>

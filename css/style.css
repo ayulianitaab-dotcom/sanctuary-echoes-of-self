@@ -895,82 +895,27 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
 }
 #title-screen.hidden { display: none; }
 
-/* --- background illustration layer (pure CSS, no baked artwork) --- */
+/* --- background illustration layer: the painted village --- */
 .ts-scene {
   position: absolute; inset: 0; overflow: hidden;
   background: linear-gradient(180deg, #ece0f2 0%, #f6e7da 30%, #fbf0de 50%, #f2e0c9 72%, #e6cfb5 100%);
 }
-.ts-sun {
-  position: absolute; left: 64%; top: -12%; width: 70vmax; height: 70vmax; transform: translate(-50%, 0);
-  background: radial-gradient(circle, rgba(255,243,206,.95) 0%, rgba(255,228,174,.5) 30%, rgba(255,226,178,0) 62%);
+/* the painted village sits behind the same composition. The gradient above
+   stays as the fallback while the artwork loads (or if it is ever missing). */
+.ts-bg {
+  position: absolute; inset: -2%;
+  background-image: var(--ts-bg-img, none);
+  background-size: cover; background-position: 50% 46%; background-repeat: no-repeat;
+  transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -3px), 0) scale(1.01);
 }
-.ts-clouds i { position: absolute; border-radius: 999px; background: rgba(255,252,244,.55); filter: blur(7px); }
-.ts-clouds i:nth-child(1) { left: 18%; top: 11%; width: 24%; height: 42px; }
-.ts-clouds i:nth-child(2) { left: 46%; top: 6%; width: 18%; height: 32px; }
-.ts-clouds i:nth-child(3) { right: 12%; top: 16%; width: 22%; height: 38px; }
-.ts-mountains { position: absolute; left: 0; right: 0; bottom: 36%; height: 26%; }
-.ts-mountains i { position: absolute; bottom: 0; height: 100%; }
-.ts-mountains .m1 { left: -4%; width: 54%; clip-path: polygon(0 100%, 22% 30%, 34% 52%, 52% 8%, 74% 60%, 100% 100%); background: linear-gradient(180deg, #dfd0ea, #c3b0d3); opacity: .85; }
-.ts-mountains .m2 { right: -6%; width: 58%; clip-path: polygon(0 100%, 18% 44%, 38% 64%, 58% 18%, 86% 62%, 100% 100%); background: linear-gradient(180deg, #d6c4e4, #b8a3cb); opacity: .8; }
-.ts-mountains .m3 { left: 26%; width: 46%; clip-path: polygon(0 100%, 30% 46%, 52% 66%, 70% 30%, 100% 100%); background: linear-gradient(180deg, #cbb7da, #a894bd); opacity: .55; }
-.ts-village { position: absolute; right: 0; bottom: 31%; width: 52%; height: 22%; }
-.ts-house { position: absolute; bottom: 0; }
-.ts-house .roof { position: absolute; left: 0; right: 0; top: 0; height: 62%; clip-path: polygon(0 100%, 50% 0, 100% 100%); background: linear-gradient(180deg, #9c7e90, #6d5265); }
-.ts-house .body { position: absolute; left: 12%; right: 12%; bottom: 0; top: 46%; background: linear-gradient(180deg, #f8ecd6, #e3cfae); border-radius: 3px 3px 0 0; box-shadow: inset 0 -8px 14px rgba(140,110,80,.18); }
-.ts-house .body i { position: absolute; width: 22%; height: 26%; top: 22%; border-radius: 2px; background: radial-gradient(circle, #ffe6a6, #e8bd6a); box-shadow: 0 0 10px rgba(255,210,130,.75); }
-.ts-house .body i:first-child { left: 16%; }
-.ts-house .body i:last-child { right: 16%; }
-.ts-house .body::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 26%; height: 44%; margin-left: -13%; border-radius: 2px 2px 0 0; background: linear-gradient(180deg, #b98f66, #8a6a4a); }
-.ts-house .roof { box-shadow: inset 0 6px 0 rgba(255,240,220,.18); }
-.ts-house.h1 { left: 0; width: 21%; height: 66%; }
-.ts-house.h2 { left: 29%; width: 18%; height: 56%; }
-.ts-house.h3 { left: 62%; width: 23%; height: 74%; }
-.ts-windmill { position: absolute; right: 4%; bottom: 45%; width: 8%; height: 22%; opacity: .95; }
-.ts-windmill .tower { position: absolute; left: 16%; right: 16%; bottom: 0; top: 40%; clip-path: polygon(24% 0, 76% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, #f4e8d4, #d3bd9d); box-shadow: inset -6px 0 0 rgba(150,120,90,.16), 0 6px 14px rgba(120,90,70,.16); }
-.ts-windmill .blades { position: absolute; left: 50%; top: 36%; width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%); animation: tsMill 46s linear infinite; }
-.ts-windmill .blades::after { content: ''; position: absolute; left: 50%; top: 50%; width: 18%; aspect-ratio: 1; margin: -9% 0 0 -9%; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #f6ead2, #b08c62); box-shadow: 0 0 0 1px rgba(120,95,70,.45); }
-.ts-windmill .blades i { position: absolute; left: 50%; top: 50%; width: 9%; height: 44%; margin-left: -4.5%; border-radius: 1px; transform-origin: 50% 0; box-shadow: 0 0 0 1px rgba(120,95,70,.32); background: repeating-linear-gradient(180deg, rgba(120,95,70,.7) 0 3px, rgba(240,228,206,.9) 3px 9px), linear-gradient(180deg, #8a6f57, #b0906f); }
-.ts-windmill .blades i:nth-child(1) { transform: rotate(0deg); }
-.ts-windmill .blades i:nth-child(2) { transform: rotate(90deg); }
-.ts-windmill .blades i:nth-child(3) { transform: rotate(180deg); }
-.ts-windmill .blades i:nth-child(4) { transform: rotate(270deg); }
-@keyframes tsMill { to { transform: translate(-50%, -50%) rotate(360deg); } }
-.ts-garden { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; background: linear-gradient(180deg, #cdd8bb 0%, #c2cfae 34%, #adbd99 64%, #97a985 100%); }
-.ts-garden::before {
-  content: ''; position: absolute; inset: 0;
+/* a soft lavender wash keeps the existing palette over the painting, and a
+   quiet light corner keeps the logo and menu as readable as before */
+.ts-bg::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    repeating-linear-gradient(96deg, rgba(146,118,184,.28) 0 1.5px, transparent 1.5px 22px),
-    repeating-linear-gradient(94deg, rgba(160,132,196,.16) 0 2px, transparent 2px 34px);
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 32%, #000 82%, transparent);
-  mask-image: linear-gradient(180deg, transparent, #000 32%, #000 82%, transparent);
-  opacity: .55;
+    linear-gradient(180deg, rgba(206,188,226,.28) 0%, rgba(246,232,216,.12) 34%, rgba(246,231,205,.10) 62%, rgba(198,177,214,.22) 100%),
+    radial-gradient(ellipse at 14% 50%, rgba(250,242,231,.40), rgba(250,242,231,0) 58%);
 }
-.ts-garden::after { content: ''; position: absolute; left: 0; right: 0; top: 14%; height: 62%; background: linear-gradient(180deg, rgba(255,244,220,.32), transparent); }
-.ts-wisteria { position: absolute; top: 0; height: 32vh; width: 23%; pointer-events: none; }
-.ts-wisteria.left { left: 0; }
-.ts-wisteria.right { right: 0; transform: scaleX(-1); }
-.ts-wisteria::before {
-  content: ''; position: absolute; inset: 0 2% auto 0; height: 46%; filter: blur(4px);
-  background:
-    radial-gradient(ellipse at 18% 0%, rgba(168,138,208,.75), rgba(168,138,208,0) 62%),
-    radial-gradient(ellipse at 58% 2%, rgba(199,175,226,.7), rgba(199,175,226,0) 58%),
-    radial-gradient(ellipse at 92% 0%, rgba(140,110,180,.55), rgba(140,110,180,0) 55%);
-}
-.ts-wisteria i {
-  position: absolute; top: 4%; left: var(--l, 10%); width: 19px; height: var(--h, 56%); opacity: .38;
-  border-radius: 0 0 42% 42%; filter: blur(.4px);
-  background-image:
-    radial-gradient(circle at 50% 5px, #d9c4ee 0 3px, rgba(217,196,238,0) 4px),
-    linear-gradient(180deg, rgba(132,146,112,.5), rgba(132,146,112,0));
-  background-size: 100% 19px, 100% 100%;
-  background-repeat: repeat-y, no-repeat;
-}
-.ts-wisteria i:nth-child(1) { --l: 2%; --h: 48%; }
-.ts-wisteria i:nth-child(2) { --l: 14%; --h: 64%; }
-.ts-wisteria i:nth-child(3) { --l: 27%; --h: 40%; }
-.ts-wisteria i:nth-child(4) { --l: 39%; --h: 58%; }
-.ts-wisteria i:nth-child(5) { --l: 52%; --h: 36%; }
-.ts-wisteria i:nth-child(6) { --l: 64%; --h: 50%; }
 .ts-glow {
   position: absolute; inset: 0; pointer-events: none;
   background:
@@ -1135,20 +1080,7 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
   100% { transform: translate3d(var(--dx, 18px), -66vh, 0) scale(1); opacity: 0; }
 }
 
-/* --- environment life: sun, clouds, wisteria, lavender, cat --- */
-.ts-sun { animation: tsSun 28s ease-in-out infinite alternate; }
-@keyframes tsSun {
-  from { transform: translate(-50%, 0) scale(1); }
-  to { transform: translate(calc(-50% + 2.5vw), 1.6vh) scale(1.04); }
-}
-.ts-clouds i { animation: tsCloud 68s linear infinite alternate; }
-.ts-clouds i:nth-child(2) { animation-duration: 84s; animation-delay: -12s; }
-.ts-clouds i:nth-child(3) { animation-duration: 76s; animation-delay: -30s; }
-@keyframes tsCloud { from { transform: translateX(-2vw); } to { transform: translateX(5vw); } }
-.ts-wisteria i { animation: tsHang 7.5s ease-in-out infinite alternate; transform-origin: 50% 0; }
-.ts-wisteria i:nth-child(2n) { animation-duration: 9.2s; animation-delay: -2.4s; }
-.ts-wisteria i:nth-child(3n) { animation-duration: 6.6s; animation-delay: -4.1s; }
-@keyframes tsHang { from { transform: rotate(-1.4deg); } to { transform: rotate(1.6deg); } }
+/* --- environment life: foreground lavender, cat --- */
 .ts-foreground i { animation: tsGrass var(--sw, 5.6s) ease-in-out infinite alternate; transform-origin: 50% 100%; }
 .ts-foreground i:nth-child(2n) { animation-duration: 6.8s; animation-delay: -1.6s; }
 .ts-foreground i:nth-child(3n) { animation-duration: 4.6s; animation-delay: -3.2s; }
@@ -1181,24 +1113,20 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
 
 /* --- subtle parallax (JS sets --px / --py from the pointer) --- */
 #title-screen { --px: 0; --py: 0; }
-.ts-mountains, .ts-village, .ts-clouds, .ts-cast { transition: transform .5s ease-out; }
-.ts-mountains { transform: translate3d(calc(var(--px) * -7px), calc(var(--py) * -4px), 0); }
-.ts-village { transform: translate3d(calc(var(--px) * -12px), calc(var(--py) * -6px), 0); }
-.ts-clouds { transform: translate3d(calc(var(--px) * -4px), calc(var(--py) * -3px), 0); }
+.ts-cast, .ts-bg { transition: transform .5s ease-out; }
 .ts-cast { transform: translate3d(calc(var(--px) * 5px), calc(var(--py) * 3px), 0); }
 
 /* --- reduced motion: the scene stays still, the artwork keeps its places --- */
-body.reduce-motion .ts-sway, body.reduce-motion .ts-frame::after, body.reduce-motion .ts-sun,
-body.reduce-motion .ts-clouds i, body.reduce-motion .ts-wisteria i, body.reduce-motion .ts-foreground i,
-body.reduce-motion .ts-mote, body.reduce-motion .tbl-cat, body.reduce-motion .tbl-cat .tail,
-body.reduce-motion .tbl-cat::before, body.reduce-motion .ts-petal,
-body.reduce-motion .ts-windmill .blades { animation: none !important; }
-body.reduce-motion .ts-mountains, body.reduce-motion .ts-village,
-body.reduce-motion .ts-clouds, body.reduce-motion .ts-cast { transform: none !important; }
+body.reduce-motion .ts-sway, body.reduce-motion .ts-frame::after,
+body.reduce-motion .ts-foreground i, body.reduce-motion .ts-mote,
+body.reduce-motion .tbl-cat, body.reduce-motion .tbl-cat .tail,
+body.reduce-motion .tbl-cat::before,
+body.reduce-motion .ts-petal { animation: none !important; }
+body.reduce-motion .ts-cast, body.reduce-motion .ts-bg { transform: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .ts-sway, .ts-frame::after, .ts-sun, .ts-clouds i, .ts-wisteria i, .ts-foreground i,
+  .ts-sway, .ts-frame::after, .ts-foreground i,
   .ts-mote, .tbl-cat, .tbl-cat .tail, .tbl-cat::before { animation: none !important; }
-  .ts-mountains, .ts-village, .ts-clouds, .ts-cast { transform: none !important; }
+  .ts-cast, .ts-bg { transform: none !important; }
 }
 
 /* Settings / Character Creation cover the scene: hold the idle life in place.
@@ -1208,37 +1136,17 @@ body.reduce-motion .ts-clouds, body.reduce-motion .ts-cast { transform: none !im
 #title-screen.life-paused .ts-frame::after,
 #title-screen.life-paused .ts-mote,
 #title-screen.life-paused .ts-petal,
-#title-screen.life-paused .ts-sun,
-#title-screen.life-paused .ts-clouds i,
-#title-screen.life-paused .ts-wisteria i,
 #title-screen.life-paused .ts-foreground i,
 #title-screen.life-paused .tbl-cat,
-#title-screen.life-paused .tbl-cat .tail,
-#title-screen.life-paused .ts-windmill .blades { animation-play-state: paused !important; }
+#title-screen.life-paused .tbl-cat .tail { animation-play-state: paused !important; }
 
 /* small screens / modest devices: skip the decorative hair glint */
-#title-screen.life-light .ts-frame::after,
-#title-screen.life-light .ts-wisteria i { animation: none; }
+#title-screen.life-light .ts-frame::after { animation: none; }
+/* modest devices keep the painting still: no pointer parallax on the backdrop */
+#title-screen.life-light .ts-bg { transform: none !important; }
 
 /* --- tea table foreground --- */
 .ts-table { position: absolute; left: 58%; bottom: -1%; width: min(40vw, 560px); height: 23%; transform: translateX(-50%); z-index: 4; pointer-events: none; }
-.tbl-top { position: absolute; left: 0; right: 0; bottom: 14%; height: 54%; border-radius: 50%; background: radial-gradient(ellipse at 50% 18%, #c99a6c, #a5764f 58%, #86613f 100%); box-shadow: 0 18px 40px rgba(80,50,40,.35), inset 0 -8px 0 rgba(120,80,50,.28); }
-.tbl-cloth { position: absolute; left: 8%; bottom: 24%; width: 34%; height: 34%; border-radius: 50% 50% 46% 46%; background: linear-gradient(180deg, #fff8ea, #f0e2c8); opacity: .85; transform: rotate(-6deg); }
-.tbl-book { position: absolute; left: 29%; bottom: 32%; width: 66px; height: 44px; border-radius: 3px; background: linear-gradient(135deg, #7d5b8e, #5c436c); box-shadow: inset 0 0 0 2px rgba(240,215,160,.5), 0 4px 8px rgba(60,40,50,.3); transform: rotate(-8deg); }
-.tbl-teapot { position: absolute; left: 52%; bottom: 46%; width: 74px; height: 52px; border-radius: 50% 50% 46% 46%; background: linear-gradient(180deg, #fffaf0, #e9dcc4); box-shadow: inset -6px -6px 12px rgba(180,150,120,.35), 0 8px 14px rgba(80,50,40,.25); }
-.tbl-teapot i { position: absolute; left: 50%; top: -8px; transform: translateX(-50%); width: 26px; height: 10px; border-radius: 8px; background: #f7efdd; box-shadow: 0 0 0 1px rgba(190,160,120,.5); }
-.tbl-teapot::before { content: ''; position: absolute; left: -22px; top: 12px; width: 26px; height: 10px; border-radius: 8px 0 0 8px; background: #f3e8d2; transform: rotate(-18deg); }
-.tbl-teapot::after { content: ''; position: absolute; right: -14px; top: 10px; width: 20px; height: 24px; border: 4px solid #f0e4cc; border-left: 0; border-radius: 0 14px 14px 0; }
-.tbl-cup { position: absolute; width: 34px; height: 20px; border-radius: 0 0 12px 12px; background: linear-gradient(180deg, #fffaf0, #eadfc8); box-shadow: 0 2px 4px rgba(80,50,40,.18); }
-.tbl-cup::after { content: ''; position: absolute; right: -9px; top: 3px; width: 12px; height: 10px; border: 3px solid #f2e6d0; border-left: 0; border-radius: 0 8px 8px 0; }
-.tbl-cup.c1 { left: 38%; bottom: 40%; }
-.tbl-cup.c2 { left: 45%; bottom: 33%; }
-.tbl-cup.c3 { left: 64%; bottom: 36%; }
-.tbl-cake { position: absolute; left: 55%; bottom: 43%; width: 96px; height: 14px; border-radius: 50%; background: linear-gradient(180deg, #f6ead6, #d9c3a0); box-shadow: 0 6px 10px rgba(80,50,40,.2); }
-.tbl-cake i { position: absolute; width: 14px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 40% 30%, #f7c9a0, #d98f6f); }
-.tbl-cake i:nth-child(1) { left: 18%; top: -8px; }
-.tbl-cake i:nth-child(2) { left: 42%; top: -10px; }
-.tbl-cake i:nth-child(3) { left: 66%; top: -8px; }
 .tbl-cat { position: absolute; right: 19%; bottom: 40%; width: 88px; height: 34px; border-radius: 50% 50% 46% 46%; background: radial-gradient(ellipse at 40% 30%, #fffdf8, #ece0cf); box-shadow: 0 6px 10px rgba(80,50,40,.22); }
 .tbl-cat .ear { position: absolute; top: -10px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid #fbf4e8; }
 .tbl-cat .ear.e1 { left: 14px; }
@@ -1320,10 +1228,9 @@ body.reduce-motion .ts-clouds, body.reduce-motion .ts-cast { transform: none !im
 /* respect the player's reduced-motion choice and keep the menu readable when
    the title opens in a background tab (entrance animations may never run) */
 body.reduce-motion .ts-panel, body.reduce-motion .ts-btn,
-body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal,
-body.reduce-motion .ts-windmill .blades { animation: none !important; }
+body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .ts-panel, .ts-btn, .ts-char .ts-frame, .ts-petal, .ts-windmill .blades { animation: none !important; }
+  .ts-panel, .ts-btn, .ts-char .ts-frame, .ts-petal { animation: none !important; }
 }
 
 /* --- title-screen responsive layers --- */
@@ -1362,7 +1269,6 @@ body.reduce-motion .ts-windmill .blades { animation: none !important; }
   .ts-btn { font-size: 16px; padding: 10px 14px; }
   .ts-btn-glyph { width: 28px; height: 28px; flex-basis: 28px; font-size: 14px; }
   .ts-foot { margin-top: 10px; font-size: 8.5px; letter-spacing: .8px; }
-  .ts-wisteria { height: 16vh; width: 30%; }
   .ts-cast { position: absolute; left: 0; right: 0; top: auto; bottom: 0; height: 42vh; min-height: 290px; margin: 0; --u: 62px; }
   .ts-card { width: min(280px, 86vw); padding: 13px 32px 14px 16px; }
   .ts-tag { padding: 4px 10px 5px; }
@@ -1379,11 +1285,7 @@ body.reduce-motion .ts-windmill .blades { animation: none !important; }
   .ts-char.p9 { left: 78%; top: 32%; --k: .6; --rot: 3deg; }
   .ts-char.p10 { left: 51%; top: 56%; --k: .98; }
   .ts-table { left: 50%; width: 94%; height: 18%; bottom: 0; z-index: 2; }
-  .tbl-teapot { width: 52px; height: 38px; }
-  .tbl-cup { width: 24px; height: 15px; }
-  .tbl-cake { width: 64px; }
   .tbl-cat { width: 62px; height: 26px; }
-  .tbl-book { width: 46px; height: 32px; }
 }
 
 @media (max-width: 420px) {

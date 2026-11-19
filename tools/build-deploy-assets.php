@@ -73,3 +73,36 @@ printf(
     $inBytes / 1048576,
     $outBytes / 1048576
 );
+
+/* the title screen's painted village ships the same way: same pixels, WebP */
+$bgSrc = $root . '/assets/backgrounds';
+$bgOut = $root . '/deploy/public/assets/backgrounds';
+$bg = glob($bgSrc . '/*.png');
+if (!$bg) {
+    fwrite(STDERR, "ERROR: no title background found in $bgSrc\n");
+    exit(1);
+}
+if (!is_dir($bgOut) && !mkdir($bgOut, 0777, true)) {
+    fwrite(STDERR, "ERROR: cannot create $bgOut\n");
+    exit(1);
+}
+foreach ($bg as $file) {
+    $dest = $bgOut . '/' . preg_replace('/\.png$/i', '.webp', basename($file));
+    $im = @imagecreatefrompng($file);
+    if (!$im) {
+        fwrite(STDERR, "ERROR: cannot read " . basename($file) . "\n");
+        exit(1);
+    }
+    $ok = imagewebp($im, $dest, 82);
+    imagedestroy($im);
+    if (!$ok || !is_file($dest)) {
+        fwrite(STDERR, "ERROR: cannot write $dest\n");
+        exit(1);
+    }
+    printf(
+        "Packaged title background %s: %.1f MB -> %.1f MB\n",
+        basename($dest),
+        filesize($file) / 1048576,
+        filesize($dest) / 1048576
+    );
+}
