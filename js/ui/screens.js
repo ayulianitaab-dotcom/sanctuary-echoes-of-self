@@ -81,6 +81,7 @@
       <div class="ts-scene" aria-hidden="true">
         <div class="ts-bg"></div>
         <div class="ts-glow"></div>
+        <div class="ts-haze"></div>
       </div>
       <div class="ts-petals" aria-hidden="true"></div>
       <div class="ts-motes" aria-hidden="true"></div>
@@ -89,7 +90,7 @@
         ${cast}
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="ts-table" aria-hidden="true">
-          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i></span>
+          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i><i class="face"></i></span>
         </div>
       </div>
 
