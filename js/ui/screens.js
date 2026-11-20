@@ -4,19 +4,21 @@
   const U = SAN.util;
   const S = () => SAN.state.S;
 
-  /* the nine official villagers plus the player, placed around the tea table.
-     portraits come from the approved assets so identities never change. */
+  /* the nine official villagers plus the player, framed in arches around the
+     centre of the scene. Portraits come from the approved assets so identities
+     never change: `wing` only decides which side of the Main Character a
+     villager stands on. */
   SC.TITLE_CAST = [
-    { id: 'nyssa', name: 'Nyssa', pos: 1 },
-    { id: 'rowan', name: 'Rowan', pos: 2 },
-    { id: 'celeste', name: 'Celeste', pos: 3 },
-    { id: 'finn', name: 'Finn', pos: 4 },
-    { id: 'theo', name: 'Theo', pos: 5 },
-    { id: 'elowen', name: 'Elowen', pos: 6 },
-    { id: 'liora', name: 'Liora', pos: 7 },
-    { id: 'mira', name: 'Mira', pos: 8 },
-    { id: 'aria', name: 'Aria', pos: 9 },
-    { id: 'player', name: 'You', pos: 10, pc: true, mood: 'happy' },
+    { id: 'nyssa', name: 'Nyssa', wing: 'l' },
+    { id: 'liora', name: 'Liora', wing: 'l' },
+    { id: 'elowen', name: 'Elowen', wing: 'l' },
+    { id: 'rowan', name: 'Rowan', wing: 'l' },
+    { id: 'mira', name: 'Mira', wing: 'r' },
+    { id: 'celeste', name: 'Celeste', wing: 'r' },
+    { id: 'theo', name: 'Theo', wing: 'r' },
+    { id: 'aria', name: 'Aria', wing: 'r' },
+    { id: 'finn', name: 'Finn', wing: 'r' },
+    { id: 'player', name: 'You', pc: true, mood: 'happy' },
   ];
 
   /* how each portrait comes alive on the title screen. The moods are the
@@ -83,13 +85,14 @@
     const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
 
     const roleOf = (c) => (c.pc ? 'Newly arrived' : ((SAN.data.npcs[c.id] || {}).title || ''));
-    const cast = SC.TITLE_CAST.map((c) => {
+    const castFig = (c) => {
       const mood = c.mood || 'neutral';
       const role = roleOf(c);
       return `
-      <button type="button" class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
+      <button type="button" class="ts-char${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
         aria-label="${U.esc(c.name)}${role ? ' — ' + U.esc(role) : ''}">
         <span class="ts-frame">
+          <span class="ts-orn${c.pc ? ' ts-orn-pc' : ''}" aria-hidden="true">❀</span>
           <span class="ts-sway">
             <img class="ts-face" src="${SAN.render.portraitSrc(c.id, mood)}" alt="" draggable="false">
             <img class="ts-face ts-face-alt" alt="" aria-hidden="true" draggable="false">
@@ -97,7 +100,10 @@
         </span>
         <span class="ts-tag" aria-hidden="true"><b>${U.esc(c.name)}</b><i>${U.esc(role)}</i></span>
       </button>`;
-    }).join('');
+    };
+    const wingL = SC.TITLE_CAST.filter((c) => c.wing === 'l').map(castFig).join('');
+    const wingR = SC.TITLE_CAST.filter((c) => c.wing === 'r').map(castFig).join('');
+    const pcFig = SC.TITLE_CAST.filter((c) => c.pc).map(castFig).join('');
 
     el.innerHTML = `
       <div class="ts-scene" aria-hidden="true">
@@ -109,7 +115,9 @@
       <div class="ts-motes" aria-hidden="true"></div>
 
       <div class="ts-cast">
-        ${cast}
+        <div class="ts-wing ts-wing-l">${wingL}</div>
+        <div class="ts-pc-slot">${pcFig}</div>
+        <div class="ts-wing ts-wing-r">${wingR}</div>
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="ts-table">
           <button type="button" class="mochi" id="ts-mochi" aria-label="Mochi, your companion. Pet Mochi.">

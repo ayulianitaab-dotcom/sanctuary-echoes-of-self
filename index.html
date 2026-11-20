@@ -968,76 +968,135 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
   100% { transform: translate3d(-3vw, 106vh, 0) rotate(360deg); opacity: 0; }
 }
 
-/* --- character layer: official portrait assets, framed in gold --- */
+/* --- character layer: the official cast, framed in gold arches ---
+   The Main Character keeps the largest arch in the middle of the scene; the
+   nine villagers share one smaller frame and fan out on either side, so no
+   face is ever covered and every portrait stays the same size. */
 .ts-cast {
-  position: absolute; inset: 0; z-index: 3; --u: clamp(90px, 9.8vw, 142px);
+  position: absolute; inset: 0; z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center; justify-items: center;
+  padding: 3.4vh 2.2vw 16vh clamp(340px, 33vw, 520px);
+  column-gap: clamp(4px, 1vw, 20px);
   transform: translate3d(calc(var(--px) * 5px), calc(var(--py) * 3px), 0);
+  pointer-events: none;
 }
+.ts-wing {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(6px, 1.1vh, 14px); width: 100%; pointer-events: none;
+}
+/* the fan: portraits near the ends lean gently away from the centre */
+.ts-wing-l .ts-char:nth-child(1) { --shift: 24px; }
+.ts-wing-l .ts-char:nth-child(2) { --shift: 6px; }
+.ts-wing-l .ts-char:nth-child(3) { --shift: -3px; }
+.ts-wing-l .ts-char:nth-child(4) { --shift: 14px; }
+.ts-wing-r .ts-char:nth-child(1) { --shift: -16px; }
+.ts-wing-r .ts-char:nth-child(2) { --shift: -2px; }
+.ts-wing-r .ts-char:nth-child(3) { --shift: 6px; }
+.ts-wing-r .ts-char:nth-child(4) { --shift: 0; }
+.ts-wing-r .ts-char:nth-child(5) { --shift: -14px; }
+
 .ts-char {
-  position: absolute; width: calc(var(--u) * var(--k, 1)); margin: 0;
-  transform: translateX(-50%) rotate(var(--rot, 0deg));
+  position: relative; width: clamp(78px, 6.1vw, 104px); margin: 0;
+  transform: translateX(var(--shift, 0));
   background: none; border: 0; padding: 0; color: inherit; font: inherit;
-  text-align: center; cursor: pointer; -webkit-appearance: none; appearance: none;
-  -webkit-tap-highlight-color: transparent;
+  text-align: center; cursor: pointer; pointer-events: auto;
+  -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent;
 }
+.ts-pc-slot { display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.ts-char.pc { width: clamp(216px, 22vw, 308px); z-index: 6; transform: none; pointer-events: auto; }
+
 .ts-frame {
-  position: relative; display: block; aspect-ratio: 1 / 1.24; overflow: hidden; background: #fbf3e4;
-  border: 2px solid #c9a45e; border-radius: 120px 120px 14px 14px;
-  box-shadow: 0 0 0 5px rgba(251,243,228,.92), 0 0 0 7px rgba(201,164,94,.42), 0 14px 26px rgba(80,56,44,.22);
+  position: relative; display: block; aspect-ratio: 1 / 1.34; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 10%, #fdf8ec 0%, #f6ebd8 52%, #efe0c8 100%);
+  border: 1.5px solid #c9a45e;
+  border-radius: 999px 999px 10px 10px;
+  box-shadow: 0 0 0 3px rgba(253,247,233,.94), 0 0 0 5px rgba(201,164,94,.38),
+              0 12px 22px rgba(80,56,44,.2);
   animation: tsBreathe 7.5s ease-in-out infinite;
   transition: transform .32s ease, box-shadow .32s ease, border-color .32s ease;
 }
 .ts-char:nth-child(2n) .ts-frame { animation-delay: -2.4s; }
 .ts-char:nth-child(3n) .ts-frame { animation-delay: -4.1s; }
 @keyframes tsBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-.ts-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; display: block; }
-/* the name ribbon appears only while a portrait is hovered or focused */
+.ts-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; display: block; }
+
+/* the small gold flower seated on every arch, swaying with the wind */
+.ts-orn {
+  position: absolute; left: 50%; top: 3px; z-index: 3; transform: translateX(-50%);
+  font-size: 12px; line-height: 1; color: #b8914f; opacity: .92;
+  text-shadow: 0 1px 0 rgba(255,255,255,.85);
+  pointer-events: none; animation: tsOrnSway 8s ease-in-out infinite;
+}
+.ts-orn-pc { top: 6px; font-size: 20px; color: #c8a25c; }
+@keyframes tsOrnSway {
+  0%, 100% { transform: translateX(-50%) rotate(-4deg); }
+  50% { transform: translateX(-50%) rotate(5deg); }
+}
+
+/* the nameplate stays readable at rest and glows on hover */
 .ts-tag {
-  position: absolute; left: 50%; bottom: -4px; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
-  padding: 5px 12px 6px; border-radius: 999px; white-space: nowrap;
-  transform: translate(-50%, 6px); opacity: 0; pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,251,241,.97), rgba(242,229,204,.97));
-  border: 1px solid rgba(201,164,94,.8);
-  box-shadow: 0 6px 14px rgba(80,56,44,.22), inset 0 0 0 1px rgba(255,255,255,.7);
-  transition: opacity .22s ease, transform .22s ease;
+  position: absolute; left: 50%; bottom: -10px; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 3px 11px 4px; border-radius: 999px; white-space: nowrap;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255,251,241,.96), rgba(241,229,204,.96));
+  border: 1px solid rgba(201,164,94,.72);
+  box-shadow: 0 4px 10px rgba(80,56,44,.16), inset 0 0 0 1px rgba(255,255,255,.65);
+  transition: background .26s ease, box-shadow .26s ease, border-color .26s ease, transform .26s ease;
 }
-.ts-tag b { font-size: 12px; font-weight: 600; letter-spacing: .6px; color: #4a3a63; }
-.ts-tag i { font-style: normal; font-family: var(--sans); font-size: 8.5px; letter-spacing: 1.2px; text-transform: uppercase; color: #8a7360; }
-.ts-char:hover .ts-tag, .ts-char:focus-visible .ts-tag, .ts-char.card-open .ts-tag { opacity: 1; transform: translate(-50%, 0); }
-.ts-char.pc .ts-frame { border-color: #dcb877; box-shadow: 0 0 0 5px #fdf6e6, 0 0 0 8px rgba(220,184,119,.6), 0 0 26px 6px rgba(243,206,132,.45), 0 22px 38px rgba(80,56,44,.3); }
-.ts-char.pc .ts-tag { background: linear-gradient(180deg, #f7e6c2, #e8cf9d); border-color: #c9a45e; }
-.ts-char.pc .ts-tag b { color: #4a3628; }
-/* three rings of a semi-circle: an even outer arc, an inner arc, the player in front */
-.ts-char.p1 .ts-frame, .ts-char.p2 .ts-frame, .ts-char.p3 .ts-frame,
-.ts-char.p4 .ts-frame, .ts-char.p5 .ts-frame {
-  box-shadow: 0 0 0 4px rgba(251,243,228,.9), 0 0 0 6px rgba(201,164,94,.34), 0 12px 22px rgba(80,56,44,.18);
+.ts-tag b { font-size: 10.5px; font-weight: 600; letter-spacing: .5px; color: #4a3a63; transition: color .26s ease; }
+.ts-tag i { font-style: normal; font-family: var(--sans); font-size: 7px; letter-spacing: 1.05px; text-transform: uppercase; color: #8a7360; }
+.ts-char:hover .ts-tag, .ts-char:focus-visible .ts-tag, .ts-char.card-open .ts-tag {
+  transform: translateX(-50%) translateY(-2px);
+  border-color: rgba(178,150,214,.9);
+  box-shadow: 0 6px 16px rgba(80,56,44,.24), 0 0 14px rgba(200,176,232,.6), inset 0 0 0 1px rgba(255,255,255,.8);
 }
-.ts-char.p6 .ts-frame, .ts-char.p7 .ts-frame, .ts-char.p8 .ts-frame, .ts-char.p9 .ts-frame {
-  box-shadow: 0 0 0 5px rgba(251,243,228,.92), 0 0 0 7px rgba(201,164,94,.4), 0 18px 30px rgba(80,56,44,.24);
+.ts-char:hover .ts-tag b, .ts-char:focus-visible .ts-tag b { color: #3f2d5c; }
+
+/* the player's arch: taller, double gold, with a quiet aura behind it */
+.ts-char.pc .ts-frame {
+  aspect-ratio: 1 / 1.44; border-width: 2px;
+  border-radius: 999px 999px 14px 14px;
+  background: radial-gradient(ellipse at 50% 8%, #fefaf0 0%, #f7ecd8 46%, #ead9bd 100%);
+  box-shadow: 0 0 0 4px #fdf6e6, 0 0 0 8px rgba(220,184,119,.55),
+              0 0 34px 8px rgba(243,206,132,.4), 0 24px 42px rgba(80,56,44,.28);
+  animation: tsPcFloat 9s ease-in-out infinite;
 }
-/* the player carries a soft golden aura so the eye lands there first */
+.ts-char.pc .ts-frame img { object-position: 50% 4%; }
+.ts-char.pc .ts-tag {
+  background: linear-gradient(180deg, #f9edcf, #e9d0a0);
+  border-color: #c9a45e; padding: 4px 14px 5px;
+}
+.ts-char.pc .ts-tag b { font-size: 12.5px; color: #4a3628; }
+.ts-char.pc .ts-tag i { font-size: 7.5px; }
+@keyframes tsPcFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 .ts-char.pc::before {
-  content: ''; position: absolute; left: 50%; top: 46%; width: 210%; aspect-ratio: 1;
+  content: ''; position: absolute; left: 50%; top: 44%; width: 190%; aspect-ratio: 1;
   transform: translate(-50%, -50%); border-radius: 50%; z-index: -1; pointer-events: none;
-  background: radial-gradient(circle, rgba(255,231,176,.55) 0%, rgba(246,205,132,.26) 38%, rgba(246,205,132,0) 68%);
-  filter: blur(3px); animation: tsPcGlow 9s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(255,236,190,.5) 0%, rgba(240,205,236,.24) 40%, rgba(240,205,236,0) 70%);
+  filter: blur(4px); animation: tsPcGlow 9s ease-in-out infinite;
 }
 @keyframes tsPcGlow {
   0%, 100% { opacity: .82; transform: translate(-50%, -50%) scale(.985); }
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
 }
-.ts-char.p1 { left: 45%; top: 17%; --k: .74; --rot: -2deg; z-index: 2; }
-.ts-char.p2 { left: 53.5%; top: 10.5%; --k: .76; --rot: 1.2deg; z-index: 2; }
-.ts-char.p3 { left: 62%; top: 8%; --k: .78; --rot: 0deg; z-index: 2; }
-.ts-char.p4 { left: 70.5%; top: 10.5%; --k: .76; --rot: -1.2deg; z-index: 2; }
-.ts-char.p5 { left: 79%; top: 17%; --k: .74; --rot: 2deg; z-index: 2; }
-.ts-char.p6 { left: 47%; top: 37%; --k: .86; --rot: -1.6deg; z-index: 4; }
-.ts-char.p7 { left: 56.5%; top: 34%; --k: .9; --rot: -.6deg; z-index: 4; }
-.ts-char.p8 { left: 66%; top: 34%; --k: .9; --rot: .8deg; z-index: 4; }
-.ts-char.p9 { left: 75.5%; top: 37%; --k: .86; --rot: 1.6deg; z-index: 4; }
-.ts-char.p10 { left: 60%; top: 53%; --k: 1.16; --rot: 0deg; z-index: 9; }
 
+/* hover / focus: a lavender-gold glow, a lift and a clearer name */
+.ts-char:hover, .ts-char:focus-visible { z-index: 12; }
+.ts-char:hover .ts-frame, .ts-char:focus-visible .ts-frame {
+  animation: none;
+  transform: translateY(-4px) scale(1.055);
+  border-color: #b79ed8;
+  box-shadow: 0 0 0 3px rgba(253,246,230,.96), 0 0 0 6px rgba(199,175,224,.75),
+              0 0 26px 8px rgba(203,181,230,.55), 0 20px 32px rgba(80,56,44,.28);
+}
+.ts-char:focus-visible { outline: none; }
+.ts-char:focus-visible .ts-frame { outline: 2px solid rgba(168,138,208,.95); outline-offset: 5px; }
 /* --- living cast: breath, sway, light over the hair, blinks, glances --- */
 .ts-sway {
   position: absolute; inset: 0; display: block; transform-origin: 50% 42%;
@@ -1346,19 +1405,11 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
 }
 
 /* --- title-screen responsive layers --- */
-@media (max-width: 1180px) {
-  .ts-panel { width: min(320px, 36vw); }
-  .ts-cast { --u: clamp(72px, 7.2vw, 98px); }
-  .ts-char.p1 { left: 46%; top: 18%; }
-  .ts-char.p2 { left: 54%; top: 12%; }
-  .ts-char.p3 { left: 61.5%; top: 10%; }
-  .ts-char.p4 { left: 69%; top: 12%; }
-  .ts-char.p5 { left: 77%; top: 18%; }
-  .ts-char.p6 { left: 48%; top: 38%; }
-  .ts-char.p7 { left: 56.5%; top: 35%; }
-  .ts-char.p8 { left: 65%; top: 35%; }
-  .ts-char.p9 { left: 73%; top: 38%; }
-  .ts-char.p10 { left: 59%; top: 54%; }
+@media (max-width: 1280px) {
+  .ts-panel { width: min(340px, 30vw); }
+  .ts-cast { padding-left: clamp(306px, 31vw, 460px); }
+  .ts-char { width: clamp(76px, 7.1vw, 96px); }
+  .ts-char.pc { width: clamp(192px, 20.5vw, 250px); }
 }
 
 /* Landscape frames flatter than 16:9 (16:10 laptops, 4:3 desktops and tablets)
@@ -1384,69 +1435,101 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
     left: 0; right: 0; bottom: auto; width: auto; transform: none;
     top: calc(50% - 28.1415vw); height: 56.283vw;
   }
+  /* the fitted painting lifts Mochi's tabletop, so the fans sit a touch
+     higher and never grow over the teacups on the bottom right */
+  .ts-wing { transform: translateY(-3vh); }
 }
 
-@media (max-width: 760px), (max-aspect-ratio: 4/5) {
-  #title-screen { overflow-y: auto; overflow-x: hidden; }
+/* Phones and upright tablets: the page scrolls, the menu comes first, then the
+   Main Character, then all nine villagers in one tidy three-column gallery. */
+@media (max-width: 760px), (max-aspect-ratio: 4/5), (max-height: 540px) {
+  #title-screen { overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
   .ts-scene { position: fixed; }
   .ts-bg { background-position: 42% 52%; }
-  .ts-panel { position: relative; left: auto; top: auto; transform: none; width: auto; text-align: center; animation: none; }
+  .ts-panel {
+    position: relative; order: -1; left: auto; top: auto; transform: none;
+    width: auto; text-align: center; animation: none; margin: 0 auto; padding: 18px 18px 0;
+  }
+  .ts-panel::before { display: none; }
   .ts-crest { letter-spacing: 7px; }
-  .ts-panel { padding: 20px 18px 0; }
   .ts-logo { font-size: clamp(30px, 8.4vw, 42px); }
   .ts-tagline { margin-top: 8px; font-size: 13.5px; }
   .ts-rule { margin: 10px auto 12px; max-width: 260px; }
   .ts-menu { margin: 0 auto; gap: 8px; max-width: 330px; }
   .ts-btn { animation: none; font-size: 16px; padding: 10px 14px; }
-  .ts-foot { padding: 0 10px; white-space: normal; text-align: center; }
   .ts-btn-glyph { width: 28px; height: 28px; flex-basis: 28px; font-size: 14px; }
-  .ts-foot { margin-top: 10px; font-size: 9.5px; letter-spacing: .6px; line-height: 1.7; color: #6c5744; max-width: 320px; margin-inline: auto; }
-  .ts-cast { position: absolute; left: 0; right: 0; top: auto; bottom: 0; height: 46vh; min-height: 300px; margin: 0; --u: 64px; }
+  .ts-foot {
+    margin-top: 10px; font-size: 9.5px; letter-spacing: .6px; line-height: 1.7;
+    color: #6c5744; max-width: 320px; margin-inline: auto; padding: 0 10px; text-align: center;
+  }
+
+  .ts-cast {
+    position: relative; inset: auto; order: 1; transform: none; width: 100%;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center; align-items: start;
+    padding: 16px 12px 6px; row-gap: 26px; column-gap: 8px;
+  }
+  .ts-wing { display: contents; }
+  .ts-pc-slot { order: 1; grid-column: 1 / -1; }
+  .ts-wing .ts-char { order: 2; width: 100%; max-width: 120px; transform: none; }
+  .ts-char.pc { order: 1; width: clamp(196px, 52vw, 250px); transform: none; }
+  .ts-char.pc .ts-frame { aspect-ratio: 1 / 1.4; }
+  .ts-table {
+    order: 3; grid-column: 1 / -1; position: relative; inset: auto;
+    width: 100%; height: 132px; align-self: end;
+  }
+  .ts-foreground { display: none; }
   .ts-card { width: min(280px, 86vw); padding: 13px 32px 14px 16px; }
-  .ts-tag { padding: 4px 10px 5px; }
-  .ts-tag b { font-size: 11px; }
-  .ts-tag i { font-size: 8px; letter-spacing: 1px; }
-  .ts-char.p1 { left: 12%; top: 2%; --k: .6; --rot: -2deg; }
-  .ts-char.p2 { left: 31%; top: 0; --k: .58; --rot: 1deg; }
-  .ts-char.p3 { left: 50%; top: 0; --k: .6; --rot: -.5deg; }
-  .ts-char.p4 { left: 69%; top: 0; --k: .58; --rot: 1.5deg; }
-  .ts-char.p5 { left: 88%; top: 2%; --k: .54; --rot: -1.5deg; }
-  .ts-char.p6 { left: 21%; top: 28%; --k: .64; --rot: -1.5deg; }
-  .ts-char.p7 { left: 41%; top: 25%; --k: .68; --rot: -1deg; }
-  .ts-char.p8 { left: 61%; top: 25%; --k: .68; --rot: 1deg; }
-  .ts-char.p9 { left: 81%; top: 28%; --k: .6; --rot: 1.5deg; }
-  .ts-char.p10 { left: 51%; top: 55%; --k: 1.02; }
-  .ts-table { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 26%; z-index: 10; }
-  .mochi { left: 88%; bottom: 6%; width: clamp(62px, 15vw, 86px); }
+  .ts-tag { padding: 2px 9px 3px; }
+  .ts-tag b { font-size: 10px; }
+  .ts-tag i { font-size: 6.5px; letter-spacing: .8px; }
+  .mochi { left: 88%; bottom: 4%; width: clamp(62px, 15vw, 86px); }
   .mochi-tag { padding: 4px 10px 5px; }
   .mochi-tag b { font-size: 10.5px; }
   .mochi-tag i { font-size: 7.5px; letter-spacing: 1px; }
 }
 
-/* tablets held upright keep the same two rows, a little larger and centred */
+/* tablets held upright: the same gallery, a little larger */
 @media (min-width: 600px) and (max-aspect-ratio: 4/5) {
-  .ts-cast { --u: 88px; }
-  .ts-char.p1 { left: 14%; }
-  .ts-char.p2 { left: 32%; }
-  .ts-char.p3 { left: 50%; }
-  .ts-char.p4 { left: 68%; }
-  .ts-char.p5 { left: 86%; }
-  .ts-char.p6 { left: 23%; }
-  .ts-char.p7 { left: 42%; }
-  .ts-char.p8 { left: 61%; }
-  .ts-char.p9 { left: 80%; }
-  .ts-char.p10 { --k: 1.12; }
+  .ts-wing .ts-char { max-width: 152px; }
+  .ts-char.pc { width: clamp(240px, 40vw, 300px); }
+  .ts-table { height: 172px; }
   .mochi { width: clamp(70px, 12vw, 96px); }
 }
 
 @media (max-width: 420px) {
-  .ts-cast { --u: 56px; min-height: 290px; }
-  .ts-char.p5 { left: 90%; top: 3%; --k: .5; }
-  .ts-char.p9 { left: 83%; }
-  .ts-char.p10 { left: 53%; top: 57%; }
-  .ts-foreground i { --h: 46px; }
+  .ts-wing .ts-char { max-width: 104px; }
+  .ts-char.pc { width: clamp(172px, 48vw, 210px); }
+  .ts-table { height: 112px; }
+  .mochi { width: 62px; }
 }
 
+/* --- menu: Victorian parchment with a lavender-gold light --- */
+.ts-btn {
+  border-radius: 13px;
+  background: linear-gradient(180deg, #fdf8ee 0%, #f6ead2 55%, #eddcbb 100%);
+  box-shadow: 0 1px 0 #fffaf0 inset, 0 0 0 3px rgba(253,247,233,.68) inset,
+              0 0 0 5px rgba(195,161,99,.26), 0 8px 18px rgba(90,62,40,.14);
+}
+.ts-btn:hover {
+  border-color: #c8a76d;
+  background: linear-gradient(180deg, #fffcf5 0%, #f9efd9 55%, #f1e3c4 100%);
+  box-shadow: 0 1px 0 #fffaf0 inset, 0 0 0 3px rgba(255,251,240,.9) inset,
+              0 0 0 5px rgba(214,178,110,.42),
+              0 14px 26px rgba(90,62,40,.18), 0 0 22px rgba(178,150,214,.42);
+}
+.ts-btn:active {
+  transform: translateX(5px) translateY(0) scale(.985);
+  transition-duration: .09s;
+  box-shadow: 0 1px 0 rgba(255,250,240,.6) inset, 0 2px 7px rgba(110,80,50,.2) inset,
+              0 0 0 3px rgba(250,243,229,.55) inset, 0 0 0 5px rgba(195,161,99,.32),
+              0 4px 10px rgba(90,62,40,.14);
+}
+.ts-btn:hover .ts-btn-glyph {
+  border-color: rgba(178,150,214,.95);
+  box-shadow: 0 0 12px rgba(196,174,226,.7);
+  background: radial-gradient(circle at 35% 30%, #fdf8ff, #e9ddf5);
+}
 .title-modal {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   z-index: 30; width: min(680px, 94vw); max-height: 88vh; overflow-y: auto;
@@ -13853,19 +13936,21 @@ window.SAN = window.SAN || {};
   const U = SAN.util;
   const S = () => SAN.state.S;
 
-  /* the nine official villagers plus the player, placed around the tea table.
-     portraits come from the approved assets so identities never change. */
+  /* the nine official villagers plus the player, framed in arches around the
+     centre of the scene. Portraits come from the approved assets so identities
+     never change: `wing` only decides which side of the Main Character a
+     villager stands on. */
   SC.TITLE_CAST = [
-    { id: 'nyssa', name: 'Nyssa', pos: 1 },
-    { id: 'rowan', name: 'Rowan', pos: 2 },
-    { id: 'celeste', name: 'Celeste', pos: 3 },
-    { id: 'finn', name: 'Finn', pos: 4 },
-    { id: 'theo', name: 'Theo', pos: 5 },
-    { id: 'elowen', name: 'Elowen', pos: 6 },
-    { id: 'liora', name: 'Liora', pos: 7 },
-    { id: 'mira', name: 'Mira', pos: 8 },
-    { id: 'aria', name: 'Aria', pos: 9 },
-    { id: 'player', name: 'You', pos: 10, pc: true, mood: 'happy' },
+    { id: 'nyssa', name: 'Nyssa', wing: 'l' },
+    { id: 'liora', name: 'Liora', wing: 'l' },
+    { id: 'elowen', name: 'Elowen', wing: 'l' },
+    { id: 'rowan', name: 'Rowan', wing: 'l' },
+    { id: 'mira', name: 'Mira', wing: 'r' },
+    { id: 'celeste', name: 'Celeste', wing: 'r' },
+    { id: 'theo', name: 'Theo', wing: 'r' },
+    { id: 'aria', name: 'Aria', wing: 'r' },
+    { id: 'finn', name: 'Finn', wing: 'r' },
+    { id: 'player', name: 'You', pc: true, mood: 'happy' },
   ];
 
   /* how each portrait comes alive on the title screen. The moods are the
@@ -13932,13 +14017,14 @@ window.SAN = window.SAN || {};
     const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
 
     const roleOf = (c) => (c.pc ? 'Newly arrived' : ((SAN.data.npcs[c.id] || {}).title || ''));
-    const cast = SC.TITLE_CAST.map((c) => {
+    const castFig = (c) => {
       const mood = c.mood || 'neutral';
       const role = roleOf(c);
       return `
-      <button type="button" class="ts-char p${c.pos}${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
+      <button type="button" class="ts-char${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
         aria-label="${U.esc(c.name)}${role ? ' — ' + U.esc(role) : ''}">
         <span class="ts-frame">
+          <span class="ts-orn${c.pc ? ' ts-orn-pc' : ''}" aria-hidden="true">❀</span>
           <span class="ts-sway">
             <img class="ts-face" src="${SAN.render.portraitSrc(c.id, mood)}" alt="" draggable="false">
             <img class="ts-face ts-face-alt" alt="" aria-hidden="true" draggable="false">
@@ -13946,7 +14032,10 @@ window.SAN = window.SAN || {};
         </span>
         <span class="ts-tag" aria-hidden="true"><b>${U.esc(c.name)}</b><i>${U.esc(role)}</i></span>
       </button>`;
-    }).join('');
+    };
+    const wingL = SC.TITLE_CAST.filter((c) => c.wing === 'l').map(castFig).join('');
+    const wingR = SC.TITLE_CAST.filter((c) => c.wing === 'r').map(castFig).join('');
+    const pcFig = SC.TITLE_CAST.filter((c) => c.pc).map(castFig).join('');
 
     el.innerHTML = `
       <div class="ts-scene" aria-hidden="true">
@@ -13958,7 +14047,9 @@ window.SAN = window.SAN || {};
       <div class="ts-motes" aria-hidden="true"></div>
 
       <div class="ts-cast">
-        ${cast}
+        <div class="ts-wing ts-wing-l">${wingL}</div>
+        <div class="ts-pc-slot">${pcFig}</div>
+        <div class="ts-wing ts-wing-r">${wingR}</div>
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="ts-table">
           <button type="button" class="mochi" id="ts-mochi" aria-label="Mochi, your companion. Pet Mochi.">
