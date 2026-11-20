@@ -256,9 +256,10 @@
      --------------------------------------------------------- */
   SC.titleInfo = function (id) {
     if (id === 'player') {
+      const me = SC.castInfo('player');
       return {
-        name: 'You',
-        role: 'Newly arrived',
+        name: me.name,
+        role: me.role,
         line: 'A traveller who came to rest. Sanctuary has been keeping a light on for you.',
       };
     }
@@ -321,17 +322,20 @@
       fig.classList.toggle('look-right', dir === 'right');
     };
 
+    const clearOpen = () => Array.prototype.forEach.call(
+      el.querySelectorAll('.ts-char.card-open'), (f) => f.classList.remove('card-open')
+    );
     const closeCard = () => {
       card.classList.remove('on', 'below');
       card.hidden = true;
-      Array.prototype.forEach.call(el.querySelectorAll('.ts-char.card-open'), (f) => f.classList.remove('card-open'));
+      clearOpen();
     };
 
     // a short note about the villager — never starts a dialogue
     const openCard = (fig) => {
       const info = SC.titleInfo(fig.dataset.npc);
       if (!info) return;
-      Array.prototype.forEach.call(el.querySelectorAll('.ts-char.card-open'), (f) => f.classList.remove('card-open'));
+      clearOpen();
       fig.classList.add('card-open');
       card.querySelector('.ts-card-name').textContent = info.name;
       card.querySelector('.ts-card-role').textContent = info.role;
@@ -357,7 +361,7 @@
       };
       const leave = () => {
         fig.classList.remove('lit');
-        paint(fig, fig.dataset.baseMood || 'neutral');
+        paint(fig, base);
       };
       fig.addEventListener('mouseenter', enter);
       fig.addEventListener('focus', enter);
@@ -792,9 +796,12 @@
       const it = SAN.data.item(id);
       return it ? it.name : id;
     };
+    function carriedLabel(id, count) {
+      return itemName(id) + ' ×' + count;
+    }
     function carriedList(gift) {
       return Object.keys(gift || {}).map(function (id) {
-        return itemName(id) + ' ×' + gift[id];
+        return carriedLabel(id, gift[id]);
       });
     }
     function carriedPhrase(gift) {
@@ -844,7 +851,7 @@
       sumTemperament.textContent = temp.name;
       const all = SAN.state.carriedItems({ background: bg.id, temperament: temp.id });
       carriedEl.textContent = all.length
-        ? 'In your satchel: ' + all.map(function (g) { return itemName(g.id) + ' ×' + g.count; }).join(', ') + '.'
+        ? 'In your satchel: ' + all.map(function (g) { return carriedLabel(g.id, g.count); }).join(', ') + '.'
         : 'Your satchel starts as it is.';
     }
 
