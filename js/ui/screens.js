@@ -5,21 +5,29 @@
   const S = () => SAN.state.S;
 
   /* the nine official villagers plus the player, framed in arches around the
-     centre of the scene. Portraits come from the approved assets so identities
-     never change: `wing` only decides which side of the Main Character a
-     villager stands on. */
+     centre of the scene. Names and roles come from the NPC registry, so this
+     list only decides where each portrait stands and never duplicates data. */
   SC.TITLE_CAST = [
-    { id: 'nyssa', name: 'Nyssa', wing: 'l' },
-    { id: 'liora', name: 'Liora', wing: 'l' },
-    { id: 'elowen', name: 'Elowen', wing: 'l' },
-    { id: 'rowan', name: 'Rowan', wing: 'l' },
-    { id: 'mira', name: 'Mira', wing: 'r' },
-    { id: 'celeste', name: 'Celeste', wing: 'r' },
-    { id: 'theo', name: 'Theo', wing: 'r' },
-    { id: 'aria', name: 'Aria', wing: 'r' },
-    { id: 'finn', name: 'Finn', wing: 'r' },
-    { id: 'player', name: 'You', pc: true, mood: 'happy' },
+    { id: 'nyssa', wing: 'l' },
+    { id: 'liora', wing: 'l' },
+    { id: 'elowen', wing: 'l' },
+    { id: 'rowan', wing: 'l' },
+    { id: 'mira', wing: 'r' },
+    { id: 'celeste', wing: 'r' },
+    { id: 'theo', wing: 'r' },
+    { id: 'aria', wing: 'r' },
+    { id: 'finn', wing: 'r' },
+    { id: 'player', pc: true, mood: 'happy' },
   ];
+
+  /* one answer for every label on the title screen: the arch, the note card
+     and the aria-label all read their wording from here */
+  SC.castInfo = function (id) {
+    if (id === 'player') return { name: 'You', role: 'Newly arrived' };
+    const n = SAN.data.npcs && SAN.data.npcs[id];
+    if (!n) return { name: id, role: '' };
+    return { name: n.name || id, role: n.title || '' };
+  };
 
   /* how each portrait comes alive on the title screen. The moods are the
      character's own uploaded expressions — never a borrowed or invented face. */
@@ -79,18 +87,18 @@
     if (touch) touch.classList.add('hidden');
     const el = document.getElementById('title-screen');
     el.className = '';
+    el.scrollTop = 0; // character creation locks the scene scroll; start fresh
     // the painted village behind the scene. The local build asks for the PNG,
     // the published copy for the WebP of the same artwork.
     el.style.setProperty('--ts-bg-img', 'url("' + SAN.render.withAssetExt('assets/backgrounds/title-village.png') + '")');
     const L = (key, fallback) => { const v = SAN.t(key); return v && v !== key ? v : fallback; };
 
-    const roleOf = (c) => (c.pc ? 'Newly arrived' : ((SAN.data.npcs[c.id] || {}).title || ''));
     const castFig = (c) => {
       const mood = c.mood || 'neutral';
-      const role = roleOf(c);
+      const info = SC.castInfo(c.id);
       return `
       <button type="button" class="ts-char${c.pc ? ' pc' : ''}" data-npc="${c.id}" data-base-mood="${mood}"
-        aria-label="${U.esc(c.name)}${role ? ' — ' + U.esc(role) : ''}">
+        aria-label="${U.esc(info.name)}${info.role ? ' — ' + U.esc(info.role) : ''}">
         <span class="ts-frame">
           <span class="ts-orn${c.pc ? ' ts-orn-pc' : ''}" aria-hidden="true">❀</span>
           <span class="ts-sway">
@@ -98,12 +106,18 @@
             <img class="ts-face ts-face-alt" alt="" aria-hidden="true" draggable="false">
           </span>
         </span>
-        <span class="ts-tag" aria-hidden="true"><b>${U.esc(c.name)}</b><i>${U.esc(role)}</i></span>
+        <span class="ts-tag" aria-hidden="true"><b>${U.esc(info.name)}</b><i>${U.esc(info.role)}</i></span>
       </button>`;
     };
-    const wingL = SC.TITLE_CAST.filter((c) => c.wing === 'l').map(castFig).join('');
-    const wingR = SC.TITLE_CAST.filter((c) => c.wing === 'r').map(castFig).join('');
-    const pcFig = SC.TITLE_CAST.filter((c) => c.pc).map(castFig).join('');
+    let wingL = '';
+    let wingR = '';
+    let pcFig = '';
+    SC.TITLE_CAST.forEach((c) => {
+      const fig = castFig(c);
+      if (c.pc) pcFig = fig;
+      else if (c.wing === 'l') wingL += fig;
+      else wingR += fig;
+    });
 
     el.innerHTML = `
       <div class="ts-scene" aria-hidden="true">
@@ -250,9 +264,10 @@
     }
     const n = SAN.data.npcs && SAN.data.npcs[id];
     if (!n) return null;
+    const info = SC.castInfo(id);
     const bio = String(n.bio || '');
     const stop = bio.indexOf('. ');
-    return { name: n.name, role: n.title || '', line: stop > 0 ? bio.slice(0, stop + 1) : bio };
+    return { name: info.name, role: info.role, line: stop > 0 ? bio.slice(0, stop + 1) : bio };
   };
 
   SC.stopTitleLife = function () {
@@ -296,7 +311,6 @@
       if (!id || !mood || !base || !alt) return;
       const src = SAN.render.portraitSrc(id, mood);
       if (!src) return;
-      fig.dataset.mood = mood;
       if (base.getAttribute('src') === src) { alt.classList.remove('on'); return; }
       if (alt.getAttribute('src') !== src) alt.setAttribute('src', src);
       alt.classList.add('on');
@@ -477,15 +491,9 @@
         (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     };
 
-    const SRC = {
-      neutral: SC.mochiSrc(MOCHI_ART.expressions.neutral),
-      happy: SC.mochiSrc(MOCHI_ART.expressions.happy),
-      curious: SC.mochiSrc(MOCHI_ART.expressions.curious),
-      blinking: SC.mochiSrc(MOCHI_ART.expressions.blinking),
-      idle: SC.mochiSrc(MOCHI_ART.poses.idle),
-      sleeping: SC.mochiSrc(MOCHI_ART.poses.sleeping),
-      stretching: SC.mochiSrc(MOCHI_ART.poses.stretching),
-    };
+    const SRC = {};
+    Object.keys(MOCHI_ART.expressions).forEach((k) => { SRC[k] = SC.mochiSrc(MOCHI_ART.expressions[k]); });
+    Object.keys(MOCHI_ART.poses).forEach((k) => { SRC[k] = SC.mochiSrc(MOCHI_ART.poses[k]); });
     // decode each file once so a swap cross-fades instead of flashing
     Object.keys(SRC).forEach((key) => { const img = new Image(); img.decoding = 'async'; img.src = SRC[key]; });
 
@@ -663,99 +671,264 @@
     wrap.querySelector('#ts-close').addEventListener('click', () => { wrap.remove(); });
   };
 
-  /* ---------------- character creation ---------------- */
+  /* ---------------- character creation ----------------
+     The official Main Character artwork is never redrawn or re-coloured:
+     the left column only frames it. Everything the player picks is written
+     into the same `custom` object SAN.state.newGame() already consumes, so
+     inventory, energy, money, save slots and the intro are untouched. */
+
+  // small line-drawn emblems for the choices — no artwork files, no emoji
+  const CC_ICONS = {
+    tide: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 14.4c2.1-2.1 4.2-2.1 6.3 0s4.2 2.1 6.3 0 4.2-2.1 6.2-.8"/><path d="M2.6 18.4c2.1-2.1 4.2-2.1 6.3 0s4.2 2.1 6.3 0 4.2-2.1 6.2-.8"/><path d="M12 3.1c2.4 2.3 3.6 4.2 3.6 5.8a3.6 3.6 0 0 1-7.2 0c0-1.6 1.2-3.5 3.6-5.8z"/></svg>',
+    garden: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8.4"/><path d="M12 12.6C8.7 12.6 6.4 10.8 6.4 7.8c3.4 0 5.6 1.9 5.6 4.8z"/><path d="M12 12.6c3.3 0 5.6-1.8 5.6-4.8-3.4 0-5.6 1.9-5.6 4.8z"/><path d="M8.2 21h7.6"/></svg>',
+    archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.6h5.9A2.9 2.9 0 0 1 12.8 8.5v10.4a2.4 2.4 0 0 0-2.4-2H4z"/><path d="M20 5.6h-5.9a2.9 2.9 0 0 0-2.9 2.9v10.4a2.4 2.4 0 0 1 2.4-2H20z"/></svg>',
+    gentle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2s-7.1-4.2-7.1-9.1A3.8 3.8 0 0 1 12 8.3a3.8 3.8 0 0 1 7.1 2.8c0 4.9-7.1 9.1-7.1 9.1z"/></svg>',
+    curious: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l2.2 5.3 5.6.5-4.3 3.8 1.3 5.6L12 15.7l-4.8 2.9 1.3-5.6-4.3-3.8 5.6-.5z"/></svg>',
+    steady: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l7 2.6v5.5c0 4.5-3.4 7.7-7 8.9-3.6-1.2-7-4.4-7-8.9V6z"/><path d="M9 11.9l2.2 2.2 4-4.2"/></svg>',
+  };
+
+  const CC_FLOURISH = '<svg class="cc-flourish" viewBox="0 0 180 14" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">' +
+    '<path d="M2 7h58"/><path d="M120 7h58"/>' +
+    '<path d="M66 7c5-4 10-4 14 0-4 4-9 4-14 0z"/><path d="M114 7c-5-4-10-4-14 0 4 4 9 4 14 0z"/>' +
+    '<path d="M90 2.4l1.9 3.2 3.3 1.4-3.3 1.8L90 11.9l-1.9-3.1-3.3-1.8 3.3-1.4z"/></svg>';
+
   SC.showCustomizer = function () {
     const el = document.getElementById('title-screen');
     const custom = SAN.state.defaultCustom();
-    el.classList.add('title-subpanel');
+    el.classList.add('title-subpanel', 'cc-open');
+    el.scrollTop = 0;
+
     const wrap = document.createElement('div');
-    wrap.className = 'title-modal wide creator';
+    wrap.className = 'cc-scene';
     wrap.innerHTML = `
-      <div class="creator-head">
-        <h2>Who are you, when no one needs anything from you?</h2>
-        <p class="fineprint">Your name and pronouns can change later at the wardrobe. What you carried and how you meet the day stay with you.</p>
-      </div>
-      <div class="creator-body">
-        <div class="creator-preview">
-          <div class="creator-portrait" id="creator-portrait"></div>
-          <div class="creator-name-display" id="creator-name-display">Elara</div>
-          <div class="creator-identity" id="creator-identity"></div>
+      <div class="cc-veil" aria-hidden="true"></div>
+      <div class="cc-panel" role="dialog" aria-modal="true" aria-labelledby="cc-heading">
+        <header class="cc-head">
+          <p class="cc-kicker">Sanctuary &middot; Echoes of Self</p>
+          <h2 class="cc-title" id="cc-heading">Who are you, when no one needs anything from you?</h2>
+          <p class="cc-sub">Your name and pronouns can change later at the wardrobe. What you carried and how you meet the day stay with you.</p>
+          ${CC_FLOURISH}
+        </header>
+        <div class="cc-body">
+          <aside class="cc-preview" aria-label="Your character">
+            <div class="cc-frame">
+              <span class="cc-orn a" aria-hidden="true">❀</span>
+              <span class="cc-orn b" aria-hidden="true">❀</span>
+              <div class="cc-portrait" id="creator-portrait"></div>
+              <div class="cc-plate">
+                <div class="cc-name" id="creator-name-display">Elara</div>
+                <div class="cc-role" id="creator-identity"></div>
+              </div>
+            </div>
+            <div class="cc-side">
+              <div class="cc-summary" aria-live="polite">
+                <span class="cc-sum"><i>Pronouns</i><b id="cc-sum-pronoun"></b></span>
+                <span class="cc-sum"><i>Carried</i><b id="cc-sum-background"></b></span>
+                <span class="cc-sum"><i>Temperament</i><b id="cc-sum-temperament"></b></span>
+              </div>
+              <p class="cc-carried" id="cc-carried"></p>
+            </div>
+          </aside>
+          <div class="cc-form">
+            <section class="cc-section" aria-labelledby="cc-sec-identity">
+              <div class="cc-sec-head">
+                <span class="cc-sec-num" aria-hidden="true">I</span>
+                <h3 id="cc-sec-identity">Your Identity</h3>
+                <span class="cc-sec-rule" aria-hidden="true"></span>
+              </div>
+              <label class="cc-label" for="cr-name">Character name</label>
+              <input class="cc-input" id="cr-name" maxlength="16" autocomplete="off" spellcheck="false" value="${U.esc(custom.name)}">
+              <p class="cc-error" id="cc-name-error" role="alert" hidden>Please give your character a name.</p>
+              <div class="cc-label-row">
+                <span class="cc-label">Pronouns</span>
+                <span class="cc-label-note">how the village will speak of you</span>
+              </div>
+              <div class="cc-pills" id="cr-pronoun" role="group" aria-label="Pronouns"></div>
+            </section>
+            <section class="cc-section" aria-labelledby="cc-sec-background">
+              <div class="cc-sec-head">
+                <span class="cc-sec-num" aria-hidden="true">II</span>
+                <h3 id="cc-sec-background">What You Carried Here</h3>
+                <span class="cc-sec-rule" aria-hidden="true"></span>
+              </div>
+              <div class="cc-cards" id="cr-background" role="group" aria-label="What you carried here"></div>
+            </section>
+            <section class="cc-section" aria-labelledby="cc-sec-temperament">
+              <div class="cc-sec-head">
+                <span class="cc-sec-num" aria-hidden="true">III</span>
+                <h3 id="cc-sec-temperament">How You Meet the Day</h3>
+                <span class="cc-sec-rule" aria-hidden="true"></span>
+              </div>
+              <div class="cc-cards" id="cr-temperament" role="group" aria-label="How you meet the day"></div>
+            </section>
+          </div>
         </div>
-        <div class="creator-options">
-          <label class="field-label">Name</label>
-          <input class="text-input" id="cr-name" maxlength="16" value="${U.esc(custom.name)}">
-          <label class="field-label">Pronouns</label>
-          <div class="chip-row" id="cr-pronoun"></div>
-          <label class="field-label">What you carried here</label>
-          <div class="chip-row" id="cr-background"></div>
-          <p class="fineprint" id="cr-background-note"></p>
-          <label class="field-label">How you meet the day</label>
-          <div class="chip-row" id="cr-temperament"></div>
-          <p class="fineprint" id="cr-temperament-note"></p>
-          <p class="fineprint">The portrait is the official artwork, so it stays exactly as drawn. Your name and pronouns are used in the village, and what you carried starts in your satchel.</p>
-        </div>
-      </div>
-      <div class="creator-actions">
-        <button class="btn btn-ghost" id="cr-random">Surprise me</button>
-        <button class="btn btn-ghost" id="cr-back">Back</button>
-        <button class="btn btn-primary" id="cr-start">Begin</button>
+        <footer class="cc-actions">
+          <button type="button" class="cc-btn cc-btn-ghost" id="cr-random">Surprise Me</button>
+          <div class="cc-actions-right">
+            <button type="button" class="cc-btn cc-btn-ghost" id="cr-back">Back</button>
+            <button type="button" class="cc-btn cc-begin" id="cr-start">Begin</button>
+          </div>
+        </footer>
       </div>`;
     el.appendChild(wrap);
+
     const portrait = wrap.querySelector('#creator-portrait');
     const nameDisplay = wrap.querySelector('#creator-name-display');
     const identityLine = wrap.querySelector('#creator-identity');
+    const nameInput = wrap.querySelector('#cr-name');
+    const nameError = wrap.querySelector('#cc-name-error');
+    const carriedEl = wrap.querySelector('#cc-carried');
+    const sumPronoun = wrap.querySelector('#cc-sum-pronoun');
+    const sumBackground = wrap.querySelector('#cc-sum-background');
+    const sumTemperament = wrap.querySelector('#cc-sum-temperament');
 
-    function carriedLabel(gift) {
-      const parts = Object.keys(gift || {}).map((id) => {
-        const it = SAN.data.item(id);
-        return (it ? it.name : id) + (gift[id] > 1 ? ' ×' + gift[id] : '');
+    // the official reference artwork, framed exactly as drawn
+    portrait.innerHTML = SAN.render.fullBodyImg();
+    const mcImg = portrait.querySelector('img');
+    if (mcImg) mcImg.alt = 'The Main Character';
+
+    const itemName = function (id) {
+      const it = SAN.data.item(id);
+      return it ? it.name : id;
+    };
+    function carriedList(gift) {
+      return Object.keys(gift || {}).map(function (id) {
+        return itemName(id) + ' ×' + gift[id];
       });
-      return parts.length ? parts.join(', ') : 'nothing extra';
+    }
+    function carriedPhrase(gift) {
+      const parts = carriedList(gift);
+      if (!parts.length) return 'nothing extra';
+      if (parts.length === 1) return parts[0];
+      return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+    }
+    // the real starting inventory of each choice, read from SAN.state
+    function backgroundText(bg) {
+      return bg.blurb + ' You carry ' + carriedPhrase(bg.carries) + '.';
+    }
+
+    function chipMarkup(item, key, icon) {
+      const active = custom[key] === item.id ? ' active' : '';
+      const desc = key === 'background' ? backgroundText(item) : item.blurb;
+      return '<button type="button" class="cc-opt' + active + '" data-id="' + item.id + '"' +
+        ' aria-pressed="' + (custom[key] === item.id ? 'true' : 'false') + '">' +
+        '<span class="cc-opt-mark" aria-hidden="true"></span>' +
+        '<span class="cc-opt-head"><span class="cc-opt-icon" aria-hidden="true">' + (CC_ICONS[icon] || '') + '</span>' +
+        '<span class="cc-opt-name">' + U.esc(item.name) + '</span></span>' +
+        '<span class="cc-opt-desc">' + U.esc(desc) + '</span></button>';
+    }
+
+    function renderChoices() {
+      wrap.querySelector('#cr-pronoun').innerHTML = SAN.state.PRONOUNS.map(function (p) {
+        return '<button type="button" class="cc-pill' + (custom.pronoun === p.id ? ' active' : '') + '"' +
+          ' data-id="' + p.id + '" aria-pressed="' + (custom.pronoun === p.id ? 'true' : 'false') + '">' +
+          U.esc(p.name) + '</button>';
+      }).join('');
+      wrap.querySelector('#cr-background').innerHTML = SAN.state.BACKGROUNDS.map(function (b) {
+        return chipMarkup(b, 'background', b.id);
+      }).join('');
+      wrap.querySelector('#cr-temperament').innerHTML = SAN.state.TEMPERAMENTS.map(function (t) {
+        return chipMarkup(t, 'temperament', t.id);
+      }).join('');
     }
 
     function paint() {
       const pr = SAN.state.pronoun(custom.pronoun);
       const bg = SAN.state.background(custom.background);
       const temp = SAN.state.temperament(custom.temperament);
-      portrait.innerHTML = SAN.render.fullBodyImg();
-      nameDisplay.textContent = custom.name || 'Elara';
+      nameDisplay.textContent = (custom.name || 'Elara').trim() || 'Elara';
       identityLine.textContent = pr.name + ' · ' + bg.name + ' · ' + temp.name;
-      wrap.querySelector('#cr-background-note').textContent = bg.blurb + ' You carry ' + carriedLabel(bg.carries) + '.';
-      wrap.querySelector('#cr-temperament-note').textContent = temp.blurb;
+      sumPronoun.textContent = pr.name;
+      sumBackground.textContent = bg.name;
+      sumTemperament.textContent = temp.name;
+      const all = SAN.state.carriedItems({ background: bg.id, temperament: temp.id });
+      carriedEl.textContent = all.length
+        ? 'In your satchel: ' + all.map(function (g) { return itemName(g.id) + ' ×' + g.count; }).join(', ') + '.'
+        : 'Your satchel starts as it is.';
     }
-    function chips(containerId, list, key, labelKey) {
-      const box = wrap.querySelector(containerId);
-      box.innerHTML = '';
-      list.forEach((item) => {
-        const b = document.createElement('button');
-        b.className = 'chip' + (custom[key] === item.id ? ' active' : '');
-        b.textContent = item[labelKey || 'name'];
-        b.addEventListener('click', () => { custom[key] = item.id; chips(containerId, list, key, labelKey); paint(); });
-        box.appendChild(b);
+
+    function chooseFrom(containerId, key) {
+      wrap.querySelector(containerId).addEventListener('click', function (e) {
+        const btn = e.target.closest ? e.target.closest('[data-id]') : null;
+        if (!btn) return;
+        if (custom[key] === btn.dataset.id) return;
+        custom[key] = btn.dataset.id;
+        renderChoices();
+        paint();
+        // the list is redrawn, so keep keyboard focus on the chosen option
+        const again = wrap.querySelector(containerId + ' [data-id="' + btn.dataset.id + '"]');
+        if (again) again.focus({ preventScroll: true });
+        if (SAN.audio && SAN.audio.sfx) SAN.audio.sfx('click');
       });
     }
-    chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
-    chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
-    chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
+    chooseFrom('#cr-pronoun', 'pronoun');
+    chooseFrom('#cr-background', 'background');
+    chooseFrom('#cr-temperament', 'temperament');
 
-    wrap.querySelector('#cr-name').addEventListener('input', (e) => { custom.name = e.target.value; nameDisplay.textContent = custom.name || 'Elara'; });
-    wrap.querySelector('#cr-random').addEventListener('click', () => {
-      custom.pronoun = U.pick(SAN.state.PRONOUNS).id;
-      custom.background = U.pick(SAN.state.BACKGROUNDS).id;
-      custom.temperament = U.pick(SAN.state.TEMPERAMENTS).id;
-      chips('#cr-pronoun', SAN.state.PRONOUNS, 'pronoun');
-      chips('#cr-background', SAN.state.BACKGROUNDS, 'background');
-      chips('#cr-temperament', SAN.state.TEMPERAMENTS, 'temperament');
-      paint();
+    nameInput.addEventListener('input', function () {
+      custom.name = nameInput.value;
+      // the preview tidies spacing exactly like Begin does, so they always agree
+      nameDisplay.textContent = nameInput.value.replace(/\s+/g, ' ').trim() || 'Elara';
+      if (!nameError.hidden) {
+        nameError.hidden = true;
+        nameInput.classList.remove('invalid');
+      }
     });
-    wrap.querySelector('#cr-back').addEventListener('click', () => { wrap.remove(); el.classList.remove('title-subpanel'); SC.showTitle(); });
-    wrap.querySelector('#cr-start').addEventListener('click', () => {
-      custom.name = (wrap.querySelector('#cr-name').value || 'Elara').trim().slice(0, 16) || 'Elara';
+
+    function close() {
+      document.removeEventListener('keydown', onKey);
       wrap.remove();
-      el.classList.remove('title-subpanel');
+      el.classList.remove('title-subpanel', 'cc-open');
+    }
+    function goBack() {
+      close();
+      SC.showTitle();
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); goBack(); }
+    }
+    document.addEventListener('keydown', onKey);
+
+    wrap.querySelector('#cr-random').addEventListener('click', function () {
+      // always lands on a different combination, name left as the player typed it
+      const other = function (list, current) {
+        const pool = list.filter(function (i) { return i.id !== current; });
+        return U.pick(pool.length ? pool : list).id;
+      };
+      custom.pronoun = other(SAN.state.PRONOUNS, custom.pronoun);
+      custom.background = other(SAN.state.BACKGROUNDS, custom.background);
+      custom.temperament = other(SAN.state.TEMPERAMENTS, custom.temperament);
+      renderChoices();
+      paint();
+      if (SAN.audio && SAN.audio.sfx) SAN.audio.sfx('open');
+    });
+
+    wrap.querySelector('#cr-back').addEventListener('click', goBack);
+
+    wrap.querySelector('#cr-start').addEventListener('click', function () {
+      const name = (nameInput.value || '').replace(/\s+/g, ' ').trim().slice(0, 16);
+      if (!name) {
+        nameError.hidden = false;
+        nameInput.classList.add('invalid');
+        nameInput.focus();
+        if (SAN.audio && SAN.audio.sfx) SAN.audio.sfx('close');
+        return;
+      }
+      custom.name = name;
+      // the same normalisation the state layer expects
+      custom.pronoun = SAN.state.pronoun(custom.pronoun).id;
+      custom.background = SAN.state.background(custom.background).id;
+      custom.temperament = SAN.state.temperament(custom.temperament).id;
+      close();
       SC.beginGame(custom);
     });
+
+    renderChoices();
     paint();
+    if (window.innerWidth > 900) {
+      setTimeout(function () { if (nameInput.isConnected) nameInput.focus(); }, 80);
+    }
   };
 
   /* ---------------- new game / intro ---------------- */
