@@ -34,6 +34,28 @@
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
   };
 
+  /* ---------------------------------------------------------
+     MOCHI — the official companion
+     Every frame below is one of the uploaded full-body PNGs. Nothing
+     is cut from a sheet, redrawn, recoloured or replaced with an
+     emoji: the controller only ever swaps between those files.
+     --------------------------------------------------------- */
+  const MOCHI_ART = {
+    dir: 'assets/companions/mochi/',
+    expressions: {
+      neutral: 'expressions/neutral.png',
+      happy: 'expressions/happy.png',
+      curious: 'expressions/curious.png',
+      blinking: 'expressions/blinking.png',
+    },
+    poses: {
+      idle: 'poses/idle.png',
+      sleeping: 'poses/sleeping.png',
+      stretching: 'poses/stretching.png',
+    },
+  };
+  SC.mochiSrc = function (file) { return SAN.render.withAssetExt(MOCHI_ART.dir + file); };
+
   // keep the title light on small screens and modest devices: fewer motes and
   // petals, and less frequent idle changes, without touching the composition
   SC.titleLightMode = function () {
@@ -89,8 +111,16 @@
       <div class="ts-cast">
         ${cast}
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="ts-table" aria-hidden="true">
-          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i><i class="face"></i></span>
+        <div class="ts-table">
+          <button type="button" class="mochi" id="ts-mochi" aria-label="Mochi, your companion. Pet Mochi.">
+            <span class="mochi-glow" aria-hidden="true"></span>
+            <span class="mochi-body" aria-hidden="true">
+              <img class="mochi-sprite on" src="${SC.mochiSrc(MOCHI_ART.poses.idle)}" alt="" draggable="false">
+              <img class="mochi-sprite alt" alt="" draggable="false">
+            </span>
+            <span class="mochi-tag" aria-hidden="true"><b>Mochi</b><i>Companion</i></span>
+            <span class="mochi-spark" aria-hidden="true">✦</span>
+          </button>
         </div>
       </div>
 
@@ -222,7 +252,6 @@
     if (!fx) return;
     if (fx.tick) clearTimeout(fx.tick);
     if (fx.blink) clearTimeout(fx.blink);
-    if (fx.cat) clearTimeout(fx.cat);
     if (fx.raf) cancelAnimationFrame(fx.raf);
     if (fx.detach) fx.detach();
     SC._titleFx = null;
@@ -380,20 +409,8 @@
       }, light ? 3200 + Math.random() * 4200 : 1500 + Math.random() * 2600);
     };
 
-    // the cat on the tea table: blink, tail flick, yawn
-    const cat = el.querySelector('.tbl-cat');
-    const scheduleCat = () => {
-      fx.cat = setTimeout(() => {
-        if (!el.isConnected) { fx.cat = 0; return; }
-        if (cat && !reduce() && !paused() && !document.hidden) {
-          const acts = ['blink', 'tail', 'yawn', 'tail', 'blink'];
-          const act = acts[Math.floor(Math.random() * acts.length)];
-          cat.classList.add(act);
-          setTimeout(() => cat.classList.remove(act), act === 'yawn' ? 1550 : act === 'blink' ? 230 : 950);
-        }
-        scheduleCat();
-      }, light ? 7000 + Math.random() * 6000 : 4800 + Math.random() * 5200);
-    };
+    // Mochi keeps the table corner: expressions, poses and a small hello
+    const mochi = SC.initMochi(el, { paused: paused, reduceMotion: reduce });
 
     // very subtle parallax: the scene drifts against the pointer
     let px = 0;
@@ -410,6 +427,8 @@
       if (!r.width || !r.height) return;
       px = U.clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1);
       py = U.clamp((e.clientY - r.top) / r.height * 2 - 1, -1, 1);
+      mochi.proximity(e.clientX, e.clientY);
+      mochi.touch();
       if (!queued) { queued = true; fx.raf = requestAnimationFrame(applyParallax); }
     };
     const onLeaveScene = () => { px = 0; py = 0; applyParallax(); };
@@ -423,11 +442,178 @@
       document.removeEventListener('click', onDocClick);
       el.removeEventListener('mousemove', onMove);
       el.removeEventListener('mouseleave', onLeaveScene);
+      mochi.dispose();
     };
 
     scheduleIdle();
     scheduleBlink();
-    scheduleCat();
+  };
+
+  /* ---------------------------------------------------------
+     Mochi's behaviour: sits and breathes, blinks now and then,
+     stretches after a while, dozes when nothing happens, grows
+     curious when the pointer comes near, and is happy when petted.
+     One action at a time, and every timer lives here so leaving the
+     title screen leaves nothing running behind.
+     --------------------------------------------------------- */
+  SC.initMochi = function (el, opts) {
+    const root = el.querySelector('#ts-mochi');
+    const sprites = root ? Array.prototype.slice.call(root.querySelectorAll('.mochi-sprite')) : [];
+    if (!root || sprites.length < 2) {
+      return { proximity: function () {}, touch: function () {}, dispose: function () {} };
+    }
+    const o = opts || {};
+    const paused = o.paused || function () { return false; };
+    const reduce = o.reduceMotion || function () {
+      return document.body.classList.contains('reduce-motion') ||
+        (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    };
+
+    const SRC = {
+      neutral: SC.mochiSrc(MOCHI_ART.expressions.neutral),
+      happy: SC.mochiSrc(MOCHI_ART.expressions.happy),
+      curious: SC.mochiSrc(MOCHI_ART.expressions.curious),
+      blinking: SC.mochiSrc(MOCHI_ART.expressions.blinking),
+      idle: SC.mochiSrc(MOCHI_ART.poses.idle),
+      sleeping: SC.mochiSrc(MOCHI_ART.poses.sleeping),
+      stretching: SC.mochiSrc(MOCHI_ART.poses.stretching),
+    };
+    // decode each file once so a swap cross-fades instead of flashing
+    Object.keys(SRC).forEach((key) => { const img = new Image(); img.decoding = 'async'; img.src = SRC[key]; });
+
+    let front = 0;
+    let pose = 'idle';
+    let expr = 'neutral';
+    let near = false;
+    let petting = false;
+    let lastPet = 0;
+    let lastTouch = Date.now();
+    let beatT = 0;
+    let busyT = 0;
+
+    // two stacked sprites: the dormant one takes the new frame, then fades in
+    const paint = (src) => {
+      const cur = sprites[front];
+      const next = sprites[1 - front];
+      if (cur.getAttribute('src') === src && cur.classList.contains('on')) return;
+      if (next.getAttribute('src') !== src) next.setAttribute('src', src);
+      next.classList.add('on');
+      cur.classList.remove('on');
+      front = 1 - front;
+    };
+
+    const show = () => {
+      root.classList.toggle('sleeping', pose === 'sleeping');
+      if (pose === 'sleeping') paint(SRC.sleeping);
+      else if (pose === 'stretching') paint(SRC.stretching);
+      else paint(SRC[expr] || SRC.neutral);
+    };
+
+    const wake = () => {
+      lastTouch = Date.now();
+      if (pose === 'sleeping') { pose = 'idle'; expr = near ? 'curious' : 'neutral'; show(); }
+    };
+
+    const settle = () => {
+      petting = false;
+      pose = 'idle';
+      expr = near ? 'curious' : 'neutral';
+      show();
+    };
+
+    const blink = () => {
+      if (pose !== 'idle' || petting || near) return;
+      expr = 'blinking';
+      show();
+      busyT = setTimeout(() => {
+        if (pose === 'idle' && !petting) { expr = near ? 'curious' : 'neutral'; show(); }
+      }, 160);
+    };
+
+    const stretch = () => {
+      if (pose !== 'idle' || petting || near) return;
+      pose = 'stretching';
+      show();
+      busyT = setTimeout(() => { if (pose === 'stretching') settle(); }, 2400);
+    };
+
+    const beat = () => {
+      if (!el.isConnected) { beatT = 0; return; }
+      if (!paused() && !document.hidden && !reduce()) {
+        const quiet = Date.now() - lastTouch;
+        if (pose === 'idle' && !petting && !near && quiet > 26000) {
+          pose = 'sleeping';
+          show();
+        } else if (pose === 'idle' && !petting) {
+          if (quiet > 9000 && Math.random() < 0.16) stretch();
+          else if (Math.random() < 0.5) blink();
+        }
+      }
+      beatT = setTimeout(beat, 3200 + Math.random() * 2600);
+    };
+
+    const pet = () => {
+      const now = Date.now();
+      wake();
+      if (now - lastPet < 1400) return; // a small pause between greetings
+      lastPet = now;
+      petting = true;
+      clearTimeout(busyT);
+      pose = 'idle';
+      expr = 'happy';
+      show();
+      root.classList.remove('pet');
+      void root.offsetWidth;
+      root.classList.add('pet');
+      if (SAN.audio && SAN.audio.sfx) { try { SAN.audio.sfx('purr'); } catch (err) { } }
+      busyT = setTimeout(() => { root.classList.remove('pet'); settle(); }, 1600);
+    };
+
+    const onFocus = () => {
+      near = true;
+      wake();
+      if (pose === 'idle' && !petting) { expr = 'curious'; show(); }
+    };
+    const onBlur = () => {
+      near = false;
+      if (pose === 'idle' && !petting) { expr = 'neutral'; show(); }
+    };
+
+    root.addEventListener('click', pet);
+    root.addEventListener('focus', onFocus);
+    root.addEventListener('blur', onBlur);
+    show();
+    beat();
+
+    return {
+      // the pointer is near enough to notice Mochi
+      proximity: (x, y) => {
+        const r = root.getBoundingClientRect();
+        if (!r.width) return;
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height * 0.62;
+        const close = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < r.width * 1.25;
+        if (close === near) return;
+        near = close;
+        if (close) {
+          wake();
+          if (!petting && pose === 'idle') { expr = 'curious'; show(); }
+        } else if (!petting && pose === 'idle') {
+          expr = 'neutral';
+          show();
+        }
+      },
+      // any movement over the title screen keeps Mochi awake
+      touch: () => { lastTouch = Date.now(); },
+      dispose: () => {
+        clearTimeout(beatT);
+        clearTimeout(busyT);
+        root.removeEventListener('click', pet);
+        root.removeEventListener('focus', onFocus);
+        root.removeEventListener('blur', onBlur);
+        root.classList.remove('pet', 'sleeping');
+      },
+    };
   };
 
   SC.showTitleSettings = function () {

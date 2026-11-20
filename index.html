@@ -1135,27 +1135,21 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
   from { transform: rotate(var(--r, 0deg)); }
   to { transform: rotate(calc(var(--r, 0deg) + 3.4deg)); }
 }
-.tbl-cat { animation: tsCatBreathe 6s ease-in-out infinite; transform-origin: 50% 100%; }
-@keyframes tsCatBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012, 1.02); } }
-.tbl-cat .tail { animation: tsTailSway 5.4s ease-in-out infinite; transform-origin: 0 100%; }
-@keyframes tsTailSway {
-  0%, 100% { transform: rotate(-8deg); }
-  40% { transform: rotate(-2deg); }
-  72% { transform: rotate(-16deg); }
+/* Mochi's life: a slow breath while sitting, a deeper one while dozing,
+   and a small hop when petted. The artwork itself is never distorted. */
+.mochi-sprite { animation: mochiBreathe 5.4s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes mochiBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1px) scale(1.006, .997); }
 }
-.tbl-cat.blink::before { animation: tsCatBlink .2s ease; }
-@keyframes tsCatBlink { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.78) translateY(2px); } }
-.tbl-cat.yawn::before { animation: tsCatYawn 1.5s ease; }
-@keyframes tsCatYawn {
-  0%, 100% { transform: scale(1); }
-  30% { transform: scale(1.1, 1.14) translateY(-2px); }
-  62% { transform: scale(1.02, .93); }
-}
-.tbl-cat.tail .tail { animation: tsTailFlick .9s ease; }
-@keyframes tsTailFlick {
-  0%, 100% { transform: rotate(-8deg); }
-  30% { transform: rotate(-30deg); }
-  60% { transform: rotate(2deg); }
+.mochi.sleeping .mochi-sprite { animation: mochiSleep 6.6s ease-in-out infinite; }
+@keyframes mochiSleep { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.986); } }
+.mochi.pet .mochi-body { animation: mochiHop .64s cubic-bezier(.3,.8,.35,1); }
+@keyframes mochiHop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  26% { transform: translateY(-7px) scale(1.03, .97); }
+  56% { transform: translateY(0) scale(.985, 1.015); }
+  76% { transform: translateY(-2px) scale(1.008, .992); }
 }
 
 /* --- subtle parallax (JS sets --px / --py from the pointer); the offsets live
@@ -1165,15 +1159,14 @@ body.touch #touch-ui, #touch-ui.force-show { display: block; }
 /* --- reduced motion: the scene stays still, the artwork keeps its places --- */
 body.reduce-motion .ts-sway, body.reduce-motion .ts-frame::after,
 body.reduce-motion .ts-foreground i, body.reduce-motion .ts-mote,
-body.reduce-motion .tbl-cat, body.reduce-motion .tbl-cat .tail,
-body.reduce-motion .tbl-cat::before,
+body.reduce-motion .mochi-sprite, body.reduce-motion .mochi-body,
 body.reduce-motion .ts-char.pc::before,
 body.reduce-motion .ts-haze::before, body.reduce-motion .ts-haze::after,
 body.reduce-motion .ts-petal { animation: none !important; }
 body.reduce-motion .ts-cast, body.reduce-motion .ts-bg, body.reduce-motion .ts-glow { transform: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .ts-sway, .ts-frame::after, .ts-foreground i,
-  .ts-mote, .tbl-cat, .tbl-cat .tail, .tbl-cat::before,
+  .ts-mote, .mochi-sprite, .mochi-body,
   .ts-char.pc::before, .ts-haze::before, .ts-haze::after { animation: none !important; }
   .ts-cast, .ts-bg, .ts-glow { transform: none !important; }
   .ts-char.pc::before { opacity: .85; }
@@ -1187,8 +1180,8 @@ body.reduce-motion .ts-cast, body.reduce-motion .ts-bg, body.reduce-motion .ts-g
 #title-screen.life-paused .ts-mote,
 #title-screen.life-paused .ts-petal,
 #title-screen.life-paused .ts-foreground i,
-#title-screen.life-paused .tbl-cat,
-#title-screen.life-paused .tbl-cat .tail,
+#title-screen.life-paused .mochi-sprite,
+#title-screen.life-paused .mochi-body,
 #title-screen.life-paused .ts-char.pc::before,
 #title-screen.life-paused .ts-haze::before,
 #title-screen.life-paused .ts-haze::after { animation-play-state: paused !important; }
@@ -1200,20 +1193,62 @@ body.reduce-motion .ts-cast, body.reduce-motion .ts-bg, body.reduce-motion .ts-g
 #title-screen.life-light .ts-bg, #title-screen.life-light .ts-glow { transform: none !important; }
 
 /* --- tea table foreground --- */
-.ts-table { position: absolute; left: 80%; bottom: 0; width: min(46vw, 660px); height: 24%; transform: translateX(-50%); z-index: 4; pointer-events: none; }
-.tbl-cat { position: absolute; left: 30%; bottom: 52%; width: 100px; height: 38px; border-radius: 50% 50% 46% 46%; background: radial-gradient(ellipse at 42% 28%, #fffdf8, #ece0cf); box-shadow: 0 6px 10px rgba(80,50,40,.18); filter: drop-shadow(0 7px 7px rgba(92,62,44,.26)); }
-.tbl-cat .ear { position: absolute; top: -17px; width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 16px solid #fbf4e8; }
-.tbl-cat .ear.e1 { left: 6px; }
-.tbl-cat .ear.e2 { left: 28px; }
-.tbl-cat .tail { position: absolute; right: -20px; bottom: 3px; width: 44px; height: 16px; border: 5px solid #fbf4e8; border-left: 0; border-bottom: 0; border-radius: 0 20px 0 0; transform: rotate(-8deg); }
-.tbl-cat::before { content: ''; position: absolute; left: 2px; top: -4px; width: 36px; height: 32px; border-radius: 50%; background: radial-gradient(ellipse at 40% 32%, #fffdf8, #f3e9da); }
-/* a cat needs a face: two quiet eyes on the head */
-.tbl-cat .face { position: absolute; left: 8px; top: 3px; width: 26px; height: 12px; z-index: 2; }
-.tbl-cat .face::before, .tbl-cat .face::after {
-  content: ''; position: absolute; top: 2px; width: 4px; height: 5px; border-radius: 50%; background: #5a463f;
+/* the table layer is the artwork frame itself, so Mochi keeps her place on
+   the painted tabletop at every aspect ratio (the fitted-frame block below
+   narrows this box to exactly the painting) */
+.ts-table { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.mochi {
+  position: absolute; left: 88.5%; bottom: .8%;
+  width: clamp(74px, 6.4vw, 132px); aspect-ratio: 1 / 1;
+  transform: translateX(-50%); padding: 0; border: 0; background: none;
+  color: inherit; font: inherit; cursor: pointer; pointer-events: auto;
+  -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 8px 11px rgba(92,62,44,.3));
+  transition: transform .3s ease, filter .3s ease;
 }
-.tbl-cat .face::before { left: 3px; }
-.tbl-cat .face::after { right: 3px; }
+.mochi:hover, .mochi:focus-visible {
+  transform: translateX(-50%) translateY(-3px);
+  filter: drop-shadow(0 12px 16px rgba(92,62,44,.34));
+}
+.mochi:focus-visible { outline: none; }
+.mochi:focus-visible .mochi-glow { opacity: 1; }
+.mochi-glow {
+  position: absolute; inset: -22% -26% -12%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 62%, rgba(255,236,190,.55), rgba(214,190,238,.3) 46%, rgba(214,190,238,0) 72%);
+  opacity: .4; transition: opacity .34s ease;
+}
+.mochi:hover .mochi-glow, .mochi.pet .mochi-glow, .mochi:focus-visible .mochi-glow { opacity: 1; }
+.mochi-body { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; }
+/* every frame is one uploaded full-body PNG, shown whole and never stretched */
+.mochi-sprite {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: 50% 100%;
+  opacity: 0; transition: opacity .34s ease; pointer-events: none; user-select: none;
+}
+.mochi-sprite.on { opacity: 1; }
+.mochi-tag {
+  position: absolute; left: 50%; bottom: calc(100% - 10px); z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 5px 12px 6px; border-radius: 999px; white-space: nowrap;
+  transform: translate(-50%, 6px); opacity: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,251,241,.97), rgba(242,229,204,.97));
+  border: 1px solid rgba(201,164,94,.8);
+  box-shadow: 0 6px 14px rgba(80,56,44,.22), inset 0 0 0 1px rgba(255,255,255,.7);
+  transition: opacity .22s ease, transform .22s ease;
+}
+.mochi:hover .mochi-tag, .mochi:focus-visible .mochi-tag, .mochi.pet .mochi-tag { opacity: 1; transform: translate(-50%, 0); }
+.mochi-tag b { font-size: 11.5px; font-weight: 600; letter-spacing: .6px; color: #4a3a63; }
+.mochi-tag i { font-style: normal; font-family: var(--sans); font-size: 8px; letter-spacing: 1.2px; text-transform: uppercase; color: #8a7360; }
+.mochi-spark {
+  position: absolute; right: -4%; top: 2%; z-index: 2; font-size: 13px; color: #e9c877;
+  opacity: 0; pointer-events: none; text-shadow: 0 0 8px rgba(255,226,160,.8);
+}
+.mochi.pet .mochi-spark { animation: mochiSpark .95s ease; }
+@keyframes mochiSpark {
+  0% { opacity: 0; transform: scale(.4) rotate(-18deg); }
+  34% { opacity: 1; transform: scale(1.15) rotate(6deg); }
+  100% { opacity: 0; transform: translateY(-14px) scale(.9) rotate(18deg); }
+}
 
 /* --- foreground lavender, drawn in front of the table --- */
 .ts-foreground { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; z-index: 9; pointer-events: none; overflow: hidden; }
@@ -1324,7 +1359,6 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
   .ts-char.p8 { left: 65%; top: 35%; }
   .ts-char.p9 { left: 73%; top: 38%; }
   .ts-char.p10 { left: 59%; top: 54%; }
-  .ts-table { left: 78%; width: 52vw; height: 26%; }
 }
 
 /* Landscape frames flatter than 16:9 (16:10 laptops, 4:3 desktops and tablets)
@@ -1344,13 +1378,12 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
     transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -3px), 0);
   }
   /* the tea-table layer tracks the fitted artwork exactly (width fits, height
-     keeps the painting's proportions), so the cat stays on the painted
+     keeps the painting's proportions), so Mochi stays on the painted
      tabletop instead of drifting into the frame edge */
   .ts-table {
     left: 0; right: 0; bottom: auto; width: auto; transform: none;
     top: calc(50% - 28.1415vw); height: 56.283vw;
   }
-  .tbl-cat { left: 68.76%; bottom: 12.46%; }
 }
 
 @media (max-width: 760px), (max-aspect-ratio: 4/5) {
@@ -1383,15 +1416,11 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
   .ts-char.p8 { left: 61%; top: 25%; --k: .68; --rot: 1deg; }
   .ts-char.p9 { left: 81%; top: 28%; --k: .6; --rot: 1.5deg; }
   .ts-char.p10 { left: 51%; top: 55%; --k: 1.02; }
-  .ts-table { left: 76%; width: 52vw; height: 15%; bottom: 3%; z-index: 10; }
-  .tbl-cat { width: 60px; height: 24px; left: 24%; bottom: 30%; }
-  .tbl-cat .ear { top: -12px; border-left-width: 7px; border-right-width: 7px; border-bottom-width: 12px; }
-  .tbl-cat .ear.e1 { left: 5px; }
-  .tbl-cat .ear.e2 { right: auto; left: 21px; }
-  .tbl-cat::before { left: 2px; top: -3px; width: 24px; height: 22px; }
-  .tbl-cat .face { left: 6px; top: 3px; width: 18px; }
-  .tbl-cat .face::before, .tbl-cat .face::after { width: 3px; height: 4px; }
-  .tbl-cat .tail { right: -14px; width: 30px; height: 12px; border-width: 4px; }
+  .ts-table { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 26%; z-index: 10; }
+  .mochi { left: 88%; bottom: 6%; width: clamp(62px, 15vw, 86px); }
+  .mochi-tag { padding: 4px 10px 5px; }
+  .mochi-tag b { font-size: 10.5px; }
+  .mochi-tag i { font-size: 7.5px; letter-spacing: 1px; }
 }
 
 /* tablets held upright keep the same two rows, a little larger and centred */
@@ -1407,7 +1436,7 @@ body.reduce-motion .ts-char .ts-frame, body.reduce-motion .ts-petal { animation:
   .ts-char.p8 { left: 61%; }
   .ts-char.p9 { left: 80%; }
   .ts-char.p10 { --k: 1.12; }
-  .ts-table { width: 44vw; }
+  .mochi { width: clamp(70px, 12vw, 96px); }
 }
 
 @media (max-width: 420px) {
@@ -13854,6 +13883,28 @@ window.SAN = window.SAN || {};
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
   };
 
+  /* ---------------------------------------------------------
+     MOCHI — the official companion
+     Every frame below is one of the uploaded full-body PNGs. Nothing
+     is cut from a sheet, redrawn, recoloured or replaced with an
+     emoji: the controller only ever swaps between those files.
+     --------------------------------------------------------- */
+  const MOCHI_ART = {
+    dir: 'assets/companions/mochi/',
+    expressions: {
+      neutral: 'expressions/neutral.png',
+      happy: 'expressions/happy.png',
+      curious: 'expressions/curious.png',
+      blinking: 'expressions/blinking.png',
+    },
+    poses: {
+      idle: 'poses/idle.png',
+      sleeping: 'poses/sleeping.png',
+      stretching: 'poses/stretching.png',
+    },
+  };
+  SC.mochiSrc = function (file) { return SAN.render.withAssetExt(MOCHI_ART.dir + file); };
+
   // keep the title light on small screens and modest devices: fewer motes and
   // petals, and less frequent idle changes, without touching the composition
   SC.titleLightMode = function () {
@@ -13909,8 +13960,16 @@ window.SAN = window.SAN || {};
       <div class="ts-cast">
         ${cast}
         <div class="ts-foreground" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="ts-table" aria-hidden="true">
-          <span class="tbl-cat"><i class="ear e1"></i><i class="ear e2"></i><i class="tail"></i><i class="face"></i></span>
+        <div class="ts-table">
+          <button type="button" class="mochi" id="ts-mochi" aria-label="Mochi, your companion. Pet Mochi.">
+            <span class="mochi-glow" aria-hidden="true"></span>
+            <span class="mochi-body" aria-hidden="true">
+              <img class="mochi-sprite on" src="${SC.mochiSrc(MOCHI_ART.poses.idle)}" alt="" draggable="false">
+              <img class="mochi-sprite alt" alt="" draggable="false">
+            </span>
+            <span class="mochi-tag" aria-hidden="true"><b>Mochi</b><i>Companion</i></span>
+            <span class="mochi-spark" aria-hidden="true">✦</span>
+          </button>
         </div>
       </div>
 
@@ -14042,7 +14101,6 @@ window.SAN = window.SAN || {};
     if (!fx) return;
     if (fx.tick) clearTimeout(fx.tick);
     if (fx.blink) clearTimeout(fx.blink);
-    if (fx.cat) clearTimeout(fx.cat);
     if (fx.raf) cancelAnimationFrame(fx.raf);
     if (fx.detach) fx.detach();
     SC._titleFx = null;
@@ -14200,20 +14258,8 @@ window.SAN = window.SAN || {};
       }, light ? 3200 + Math.random() * 4200 : 1500 + Math.random() * 2600);
     };
 
-    // the cat on the tea table: blink, tail flick, yawn
-    const cat = el.querySelector('.tbl-cat');
-    const scheduleCat = () => {
-      fx.cat = setTimeout(() => {
-        if (!el.isConnected) { fx.cat = 0; return; }
-        if (cat && !reduce() && !paused() && !document.hidden) {
-          const acts = ['blink', 'tail', 'yawn', 'tail', 'blink'];
-          const act = acts[Math.floor(Math.random() * acts.length)];
-          cat.classList.add(act);
-          setTimeout(() => cat.classList.remove(act), act === 'yawn' ? 1550 : act === 'blink' ? 230 : 950);
-        }
-        scheduleCat();
-      }, light ? 7000 + Math.random() * 6000 : 4800 + Math.random() * 5200);
-    };
+    // Mochi keeps the table corner: expressions, poses and a small hello
+    const mochi = SC.initMochi(el, { paused: paused, reduceMotion: reduce });
 
     // very subtle parallax: the scene drifts against the pointer
     let px = 0;
@@ -14230,6 +14276,8 @@ window.SAN = window.SAN || {};
       if (!r.width || !r.height) return;
       px = U.clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1);
       py = U.clamp((e.clientY - r.top) / r.height * 2 - 1, -1, 1);
+      mochi.proximity(e.clientX, e.clientY);
+      mochi.touch();
       if (!queued) { queued = true; fx.raf = requestAnimationFrame(applyParallax); }
     };
     const onLeaveScene = () => { px = 0; py = 0; applyParallax(); };
@@ -14243,11 +14291,178 @@ window.SAN = window.SAN || {};
       document.removeEventListener('click', onDocClick);
       el.removeEventListener('mousemove', onMove);
       el.removeEventListener('mouseleave', onLeaveScene);
+      mochi.dispose();
     };
 
     scheduleIdle();
     scheduleBlink();
-    scheduleCat();
+  };
+
+  /* ---------------------------------------------------------
+     Mochi's behaviour: sits and breathes, blinks now and then,
+     stretches after a while, dozes when nothing happens, grows
+     curious when the pointer comes near, and is happy when petted.
+     One action at a time, and every timer lives here so leaving the
+     title screen leaves nothing running behind.
+     --------------------------------------------------------- */
+  SC.initMochi = function (el, opts) {
+    const root = el.querySelector('#ts-mochi');
+    const sprites = root ? Array.prototype.slice.call(root.querySelectorAll('.mochi-sprite')) : [];
+    if (!root || sprites.length < 2) {
+      return { proximity: function () {}, touch: function () {}, dispose: function () {} };
+    }
+    const o = opts || {};
+    const paused = o.paused || function () { return false; };
+    const reduce = o.reduceMotion || function () {
+      return document.body.classList.contains('reduce-motion') ||
+        (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    };
+
+    const SRC = {
+      neutral: SC.mochiSrc(MOCHI_ART.expressions.neutral),
+      happy: SC.mochiSrc(MOCHI_ART.expressions.happy),
+      curious: SC.mochiSrc(MOCHI_ART.expressions.curious),
+      blinking: SC.mochiSrc(MOCHI_ART.expressions.blinking),
+      idle: SC.mochiSrc(MOCHI_ART.poses.idle),
+      sleeping: SC.mochiSrc(MOCHI_ART.poses.sleeping),
+      stretching: SC.mochiSrc(MOCHI_ART.poses.stretching),
+    };
+    // decode each file once so a swap cross-fades instead of flashing
+    Object.keys(SRC).forEach((key) => { const img = new Image(); img.decoding = 'async'; img.src = SRC[key]; });
+
+    let front = 0;
+    let pose = 'idle';
+    let expr = 'neutral';
+    let near = false;
+    let petting = false;
+    let lastPet = 0;
+    let lastTouch = Date.now();
+    let beatT = 0;
+    let busyT = 0;
+
+    // two stacked sprites: the dormant one takes the new frame, then fades in
+    const paint = (src) => {
+      const cur = sprites[front];
+      const next = sprites[1 - front];
+      if (cur.getAttribute('src') === src && cur.classList.contains('on')) return;
+      if (next.getAttribute('src') !== src) next.setAttribute('src', src);
+      next.classList.add('on');
+      cur.classList.remove('on');
+      front = 1 - front;
+    };
+
+    const show = () => {
+      root.classList.toggle('sleeping', pose === 'sleeping');
+      if (pose === 'sleeping') paint(SRC.sleeping);
+      else if (pose === 'stretching') paint(SRC.stretching);
+      else paint(SRC[expr] || SRC.neutral);
+    };
+
+    const wake = () => {
+      lastTouch = Date.now();
+      if (pose === 'sleeping') { pose = 'idle'; expr = near ? 'curious' : 'neutral'; show(); }
+    };
+
+    const settle = () => {
+      petting = false;
+      pose = 'idle';
+      expr = near ? 'curious' : 'neutral';
+      show();
+    };
+
+    const blink = () => {
+      if (pose !== 'idle' || petting || near) return;
+      expr = 'blinking';
+      show();
+      busyT = setTimeout(() => {
+        if (pose === 'idle' && !petting) { expr = near ? 'curious' : 'neutral'; show(); }
+      }, 160);
+    };
+
+    const stretch = () => {
+      if (pose !== 'idle' || petting || near) return;
+      pose = 'stretching';
+      show();
+      busyT = setTimeout(() => { if (pose === 'stretching') settle(); }, 2400);
+    };
+
+    const beat = () => {
+      if (!el.isConnected) { beatT = 0; return; }
+      if (!paused() && !document.hidden && !reduce()) {
+        const quiet = Date.now() - lastTouch;
+        if (pose === 'idle' && !petting && !near && quiet > 26000) {
+          pose = 'sleeping';
+          show();
+        } else if (pose === 'idle' && !petting) {
+          if (quiet > 9000 && Math.random() < 0.16) stretch();
+          else if (Math.random() < 0.5) blink();
+        }
+      }
+      beatT = setTimeout(beat, 3200 + Math.random() * 2600);
+    };
+
+    const pet = () => {
+      const now = Date.now();
+      wake();
+      if (now - lastPet < 1400) return; // a small pause between greetings
+      lastPet = now;
+      petting = true;
+      clearTimeout(busyT);
+      pose = 'idle';
+      expr = 'happy';
+      show();
+      root.classList.remove('pet');
+      void root.offsetWidth;
+      root.classList.add('pet');
+      if (SAN.audio && SAN.audio.sfx) { try { SAN.audio.sfx('purr'); } catch (err) { } }
+      busyT = setTimeout(() => { root.classList.remove('pet'); settle(); }, 1600);
+    };
+
+    const onFocus = () => {
+      near = true;
+      wake();
+      if (pose === 'idle' && !petting) { expr = 'curious'; show(); }
+    };
+    const onBlur = () => {
+      near = false;
+      if (pose === 'idle' && !petting) { expr = 'neutral'; show(); }
+    };
+
+    root.addEventListener('click', pet);
+    root.addEventListener('focus', onFocus);
+    root.addEventListener('blur', onBlur);
+    show();
+    beat();
+
+    return {
+      // the pointer is near enough to notice Mochi
+      proximity: (x, y) => {
+        const r = root.getBoundingClientRect();
+        if (!r.width) return;
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height * 0.62;
+        const close = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) < r.width * 1.25;
+        if (close === near) return;
+        near = close;
+        if (close) {
+          wake();
+          if (!petting && pose === 'idle') { expr = 'curious'; show(); }
+        } else if (!petting && pose === 'idle') {
+          expr = 'neutral';
+          show();
+        }
+      },
+      // any movement over the title screen keeps Mochi awake
+      touch: () => { lastTouch = Date.now(); },
+      dispose: () => {
+        clearTimeout(beatT);
+        clearTimeout(busyT);
+        root.removeEventListener('click', pet);
+        root.removeEventListener('focus', onFocus);
+        root.removeEventListener('blur', onBlur);
+        root.classList.remove('pet', 'sleeping');
+      },
+    };
   };
 
   SC.showTitleSettings = function () {

@@ -106,3 +106,42 @@ foreach ($bg as $file) {
         filesize($dest) / 1048576
     );
 }
+
+/* Mochi's full-body sprites ship the same way: the same pixels, WebP. The
+ * character sheet is design reference only, so it never goes to the web. */
+$mochiSrc = $root . '/assets/companions/mochi';
+$mochiOut = $root . '/deploy/public/assets/companions/mochi';
+$mochi = array_merge(
+    glob($mochiSrc . '/expressions/*.png') ?: array(),
+    glob($mochiSrc . '/poses/*.png') ?: array()
+);
+if (count($mochi) < 7) {
+    fwrite(STDERR, "ERROR: expected 7 Mochi sprites in $mochiSrc, found " . count($mochi) . "\n");
+    exit(1);
+}
+foreach ($mochi as $file) {
+    $rel = str_replace('\\', '/', substr($file, strlen($mochiSrc) + 1));
+    $dest = $mochiOut . '/' . preg_replace('/\.png$/i', '.webp', $rel);
+    if (!is_dir(dirname($dest)) && !mkdir(dirname($dest), 0777, true)) {
+        fwrite(STDERR, "ERROR: cannot create " . dirname($dest) . "\n");
+        exit(1);
+    }
+    $im = @imagecreatefrompng($file);
+    if (!$im) {
+        fwrite(STDERR, "ERROR: cannot read " . basename($file) . "\n");
+        exit(1);
+    }
+    imagealphablending($im, false);
+    imagesavealpha($im, true);
+    $ok = imagewebp($im, $dest, 86);
+    imagedestroy($im);
+    if (!$ok || !is_file($dest)) {
+        fwrite(STDERR, "ERROR: cannot write $dest\n");
+        exit(1);
+    }
+    printf("Packaged companion sprite %s: %.0f KB -> %.0f KB\n", $rel, filesize($file) / 1024, filesize($dest) / 1024);
+}
+if (!is_file($mochiOut . '/poses/idle.webp')) {
+    fwrite(STDERR, "ERROR: companion packaging missing idle.webp\n");
+    exit(1);
+}
