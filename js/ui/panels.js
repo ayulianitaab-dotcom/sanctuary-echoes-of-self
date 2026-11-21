@@ -409,6 +409,11 @@
     bookBtn.textContent = 'Memory journal';
     bookBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('storybook'); });
     el.querySelector('.panel-head').appendChild(bookBtn);
+    const loreBtn = document.createElement('button');
+    loreBtn.className = 'btn small vault-scene-btn';
+    loreBtn.textContent = 'World & lives';
+    loreBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('lore'); });
+    el.querySelector('.panel-head').appendChild(loreBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -609,9 +614,11 @@
       </div>
       ${romanceDetailHTML(id)}
       ${psychologyDetailHTML(id)}
+      ${loreDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
     attachRomanceButtons(d, id);
+    attachLoreButton(d, id);
   }
 
   function psychologyDetailHTML(id) {
@@ -1671,6 +1678,144 @@
       });
     });
     view('all');
+  };
+
+  /* ---------------- lore: a person's history in the profile ---------------- */
+  function loreDetailHTML(id) {
+    if (!SAN.lore) return '';
+    const b = SAN.lore.biography(id);
+    if (!b) return '';
+    const open = b.layers.filter((l) => l.open && l.label !== 'At a glance').slice(0, 2);
+    const prog = SAN.lore.progress(id);
+    return `
+      <div class="lore-box">
+        <div class="prompt-label">What you know of their life <span class="lore-count">${prog.got}/${prog.total} memories</span></div>
+        ${open.map((l) => `<div class="lore-layer"><b>${U.esc(l.label)}</b><span>${U.esc(l.text)}</span></div>`).join('')}
+        ${!open.length ? '<div class="fineprint">Only the surface, for now. Keep talking.</div>' : ''}
+        <div class="fineprint">${b.depth >= 61 ? 'They have trusted you with most of it.' : b.depth >= 41 ? 'They have told you what shaped them. The rest is still theirs.' : b.depth >= 21 ? 'Family and childhood, at least. Deeper things need more time.' : 'Acquaintances learn occupations first. That is how it should be.'}</div>
+      </div>`;
+  }
+
+  function attachLoreButton(el, id) {
+    const host = el.querySelector('.lore-box');
+    if (!host || !SAN.lore) return;
+    const b = document.createElement('button');
+    b.className = 'btn small';
+    b.textContent = 'Open their history';
+    b.addEventListener('click', () => { UI.closeAll(); UI.openPanel('lore', { npc: id }); });
+    host.appendChild(b);
+  }
+
+  /* ---------------- the world & lives codex ---------------- */
+  P.lore = function (data) {
+    const D = SAN.data;
+    const world = D.worldLore || {};
+    let tab = (data && data.npc) ? 'people' : 'chronicle';
+    let person = (data && data.npc) || null;
+    const el = UI.panel('lore', 'Sanctuary: the long record', `
+      <p class="vault-intro">A village keeps what it can. Some of it is on this page; most of it is still in people.</p>
+      <div class="vault-tabs lore-tabs">
+        <button class="chip active" data-t="chronicle">Chronicle</button>
+        <button class="chip" data-t="people">People</button>
+        <button class="chip" data-t="ties">Ties</button>
+        <button class="chip" data-t="memories">Memories</button>
+        <button class="chip" data-t="story">The story</button>
+      </div>
+      <div id="lore-body"></div>`, { wide: true });
+    const body = el.querySelector('#lore-body');
+
+    function chronicle() {
+      const mc = SAN.lore && SAN.lore.mc ? SAN.lore.mc() : null;
+      const arc = world.ARC || {};
+      body.innerHTML = `
+        ${mc ? `<div class="lore-block"><div class="prompt-label">You</div>
+          <p>${U.esc(mc.origin || '')}</p>
+          <p>${U.esc(mc.expectation || '')}</p>
+          <p class="fineprint">${U.esc((mc.reason && mc.reason.line) || '')}</p></div>` : ''}
+        <div class="lore-block"><div class="prompt-label">${U.esc(arc.title || 'The village')}</div>
+          <p>${U.esc(arc.premise || '')}</p>
+          <div class="lore-beats">${(arc.beats || []).map((t, i) => `<div class="lore-beat"><i>${i + 1}</i><span>${U.esc(t)}</span></div>`).join('')}</div>
+        </div>
+        <div class="lore-block"><div class="prompt-label">Master timeline</div>
+          <div class="lore-timeline">${(SAN.lore ? SAN.lore.timeline() : []).map((t) => `<div class="lore-tl-row"><b>${t.year < 0 ? Math.abs(t.year) + ' years before you' : 'Year ' + t.year}</b><span><i>${U.esc(t.title)}</i> ${U.esc(t.text || '')}</span></div>`).join('')}</div>
+        </div>
+        <div class="lore-block"><div class="prompt-label">The village, by its places</div>
+          ${(SAN.lore ? SAN.lore.places() : []).map((p) => `<div class="lore-place"><b>${U.esc(p.name)}</b>${p.built ? `<i>${p.built < 0 ? Math.abs(p.built) + ' years before you' : 'Year ' + p.built}</i>` : ''}<span>${U.esc(p.history)}</span><span class="fineprint">${U.esc(p.now)}</span></div>`).join('')}
+        </div>
+        <div class="lore-block"><div class="prompt-label">Traditions</div>
+          ${(world.TRADITIONS || []).map((t) => `<div class="lore-line"><b>${U.esc(t.name)}</b> <i>${U.esc(t.when)}</i> — ${U.esc(t.text)}</div>`).join('')}
+        </div>`;
+    }
+
+    function people() {
+      const ids = Object.keys((D.lore && D.lore.characters) || {});
+      if (!person && ids.length) person = ids[0];
+      const b = person && SAN.lore ? SAN.lore.biography(person) : null;
+      body.innerHTML = `<div class="lore-people">
+        <div class="lore-person-list">${ids.map((id) => {
+          const c = D.lore.characters[id];
+          const pr = SAN.lore.progress(id);
+          return `<button class="lore-person ${id === person ? 'active' : ''}" data-p="${id}">
+            ${SAN.render.portraitImg(id)}<span><b>${U.esc(c.name)}</b><i>${U.esc(c.profession)}</i><em>${pr.got}/${pr.total} memories · ${SAN.lore.depth(id)} depth</em></span></button>`;
+        }).join('')}</div>
+        <div class="lore-person-body">${b ? `
+          <div class="lore-person-head"><div class="rel-name">${U.esc(b.fullName)}</div>
+            <div class="rel-title">${U.esc(b.age)} · born ${U.esc(b.birthday)} · ${U.esc(b.profession)}</div></div>
+          ${b.layers.map((l) => l.open
+            ? `<div class="lore-layer"><b>${U.esc(l.label)}</b><span>${U.esc(l.text)}</span></div>`
+            : `<div class="lore-layer locked"><b>${U.esc(l.label)}</b><span>Not yet. This is earned, not bought.</span></div>`).join('')}
+          <div class="prompt-label">Memories</div>
+          <div class="lore-mem-list">${b.memories.map((m) => m.unlocked
+            ? `<span class="tag-pill on">${U.esc(m.title)}</span>`
+            : `<span class="tag-pill" title="${U.esc(m.hint)}">${U.esc(m.title)} · locked</span>`).join('')}</div>
+        ` : '<div class="fineprint">Nobody selected.</div>'}</div></div>`;
+      body.querySelectorAll('[data-p]').forEach((btn) => {
+        btn.addEventListener('click', () => { person = btn.getAttribute('data-p'); people(); });
+      });
+    }
+
+    function ties() {
+      const list = SAN.lore ? SAN.lore.relationships() : [];
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Who knows whom</div>
+        ${list.map((r) => `<div class="lore-tie"><div class="lore-tie-head"><b>${U.esc(r.aName)} & ${U.esc(r.bName)}</b><i>${U.esc(r.sinceLabel)}</i></div>
+        <span>${U.esc(r.how)}</span><span class="fineprint">Friction: ${U.esc(r.conflict)}</span><span class="fineprint">Now: ${U.esc(r.now)}</span></div>`).join('')}
+        </div>`;
+    }
+
+    function memories() {
+      const list = D.loreMemories || [];
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Backstory memories</div>
+        ${list.map((m) => {
+          const un = SAN.lore.isUnlocked(m.id);
+          const npc = (D.npcs[m.npc] || {}).name || '';
+          return `<div class="lore-memory ${un ? 'on' : ''}"><div class="lore-tie-head"><b>${U.esc(m.title)}</b><i>${U.esc(m.kind)} · ${U.esc(npc)}</i></div>
+            <span>${un ? U.esc(m.summary) : 'Still hidden — ' + U.esc(m.date + ', ' + m.place)}</span></div>`;
+        }).join('')}
+        </div>`;
+    }
+
+    function story() {
+      const links = SAN.lore ? SAN.lore.story() : [];
+      const arc = SAN.lore ? SAN.lore.arcStage() : null;
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Main story connections</div>
+        ${arc ? `<p class="fineprint">${arc.unlocked} of ${arc.total} memories recovered · ${U.esc(arc.title)}</p><p>${U.esc(arc.beat)}</p>` : ''}
+        ${links.map((l) => `<div class="lore-tie ${l.open ? 'on' : ''}"><div class="lore-tie-head"><b>${l.open ? U.esc(l.title) : 'A door you have not opened'}</b><i>${U.esc(l.arc)}</i></div>
+          <span>${l.open ? U.esc(l.text) : 'Something in the village points here. It is not ready to be said.'}</span></div>`).join('')}
+        <div class="prompt-label">Local legends</div>
+        ${(world.LEGENDS || []).map((t) => `<div class="lore-line">${U.esc(t)}</div>`).join('')}
+        </div>`;
+    }
+
+    const views = { chronicle, people, ties, memories, story };
+    function show(t) {
+      tab = t;
+      el.querySelectorAll('.lore-tabs .chip').forEach((b) => b.classList.toggle('active', b.getAttribute('data-t') === t));
+      views[t]();
+    }
+    el.querySelectorAll('.lore-tabs .chip').forEach((b) => {
+      b.addEventListener('click', () => show(b.getAttribute('data-t')));
+    });
+    show(tab);
   };
 
 })();

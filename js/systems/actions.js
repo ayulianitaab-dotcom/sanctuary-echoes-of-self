@@ -524,6 +524,9 @@
       if (rstage >= 4) choices.push({ label: 'Ask how they are', icon: '🤍', cb: function () { SAN.romance.comfort(def.id); } });
       if (rstage >= 5 && SAN.state.S.player.area === 'home') choices.push({ label: 'Ask them to stay the night', icon: '🌙', cb: function () { SAN.romance.stayNight(def.id); } });
     }
+    if (SAN.lore && SAN.lore.availableFor && SAN.lore.availableFor(def.id).length) {
+      choices.push({ label: 'Ask about their past', icon: '📖', cb: function () { SAN.lore.talk(def.id); } });
+    }
     choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
     choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
     choices.push({ label: 'Not right now', icon: '✕', cb: function () { } });

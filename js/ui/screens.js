@@ -729,6 +729,7 @@
                 <span class="cc-sum"><i>Pronouns</i><b id="cc-sum-pronoun"></b></span>
                 <span class="cc-sum"><i>Carried</i><b id="cc-sum-background"></b></span>
                 <span class="cc-sum"><i>Temperament</i><b id="cc-sum-temperament"></b></span>
+                <span class="cc-sum"><i>Why you came</i><b id="cc-sum-reason"></b></span>
               </div>
               <p class="cc-carried" id="cc-carried"></p>
             </div>
@@ -765,6 +766,15 @@
               </div>
               <div class="cc-cards" id="cr-temperament" role="group" aria-label="How you meet the day"></div>
             </section>
+            <section class="cc-section" aria-labelledby="cc-sec-reason">
+              <div class="cc-sec-head">
+                <span class="cc-sec-num" aria-hidden="true">IV</span>
+                <h3 id="cc-sec-reason">Why You Came</h3>
+                <span class="cc-sec-rule" aria-hidden="true"></span>
+              </div>
+              <p class="cc-sub">The village will not ask you to justify it. It will notice, later, in how you talk about home.</p>
+              <div class="cc-cards" id="cr-reason" role="group" aria-label="Why you came"></div>
+            </section>
           </div>
         </div>
         <footer class="cc-actions">
@@ -786,6 +796,7 @@
     const sumPronoun = wrap.querySelector('#cc-sum-pronoun');
     const sumBackground = wrap.querySelector('#cc-sum-background');
     const sumTemperament = wrap.querySelector('#cc-sum-temperament');
+    const sumReason = wrap.querySelector('#cc-sum-reason');
 
     // the official reference artwork, framed exactly as drawn
     portrait.innerHTML = SAN.render.fullBodyImg();
@@ -838,6 +849,10 @@
       wrap.querySelector('#cr-temperament').innerHTML = SAN.state.TEMPERAMENTS.map(function (t) {
         return chipMarkup(t, 'temperament', t.id);
       }).join('');
+      const reasons = ((SAN.data.lore || {}).REASONS || []);
+      wrap.querySelector('#cr-reason').innerHTML = reasons.map(function (r) {
+        return chipMarkup(r, 'reason', 'garden');
+      }).join('');
     }
 
     function paint() {
@@ -849,6 +864,9 @@
       sumPronoun.textContent = pr.name;
       sumBackground.textContent = bg.name;
       sumTemperament.textContent = temp.name;
+      const reasonList = ((SAN.data.lore || {}).REASONS || []);
+      const reason = reasonList.find(function (r) { return r.id === custom.reason; }) || reasonList[0];
+      if (sumReason) sumReason.textContent = reason ? reason.name : 'A fresh start';
       const all = SAN.state.carriedItems({ background: bg.id, temperament: temp.id });
       carriedEl.textContent = all.length
         ? 'In your satchel: ' + all.map(function (g) { return carriedLabel(g.id, g.count); }).join(', ') + '.'
@@ -872,6 +890,7 @@
     chooseFrom('#cr-pronoun', 'pronoun');
     chooseFrom('#cr-background', 'background');
     chooseFrom('#cr-temperament', 'temperament');
+    chooseFrom('#cr-reason', 'reason');
 
     nameInput.addEventListener('input', function () {
       custom.name = nameInput.value;
@@ -906,6 +925,8 @@
       custom.pronoun = other(SAN.state.PRONOUNS, custom.pronoun);
       custom.background = other(SAN.state.BACKGROUNDS, custom.background);
       custom.temperament = other(SAN.state.TEMPERAMENTS, custom.temperament);
+      const reasons = ((SAN.data.lore || {}).REASONS || []);
+      if (reasons.length) custom.reason = other(reasons, custom.reason);
       renderChoices();
       paint();
       if (SAN.audio && SAN.audio.sfx) SAN.audio.sfx('open');
@@ -927,6 +948,8 @@
       custom.pronoun = SAN.state.pronoun(custom.pronoun).id;
       custom.background = SAN.state.background(custom.background).id;
       custom.temperament = SAN.state.temperament(custom.temperament).id;
+      const reasonIds = ((SAN.data.lore || {}).REASONS || []).map(function (r) { return r.id; });
+      if (reasonIds.length && reasonIds.indexOf(custom.reason) < 0) custom.reason = reasonIds[0];
       close();
       SC.beginGame(custom);
     });
@@ -948,8 +971,10 @@
       const it = SAN.data.item(g.id);
       return (it ? it.name : g.id) + (g.count > 1 ? ' ×' + g.count : '');
     }).join(', ');
+    const reason = (SAN.data.lore && SAN.data.lore.REASONS || []).find((r) => r.id === custom.reason);
     const ledger = 'The village ledger writes you down as ' + (custom.name || 'Elara') + ' — ' + pr.name + '.' +
-      (carried ? ' In your satchel: ' + carried + '.' : '');
+      (carried ? ' In your satchel: ' + carried + '.' : '') +
+      (reason ? ' Why you came: ' + reason.name.toLowerCase() + '.' : '');
     S_.started = true;
     SAN.ui.titleActive = true;
     document.getElementById('title-screen').classList.add('hidden');

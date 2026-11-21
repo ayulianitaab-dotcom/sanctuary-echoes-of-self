@@ -55,6 +55,7 @@
     SAN.farming.growAll();
     SAN.quests.refreshBoard();
     if (SAN.cityLife) SAN.cityLife.tickDay();
+    if (SAN.lore) SAN.lore.tickDay();
     SAN.cat.newDay();
     S.house.fireplace = false;
     const fest = SAN.data.eventOn(S.time.season, S.time.day);

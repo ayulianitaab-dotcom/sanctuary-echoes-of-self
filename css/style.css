@@ -2556,3 +2556,46 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
 .book-entry-who { font-size: 11.5px; color: #8a7761; margin-top: 2px; }
 .book-entry-text { font-size: 12.5px; line-height: 1.55; color: #5f5245; margin-top: 5px; }
 .book-entry-meta { font-size: 10.5px; color: #a08a6a; margin-top: 5px; letter-spacing: 0.02em; }
+/* world history, character lore and backstory memories */
+.lore-box { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: rgba(201, 173, 117, 0.1); border: 1px solid rgba(201, 173, 117, 0.35); }
+.lore-count { float: right; font-weight: 400; font-size: 10.5px; color: #a08a6a; letter-spacing: 0.04em; }
+.lore-layer { margin: 6px 0; font-size: 12.5px; line-height: 1.55; color: #5f5245; }
+.lore-layer b { display: block; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a7761; margin-bottom: 2px; }
+.lore-layer.locked { opacity: 0.55; font-style: italic; }
+.lore-block { margin-bottom: 18px; }
+.lore-block p { font-size: 12.5px; line-height: 1.6; color: #5f5245; margin: 6px 0; }
+.lore-beats { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.lore-beat { display: flex; gap: 8px; font-size: 12px; color: #5f5245; line-height: 1.5; }
+.lore-beat i { flex: none; width: 18px; height: 18px; border-radius: 50%; background: rgba(189, 168, 220, 0.35); color: #5f4f70; font-style: normal; font-size: 10.5px; display: grid; place-items: center; }
+.lore-timeline { display: flex; flex-direction: column; gap: 3px; max-height: 300px; overflow: auto; padding-right: 6px; }
+.lore-tl-row { display: flex; gap: 10px; font-size: 11.5px; line-height: 1.5; color: #5f5245; }
+.lore-tl-row b { flex: none; width: 132px; color: #8a7761; font-weight: 600; }
+.lore-tl-row i { font-style: normal; color: #5f4f70; }
+.lore-place { padding: 8px 0; border-top: 1px solid rgba(201, 173, 117, 0.25); font-size: 12px; line-height: 1.55; color: #5f5245; }
+.lore-place b { display: block; color: #5f4f70; font-size: 12.5px; }
+.lore-place i { display: block; font-style: normal; font-size: 10.5px; color: #a08a6a; margin-bottom: 2px; }
+.lore-line { font-size: 12px; line-height: 1.55; color: #5f5245; margin: 4px 0; }
+.lore-line b { color: #5f4f70; }
+.lore-line i { font-style: normal; color: #a08a6a; font-size: 10.5px; }
+.lore-people { display: flex; gap: 14px; align-items: flex-start; }
+.lore-person-list { flex: 1 1 44%; display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow: auto; }
+.lore-person { display: flex; gap: 8px; align-items: center; text-align: left; padding: 6px 8px; border-radius: 9px; border: 1px solid rgba(201, 173, 117, 0.28); background: rgba(255, 252, 246, 0.6); cursor: pointer; }
+.lore-person img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.lore-person span { display: flex; flex-direction: column; }
+.lore-person b { font-size: 12px; color: #5f5245; }
+.lore-person i { font-style: normal; font-size: 10.5px; color: #8a7761; }
+.lore-person em { font-style: normal; font-size: 10px; color: #a08a6a; }
+.lore-person.active { border-color: #bda8dc; background: rgba(189, 168, 220, 0.2); }
+.lore-person-body { flex: 1 1 56%; min-width: 0; max-height: 460px; overflow: auto; padding-right: 4px; }
+.lore-person-head { margin-bottom: 8px; }
+.lore-mem-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.lore-tie { padding: 8px 10px; margin: 6px 0; border-radius: 9px; background: rgba(255, 252, 246, 0.6); border: 1px solid rgba(201, 173, 117, 0.25); font-size: 12px; line-height: 1.55; color: #5f5245; }
+.lore-tie.on { border-color: rgba(189, 168, 220, 0.6); background: rgba(189, 168, 220, 0.1); }
+.lore-tie-head { display: flex; justify-content: space-between; gap: 8px; }
+.lore-tie-head b { color: #5f4f70; font-size: 12.5px; }
+.lore-tie-head i { font-style: normal; font-size: 10.5px; color: #a08a6a; white-space: nowrap; }
+.lore-tie span { display: block; margin-top: 2px; }
+.lore-tie .fineprint { color: #8a7761; }
+.lore-memory { padding: 8px 10px; margin: 6px 0; border-radius: 9px; border: 1px dashed rgba(160, 138, 106, 0.4); font-size: 12px; line-height: 1.55; color: #6d5f52; }
+.lore-memory.on { border-style: solid; border-color: rgba(201, 173, 117, 0.5); background: rgba(255, 252, 246, 0.65); }
+@media (max-width: 760px) { .lore-people { flex-direction: column; } .lore-person-list, .lore-person-body { max-height: none; width: 100%; } }

@@ -14,6 +14,9 @@ FILES=(
   js/data/visual-registry.js
   js/data/psychology.js
   js/data/social.js
+  js/data/lore-world.js
+  js/data/lore-characters.js
+  js/data/lore-memories.js
   js/data/romance.js
   js/data/scenes-illustrated.js
   js/data/scenes.js
@@ -40,6 +43,7 @@ FILES=(
   js/systems/psychology.js
   js/systems/city-life.js
   js/systems/memory-book.js
+  js/systems/lore.js
   js/systems/photos.js
   js/systems/actions.js
   js/ui/ui.js

@@ -58,3 +58,16 @@ SCENE_PROVIDER=openai OPENAI_API_KEY=... php tools/scene-generate.php --scene ..
 `docs/reference/retired-npc-lineup.webp` — the old NPC Lineup Reference. It
 shows Liora and the female, pink-haired Elowen, so it must never be sliced
 again; `tools/build-npc-assets.php` now refuses to run. Kept only as history.
+
+### 3. Flashback illustrations (childhood / memory scenes)
+- **Status:** queued. Not generated. The available text-to-image tool cannot accept the
+  official character references, so using it would risk changing faces, hair, eyes,
+  clothing or apparent age.
+- **Targets:** `assets/scenes/memories/<memory-id>.webp`
+- **Memory ids:** see `js/data/lore-memories.js` (20 entries; each has `plate` as the
+  interim composed plate).
+- **Reference set per request:** the NPC's `neutral.png`, `fullbody.png`, and, for child
+  scenes, a reference sheet at the intended age; plus the location plate named in the
+  entry. The request must state the age of the character in the scene.
+- **Until a reference-capable provider is connected:** the game composes the official
+  artwork over the plate and labels the scene as composed. No flashback art is claimed.

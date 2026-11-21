@@ -98,6 +98,7 @@
       gender: 'feminine',
       pronoun: 'she',
       background: 'tide',
+      reason: 'fresh_start',
       temperament: 'gentle',
       hair: 'wavy',
       hairColor: '#dcc9a8',
@@ -157,6 +158,7 @@
         gender: custom.gender,
         pronoun: St.pronoun(custom.pronoun).id,
         background: background.id,
+        reason: custom.reason || 'fresh_start',
         temperament: temperament.id,
         hair: custom.hair,
         hairColor: custom.hairColor,
@@ -194,6 +196,7 @@
       romance: {},
       scenes: { seen: {}, log: [] },
       psychology: {},
+      lore: { unlocked: {}, seen: {}, flags: {}, offers: {} },
       city: { day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] },
       memoryBook: [],
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
@@ -275,6 +278,7 @@
     // saves from before identity existed fall back to the defaults
     merged.player.pronoun = St.pronoun(merged.player.pronoun).id;
     merged.player.background = St.background(merged.player.background).id;
+    merged.player.reason = merged.player.reason || 'fresh_start';
     merged.player.temperament = St.temperament(merged.player.temperament).id;
     merged.player.colors = Object.assign({}, St.playerColors(merged.player), (snap.player && snap.player.colors) || {});
     merged.time = Object.assign({}, base.time, snap.time || {});
@@ -286,6 +290,7 @@
     merged.psychology = Object.assign({}, snap.psychology || {});
     merged.city = Object.assign({ day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] }, snap.city || {});
     merged.memoryBook = Array.isArray(snap.memoryBook) ? snap.memoryBook : [];
+    merged.lore = Object.assign({ unlocked: {}, seen: {}, flags: {}, offers: {} }, snap.lore || {});
     merged.quests = Object.assign({ active: {}, completed: {}, board: [], boardDay: 0, offered: {} }, snap.quests || {});
     merged.house = Object.assign({ furniture: [] }, snap.house || {});
     merged.cat = Object.assign({}, base.cat, snap.cat || {});

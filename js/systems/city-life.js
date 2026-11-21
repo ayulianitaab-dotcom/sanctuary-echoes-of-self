@@ -216,7 +216,7 @@
         once: !!ev.once,
       });
     }
-    if (SAN.state && SAN.state.save) SAN.state.save();
+    if (SAN.save && SAN.save.autosave) SAN.save.autosave();
   };
 
   /* run the event: cinematic plate first, then the conversation on top of it */

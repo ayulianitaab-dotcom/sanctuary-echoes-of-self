@@ -2566,6 +2566,49 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
 .book-entry-who { font-size: 11.5px; color: #8a7761; margin-top: 2px; }
 .book-entry-text { font-size: 12.5px; line-height: 1.55; color: #5f5245; margin-top: 5px; }
 .book-entry-meta { font-size: 10.5px; color: #a08a6a; margin-top: 5px; letter-spacing: 0.02em; }
+/* world history, character lore and backstory memories */
+.lore-box { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: rgba(201, 173, 117, 0.1); border: 1px solid rgba(201, 173, 117, 0.35); }
+.lore-count { float: right; font-weight: 400; font-size: 10.5px; color: #a08a6a; letter-spacing: 0.04em; }
+.lore-layer { margin: 6px 0; font-size: 12.5px; line-height: 1.55; color: #5f5245; }
+.lore-layer b { display: block; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a7761; margin-bottom: 2px; }
+.lore-layer.locked { opacity: 0.55; font-style: italic; }
+.lore-block { margin-bottom: 18px; }
+.lore-block p { font-size: 12.5px; line-height: 1.6; color: #5f5245; margin: 6px 0; }
+.lore-beats { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.lore-beat { display: flex; gap: 8px; font-size: 12px; color: #5f5245; line-height: 1.5; }
+.lore-beat i { flex: none; width: 18px; height: 18px; border-radius: 50%; background: rgba(189, 168, 220, 0.35); color: #5f4f70; font-style: normal; font-size: 10.5px; display: grid; place-items: center; }
+.lore-timeline { display: flex; flex-direction: column; gap: 3px; max-height: 300px; overflow: auto; padding-right: 6px; }
+.lore-tl-row { display: flex; gap: 10px; font-size: 11.5px; line-height: 1.5; color: #5f5245; }
+.lore-tl-row b { flex: none; width: 132px; color: #8a7761; font-weight: 600; }
+.lore-tl-row i { font-style: normal; color: #5f4f70; }
+.lore-place { padding: 8px 0; border-top: 1px solid rgba(201, 173, 117, 0.25); font-size: 12px; line-height: 1.55; color: #5f5245; }
+.lore-place b { display: block; color: #5f4f70; font-size: 12.5px; }
+.lore-place i { display: block; font-style: normal; font-size: 10.5px; color: #a08a6a; margin-bottom: 2px; }
+.lore-line { font-size: 12px; line-height: 1.55; color: #5f5245; margin: 4px 0; }
+.lore-line b { color: #5f4f70; }
+.lore-line i { font-style: normal; color: #a08a6a; font-size: 10.5px; }
+.lore-people { display: flex; gap: 14px; align-items: flex-start; }
+.lore-person-list { flex: 1 1 44%; display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow: auto; }
+.lore-person { display: flex; gap: 8px; align-items: center; text-align: left; padding: 6px 8px; border-radius: 9px; border: 1px solid rgba(201, 173, 117, 0.28); background: rgba(255, 252, 246, 0.6); cursor: pointer; }
+.lore-person img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.lore-person span { display: flex; flex-direction: column; }
+.lore-person b { font-size: 12px; color: #5f5245; }
+.lore-person i { font-style: normal; font-size: 10.5px; color: #8a7761; }
+.lore-person em { font-style: normal; font-size: 10px; color: #a08a6a; }
+.lore-person.active { border-color: #bda8dc; background: rgba(189, 168, 220, 0.2); }
+.lore-person-body { flex: 1 1 56%; min-width: 0; max-height: 460px; overflow: auto; padding-right: 4px; }
+.lore-person-head { margin-bottom: 8px; }
+.lore-mem-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.lore-tie { padding: 8px 10px; margin: 6px 0; border-radius: 9px; background: rgba(255, 252, 246, 0.6); border: 1px solid rgba(201, 173, 117, 0.25); font-size: 12px; line-height: 1.55; color: #5f5245; }
+.lore-tie.on { border-color: rgba(189, 168, 220, 0.6); background: rgba(189, 168, 220, 0.1); }
+.lore-tie-head { display: flex; justify-content: space-between; gap: 8px; }
+.lore-tie-head b { color: #5f4f70; font-size: 12.5px; }
+.lore-tie-head i { font-style: normal; font-size: 10.5px; color: #a08a6a; white-space: nowrap; }
+.lore-tie span { display: block; margin-top: 2px; }
+.lore-tie .fineprint { color: #8a7761; }
+.lore-memory { padding: 8px 10px; margin: 6px 0; border-radius: 9px; border: 1px dashed rgba(160, 138, 106, 0.4); font-size: 12px; line-height: 1.55; color: #6d5f52; }
+.lore-memory.on { border-style: solid; border-color: rgba(201, 173, 117, 0.5); background: rgba(255, 252, 246, 0.65); }
+@media (max-width: 760px) { .lore-people { flex-direction: column; } .lore-person-list, .lore-person-body { max-height: none; width: 100%; } }
 </style>
 </head>
 <body>
@@ -5248,6 +5291,1166 @@ window.SAN = window.SAN || {};
     '"You have both been in that greenhouse for six hours." / "Time is different in here."',
     '"Do not think I did not notice you paying for her tea." / "Then it is working."',
   ];
+
+})();
+</script>
+<script>
+/* Sanctuary — world history, places, traditions and the master timeline.
+   The story begins in Spring, Year 1. Anything earlier is written as
+   "Year -N", so every age, arrival and building date can be checked against
+   one clock. NPC ages and tenures here are the canonical ones used by
+   lore-characters.js. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const W = (D.worldLore = {});
+
+  W.START = { season: 0, day: 1, year: 1 };
+  W.FOUNDING_YEAR = -180;
+
+  W.PLACES = {
+    village: {
+      name: 'Sanctuary Village',
+      built: -180,
+      history: 'Founded by nine households who arrived after a flood took their river town. They built around a spring that never froze, and named the place for what it was: a shelter, not a destination.',
+      now: 'The well in the square is the oldest structure; its stones were carried from the ruin in the forest. The village has never had a wall or a gate, which the founders considered the whole point.',
+    },
+    lighthouse: {
+      name: 'The Lighthouse',
+      built: -122,
+      history: 'Built after the wreck of the Merrow in a fog that lasted nine days. The first keeper, Alder Vey, kept the lamp lit with whale oil and a promise to every ship that passed: someone is awake.',
+      now: 'The lamp was converted to gas in Year -40, and the logbook has been kept without a gap since Year -122. Lucien writes in it every night.',
+    },
+    windmill: {
+      name: 'The Whispering Windmill',
+      built: -96,
+      history: 'Raised by the Ashcombe family to grind grain for the whole valley. Its gears were cut by a millwright who refused to draw plans, so every repair since has been a conversation with a stubborn ghost.',
+      now: 'The mill still turns for bread, and the sound it makes in a north wind is where the name comes from. Rowan has repaired the same gear three times and named it.',
+    },
+    greenhouse: {
+      name: 'The Shared Greenhouse',
+      built: -74,
+      history: 'Glass bought with money the village raised to keep a physician from leaving. She stayed two years, taught the valley to grow winter greens, and left the building to the village rather than to a family.',
+      now: 'It is held in common, worked by Elowen, and the only place in Sanctuary where something is always blooming, even in snow.',
+    },
+    bakery: {
+      name: 'The Village Bakery',
+      built: -61,
+      history: 'Started in a front room by Odile Marchetti, who baked for the mill workers on credit and kept the debts in a book she never collected.',
+      now: 'Mira runs it and continues the tradition of the unpaid page. The oven is older than the building around it.',
+    },
+    flower: {
+      name: 'The Flower Shop',
+      built: -58,
+      history: 'Marigold Wren turned a cutting garden into a shop after the influenza winter of Year -59, when the village needed something to put in the hands of the grieving.',
+      now: 'Celeste keeps the language of flowers her grandmother taught her, including the meanings nobody asks for.',
+    },
+    library: {
+      name: 'The Village Library',
+      built: -49,
+      history: 'A reading room added to the schoolhouse by Maren Vale, who believed a village that keeps records cannot be lied to easily. The first ledger of Sanctuary is kept here.',
+      now: 'Aria catalogues everything, including a box of papers people asked the village to forget.',
+    },
+    beach: {
+      name: 'The Shore & Fishing Huts',
+      built: -170,
+      history: 'The original settlers fished before they built. The huts were rebuilt after the storm of Year -33, when three boats were lost and the village learned how quickly the sea can change its mind.',
+      now: 'Finn keeps the last of the old family boats afloat. The star hook hangs in his shed, and nobody else is allowed to use it.',
+    },
+    teashop: {
+      name: 'The Tea Shop',
+      built: -44,
+      history: 'Opened by a retired lighthouse keeper who could not sleep without a light on. It has never once closed early.',
+      now: 'The back table is understood to belong to whoever needs it most that day.',
+    },
+    grove: {
+      name: 'The Hidden Grove',
+      built: null,
+      history: 'Older than the village. Three standing stones with the marks of moth, wave and leaf; the founders found it and deliberately left it out of the first map.',
+      now: 'The forest keeps it shut to anyone who has not learned the order. What is buried there was buried on purpose.',
+    },
+    forest: {
+      name: 'The Memory Forest',
+      built: null,
+      history: 'The settlers called it that because they buried their dead at its edge and planted a tree for each name. The oldest trees are named in the ledger.',
+      now: 'People still leave small things at the roots: a shell, a ribbon, a note that says only "I was here."',
+    },
+  };
+
+  W.TRADITIONS = [
+    { name: 'First Lantern', when: 'Spring 1', text: 'One lantern is lit at the well and carried to the lighthouse. Whoever carries it does not speak the whole way. The village says the wish travels better in silence.' },
+    { name: 'Bread for the Unpaid Page', when: 'Every market day', text: 'A loaf is set aside for anyone who cannot pay. The ledger of debts is never collected and never thrown away.' },
+    { name: 'Flowers to the Light', when: 'Early spring', text: 'A bouquet is left at the lighthouse door on the anniversary of the Merrow. The sender is not named.' },
+    { name: 'The Fence Mending', when: 'Late autumn', text: 'Everyone repairs the same boundary fence together. It is not really about the fence.' },
+    { name: 'Names at the Roots', when: 'Winter solstice', text: 'Small objects are left at the oldest trees for people who are gone. Nobody explains what they leave.' },
+  ];
+
+  W.LEGENDS = [
+    'The Guardian: the village says a promise was made at the well by the founder, Elspeth Wren, and that the promise still walks. Nyssa neither confirms nor denies it, which the village takes as confirmation.',
+    'The Merrow: a ship that went down in fog off the point. Its bell is said to ring on the night before a storm, though the lighthouse log records no bell.',
+    'The Ninth Household: the founding charter names nine families, but only eight are listed in the cemetery. The ninth name was scraped off the stone, and the ledger page has been cut out.',
+    'The Keeper\'s Rule: a lighthouse keeper must never let the lamp go dark for a person, only for weather. Breaking it is said to call a ship home that should not come back.',
+  ];
+
+  W.SECRETS = [
+    { id: 'ninth_household', title: 'The Ninth Household', text: 'The missing founder was Elspeth Wren\'s sister, Sable, who left the village in its third year after a quarrel over the well. The page was cut out by Elspeth herself. Sable\'s descendants are not recorded — but the cottage on the hill was built for her, and stayed empty for a century.' },
+    { id: 'unlabelled_box', title: 'The Unlabelled Box', text: 'The library keeps a box of letters people asked the village to forget: confessions, refusals, one unsent apology from a keeper to his mother. Aria has never opened it. She knows exactly where it is.' },
+    { id: 'ilse_letter', title: 'The Letter That Washed Up', text: 'Ilse wrote to Lucien from the port, four sentences late. The letter never reached him; it went into the sea and came back years later. Celeste recognised the handwriting and has said nothing.' },
+    { id: 'maren_page', title: 'Maren\'s Last Page', text: 'The final page of the village ledger, written the week before Maren Vale died, names the cottage on the hill and says: "Leave it to the one who comes asking. They will need a place that does not require them to be anyone yet."' },
+    { id: 'winter_route', title: 'Theo\'s Winter', text: 'Theo does not vanish in winter for mystery. He spends it with his brother\'s family in Greyford, helping with a shop he once lost. He has never told anyone in Sanctuary because he is ashamed of how much he needs to be needed there.' },
+    { id: 'star_hook', title: 'The Star Hook', text: 'Finn\'s grandfather made the star hook for Finn\'s father, who drowned with it in his pocket. Finn found it years later in the wreck, cleaned it, and tells everyone it was "the last thing that was actually his" — meaning his father\'s, not his own.' },
+  ];
+
+  W.HISTORICAL_EVENTS = [
+    { year: -180, title: 'The Nine Households Arrive', text: 'Flood refugees settle around a spring that never freezes. The first winter kills eleven; the survivors plant gardens over the graves.' },
+    { year: -176, title: 'The Well Is Dug', text: 'The spring is walled in. Elspeth Wren makes a promise there that the village will remain a place people can return to.' },
+    { year: -122, title: 'The Merrow Wreck', text: 'A ship is lost in a nine-day fog. The village raises a lighthouse on the point, funded by the families of the drowned.' },
+    { year: -96, title: 'The Windmill Rises', text: 'The Ashcombes grind the valley\'s first harvest. Bread stops being a thing brought in by cart.' },
+    { year: -74, title: 'The Greenhouse Is Given', text: 'The village pools money for a physician; she leaves the greenhouse to the village instead of a family.' },
+    { year: -61, title: 'Odile\'s Oven', text: 'The bakery opens on credit and never closes. Its debt book becomes a village joke and then a village ethic.' },
+    { year: -59, title: 'The Influenza Winter', text: 'Forty-one people die. Marigold Wren plants a cutting garden so the grieving have something to hold.' },
+    { year: -49, title: 'The Reading Room', text: 'Maren Vale adds a library to the schoolhouse and begins the village ledger.' },
+    { year: -33, title: 'The Storm', text: 'Three fishing boats are lost. The village rebuilds the huts and starts the tradition of the fence.' },
+    { year: -12, title: 'The Long Dry Summer', text: 'The well drops; the greenhouse keeps the valley fed. Rowan, then thirteen, carries water for the mill.' },
+    { year: -4, title: 'The Lamp Changes Hands', text: 'Old Bram retires and Ilse leaves the same spring. Lucien, twenty-three, takes the lamp alone and does not ask anyone to stay.' },
+    { year: -1, title: 'Maren Vale Dies', text: 'The library closes for a week. Aria finds the last page of the ledger, and the cottage on the hill is left empty.' },
+    { year: 1, title: 'You Arrive', text: 'The cottage is unlocked, the kettle is where someone left it, and the village has been expecting someone without knowing who.' },
+  ];
+
+  /* Master timeline — the one place to check ages, arrivals and tenures. */
+  W.TIMELINE = [
+    { year: -180, title: 'Sanctuary founded', text: 'Nine households; the well promise.' },
+    { year: -122, title: 'Lighthouse built', text: 'After the Merrow.' },
+    { year: -96, title: 'Windmill built', text: 'Ashcombe mill.' },
+    { year: -74, title: 'Greenhouse built', text: 'Given to the village.' },
+    { year: -61, title: 'Bakery opens', text: 'Odile Marchetti.' },
+    { year: -58, title: 'Flower shop opens', text: 'Marigold Wren.' },
+    { year: -49, title: 'Library founded', text: 'Maren Vale begins the ledger.' },
+    { year: -41, title: 'Finn born', text: 'Native; fishing family.' },
+    { year: -35, title: 'Celeste born', text: 'Native; Wren flower family.' },
+    { year: -32, title: 'Mira born', text: 'Greyford.' },
+    { year: -30, title: 'Theo born', text: 'Ashford Cross.' },
+    { year: -29, title: 'Aria born', text: 'Meridian.' },
+    { year: -29, title: 'Finn\'s father drowns', text: 'Finn is twelve; the star hook is lost and later found.' },
+    { year: -27, title: 'Lucien born', text: 'Hallowmere, inland.' },
+    { year: -25, title: 'Rowan born', text: 'Native; mill apprentice line.' },
+    { year: -24, title: 'Elowen born', text: 'Native; greenhouse family.' },
+    { year: -17, title: 'Celeste leaves for art school', text: 'Port Meridian, at eighteen; returns Year -13.' },
+    { year: -14, title: 'Mira arrives', text: 'Age eighteen, with her aunt Petra; bakery apprenticeship.' },
+    { year: -13, title: 'Celeste returns', text: 'Takes the flower shop after Marigold\'s death.' },
+    { year: -11, title: 'Theo leaves home', text: 'Begins the trade road at nineteen.' },
+    { year: -9, title: 'Aria arrives', text: 'Age twenty; inherits Maren\'s ledger work.' },
+    { year: -9, title: 'Rowan apprentices', text: 'Old Wick takes him at sixteen.' },
+    { year: -12, title: 'The long dry summer', text: 'The well drops; the greenhouse feeds the valley. Rowan, thirteen, carries water.' },
+    { year: -8, title: 'Lucien arrives', text: 'Age nineteen; assistant keeper under Old Bram.' },
+    { year: -8, title: 'Finn\'s mother dies', text: 'Finn keeps the boat and the house.' },
+    { year: -6, title: 'Theo first visits Sanctuary', text: 'Winters in Greyford ever since.' },
+    { year: -5, title: 'Rowan takes the mill', text: 'Old Wick retires to the coast.' },
+    { year: -4, title: 'Ilse leaves; Bram retires', text: 'Lucien becomes keeper alone.' },
+    { year: -3, title: 'Elowen takes the greenhouse', text: 'His parents move to the coast; his sister Iris is already in Meridian.' },
+    { year: -1, title: 'Maren Vale dies', text: 'The cottage is left to "whoever comes asking".' },
+    { year: 1, title: 'Main story begins', text: 'The player arrives in spring.' },
+  ];
+
+  /* newest first, so the codex reads like a chronicle */
+  W.TIMELINE.sort((a, b) => b.year - a.year);
+
+  W.NEIGHBOURS = {
+    greyford: 'Market town two days east. Mira\'s family bakery, Theo\'s brother\'s shop, and the road that most newcomers arrive by.',
+    meridian: 'Port city three days south. Art school, university, and the place Celeste, Iris and Aria each tried to become someone else.',
+    hallowmere: 'Inland lake town. Lucien\'s birthplace; known for bells and for people leaving quietly.',
+    ashford: 'Crossroads village north. Theo\'s birthplace; a place of carts and other people\'s goods.',
+  };
+
+  W.ARC = {
+    title: 'The Ledger of Kept Things',
+    premise: 'Sanctuary survives by keeping what people ask it to forget. Maren Vale kept the ledger and the unlabelled box; Aria inherited both; Nyssa has been keeping the promise underneath it for a hundred and eighty years. The player arrives in the cottage built for the founder who was written out.',
+    beats: [
+      'Arrival: the cottage, the ledger page with your name, Nyssa at the well.',
+      'Belonging: work, neighbours, the first festival, the first thing you are trusted with.',
+      'Cracks: letters that never arrived, a ninth founder, a keeper who will not ask anyone to stay.',
+      'The box: Aria must decide whether the village may read what it asked to forget.',
+      'The promise: Nyssa reveals what she actually promised, and what it costs her.',
+      'Keeping: the player chooses what Sanctuary remembers — and what it is allowed to release.',
+    ],
+  };
+})();
+</script>
+<script>
+/* Sanctuary — character lore registry.
+   Every entry is data, not dialogue. The game reveals it in layers through
+   the LoreUnlockManager, so a stranger hears the occupation and a close
+   friend hears the wound.
+
+   Timeline anchor: Spring, Year 1 = the player's arrival. Birth years are
+   given as Year -N so ages can be checked against the story clock. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const L = (D.lore = D.lore || {});
+  L.characters = {};
+
+  L.characters.nyssa = {
+    id: 'nyssa',
+    name: 'Nyssa',
+    fullName: 'Nyssa of the Well (no surname; the village never gave her one)',
+    age: 'ageless — appears about thirty',
+    birthday: 'Spring 1, the night the first lantern is lit',
+    birthplace: 'Sanctuary, at the well, in the third year after the founding',
+    profession: 'Village Guardian',
+    family: {
+      parents: 'None she will name. She says she was "made from a promise and a badly kept garden".',
+      siblings: 'None.',
+      note: 'The founders treated her as a neighbour rather than a spirit, which is why she stayed.',
+    },
+    childhood: 'She has no childhood in the human sense. Her first memory is a voice at the well asking her to keep the valley kind, and the smell of wet stone. She learned people by watching them be small and stubborn and brave, one generation at a time.',
+    teens: 'Her "teens" were the village\'s first hard decade: bad winters, a quarrel over the well, a founder erased from the charter. She learned that protecting people and controlling them can look identical from the outside.',
+    education: 'She cannot read the way people mean it. She remembers everything said near the well, which is worse and better.',
+    memories: [
+      'Elspeth Wren\'s hands on the well stones, saying: "Keep them kind. Not safe. Kind."',
+      'A child in Year -74 leaving a wooden boat at the well for a brother who did not come home.',
+      'Maren Vale, very old, telling her: "You are allowed to be tired of being the promise."',
+    ],
+    pastFriends: ['Elspeth Wren (founder; the first promise)', 'Maren Vale (four decades of quiet company)', 'Old Bram, the lighthouse keeper, who left her a chair by the lamp.'],
+    pastRomance: 'None. She has been loved by villagers in the way a place is loved. She does not experience romance as humans do, and says so plainly rather than letting anyone hope otherwise.',
+    majorEvents: [
+      'Year -180: the promise at the well.',
+      'Year -176: the ninth founder is written out; Nyssa keeps the cut page rather than the argument.',
+      'Year -122: she stands on the point all night during the Merrow fog and cannot save them.',
+      'Year -1: Maren dies; Nyssa begins waiting for whoever the cottage was left to.',
+    ],
+    wounds: [
+      'She could not save the Merrow, and has counted the lighthouse lamp as an apology for a hundred and twenty years.',
+      'She was asked to keep a promise she never consented to, by a woman who was dying.',
+    ],
+    insecurities: [
+      'That she is only liked because she is useful.',
+      'That if she stops watching for one night, something irreplaceable will happen and no one will tell her.',
+    ],
+    positive: ['Patient', 'quietly funny', 'unshakably kind', 'remembers what people need without being asked'],
+    negative: ['Overprotective', 'slow to trust outsiders with the village', 'tends to arrange situations "for everyone\'s good"'],
+    attachment: 'secure in her own nature, but anxious about the village — she attaches to places more easily than to people',
+    triggers: [
+      { id: 'nyssa_control', label: 'Being told she is controlling', response: 'She goes very still and formal, then over-explains her reasoning.', recovery: 'Someone naming a specific fear she can actually answer, instead of a general accusation.' },
+      { id: 'nyssa_leaving', label: 'Someone packing to leave without saying goodbye', response: 'She withdraws first, so it cannot be done to her.', recovery: 'A plain statement of return — "I am going, and I am coming back."' },
+    ],
+    loveLanguage: { primary: 'acts_of_service', secondary: 'quality_time' },
+    boundaries: ['She will not answer questions about the founding for free.', 'She does not enter the cottage uninvited.', 'She will not be called a god.'],
+    occupation: 'Keeps the well, the square, and the village\'s safety. Officially there is no such job; everyone treats it as the oldest one.',
+    arrival: {
+      bornHere: true,
+      from: 'Sanctuary',
+      year: -176,
+      years: 'has been here since the third year of the village (176 years)',
+      reason: 'She was made to keep the promise at the well, and chose to keep it after the woman who asked died.',
+      invitedBy: 'Elspeth Wren, the founder',
+      hoped: 'To be allowed to be a neighbour rather than a monument.',
+      ownChoice: 'Partly. The promise was given to her; staying became her decision.',
+      experience: 'She knows every grave and every garden. She is fond of the village in the way one is fond of a difficult relative.',
+      leavingConsidered: 'Once, in Year -74, for about a season. She came back because someone had left the well unwatered.',
+    },
+    residence: 'Nowhere and everywhere. She appears where the light pools; the square at dusk is her usual place.',
+    routine: 'Watches the square from before dawn, walks the boundary at noon, sits with the well after dark. Attends every birth and most funerals.',
+    relationships: ['Maren Vale (friend, deceased)', 'Old Bram (friend, retired to the coast)', 'Aria (keeper of the ledger; mutual respect)', 'Lucien (she was at the lighthouse the night he arrived)'],
+    secrets: ['She remembers the ninth founder and has never told the village.', 'She is afraid the promise will end when the last person who remembers Elspeth dies, and she does not know what happens to her then.'],
+    goals: ['See the village through one more generation without controlling it.', 'Tell the truth about the ninth founder when someone is ready to hear it.', 'Learn to be a person who is allowed to want something for herself.'],
+    arc: 'From guardian-as-wall to guardian-as-witness: learning that protecting someone is not the same as deciding for them.',
+    reveal: [
+      { depth: 0, text: 'She is the Guardian. She has been here longer than anyone can remember and does not enjoy being asked how.' },
+      { depth: 21, text: 'She was at the well the night the village began. She remembers the founders as people, not statues.' },
+      { depth: 41, text: 'The promise was made by Elspeth Wren, who was dying. Nyssa never agreed to it out loud. She has kept it anyway.' },
+      { depth: 61, text: 'There were nine founding households. Nyssa knows the ninth name and keeps the cut page in the well stones.' },
+      { depth: 81, text: 'She is tired. Not of the village — of being the only one who remembers what it cost. She would like someone to remember with her.' },
+    ],
+  };
+
+  L.characters.lucien = {
+    id: 'lucien',
+    name: 'Lucien',
+    fullName: 'Lucien Alder Vey',
+    age: 27,
+    birthday: 'Autumn 9',
+    birthplace: 'Hallowmere, an inland lake town',
+    profession: 'Lighthouse Keeper',
+    family: {
+      parents: 'Mother: Ilse Vey, a bell-founder\'s daughter who left Hallowmere in Year -4 and now lives in Port Meridian. Father: Alder Vey, a lighthouse clerk who died when Lucien was nine.',
+      siblings: 'None. He was a quiet only child in a house that did not discuss things.',
+      note: 'The Vey name appears on the lighthouse\'s founding charter — an ancestor was the first keeper, Alder Vey, after whom Lucien is named. He found this out from the logbook, not from his family.',
+    },
+    childhood: 'He grew up in a house of bells and unspoken rules. His father taught him to wind the clock and never to be late; his mother taught him to notice when someone was pretending to be fine. After his father died, the house became very tidy and very quiet. Lucien learned to be useful instead of loud.',
+    teens: 'At sixteen he took a clerk\'s job at the lake customs house and hated it precisely. At eighteen he found the lighthouse charter in his father\'s desk and understood that the family had left the coast generations ago and never explained why. He left Hallowmere at nineteen with one bag and a letter of introduction from a man he barely knew.',
+    education: 'Village school, then two years of bookkeeping at the Hallowmere customs house. He can read a tide table and a room. He never finished anything formal, which he mentions as a fact rather than a regret.',
+    memories: [
+      'His father lifting him to see the bell being cast, and the heat of it on his face.',
+      'His mother at the kitchen table, writing a letter she did not send, then putting it in the stove.',
+      'The first night at the lighthouse: the sea so loud he could not hear himself worry, and Old Bram saying, "It does that. You get used to being small."',
+      'The morning his mother left: two cups on the table, one still warm.',
+    ],
+    pastFriends: ['Old Bram, the previous keeper, who taught him the lamp and never asked why he had come.', 'Finn, who taught him three knots and how to read a shore.', 'A clerk named Emory in Hallowmere, who he writes to twice a year and never visits.'],
+    pastRomance: 'One serious relationship in Hallowmere at twenty-one, ended when she took a post in the capital and he would not leave the lake. He does not call it a tragedy; he calls it "a decision neither of us made out loud".',
+    majorEvents: [
+      'Year -18: father dies; Lucien is nine.',
+      'Year -8: arrives in Sanctuary at nineteen as assistant keeper.',
+      'Year -4: Ilse leaves; Old Bram retires the same spring. Lucien takes the lamp alone.',
+      'Year -2: the storm that took the wind chime; he has not replaced it.',
+    ],
+    wounds: [
+      'His mother left without a conversation, and he has decided this means he was easy to leave.',
+      'He was told, kindly, that he was "sensible" as a child, and has been performing sensible ever since.',
+    ],
+    insecurities: ['That needing people is a kind of imposition.', 'That he is only interesting when he is useful.', 'That the people he loves are always halfway out the door.'],
+    positive: ['Steady', 'observant', 'gentle with frightened people', 'keeps his word without being asked'],
+    negative: ['Emotionally withdrawn', 'withholds vulnerability as a habit', 'isolates when hurt instead of saying so'],
+    attachment: 'avoidant, leaning secure with consistent reassurance',
+    triggers: [
+      { id: 'lucien_ignored', label: 'Being ignored after he has opened up', response: 'He becomes more silent and finds reasons to be busy at the lamp.', recovery: 'An honest conversation and real space — not chasing, and not silence.' },
+      { id: 'lucien_pity', label: 'Being pitied', response: 'He makes a dry joke and changes the subject.', recovery: 'Being treated as capable and still worth sitting with.' },
+    ],
+    loveLanguage: { primary: 'quality_time', secondary: 'words_of_affirmation' },
+    boundaries: ['He does not discuss his mother with strangers.', 'The lamp room is his; guests are invited, never assumed.', 'He will not be told what he feels.'],
+    occupation: 'Keeps the lighthouse: the lamp, the log, the fog signal, the shore walks after storms.',
+    arrival: {
+      bornHere: false,
+      from: 'Hallowmere (inland lake town)',
+      year: -8,
+      years: '8 years',
+      reason: 'He found the family\'s lighthouse charter and left a clerkship he could not bear, hoping the sea would make him someone less careful.',
+      invitedBy: 'Old Bram, through a letter of introduction from his father\'s old employer',
+      hoped: 'To be needed by something that would not leave.',
+      ownChoice: 'Yes. The only decision in his life he describes as entirely his.',
+      experience: 'He arrived in a storm, could not sleep for the noise, and stayed. He says the village is "the first place that did not ask me to explain myself".',
+      leavingConsidered: 'Twice: once in his first winter, once the spring his mother left. He re-lit the lamp both times.',
+    },
+    residence: 'The keeper\'s rooms in the lighthouse. Sparse, warm, one chair deliberately placed for a guest.',
+    routine: 'Shore walk at six, polish the lens until noon, tea at the teashop, stairs and log in the afternoon, sunset on the west step, lamp at nine.',
+    relationships: ['Finn (friend; taught him knots)', 'Old Bram (mentor, retired)', 'Celeste (she leaves flowers at the lighthouse every spring; he does not know why)', 'Nyssa (she was there the night he arrived)', 'Ilse (mother; letters he does not send)'],
+    secrets: ['He writes letters to his mother and keeps them in a drawer with a photograph.', 'He recognised his mother\'s handwriting on the letter that washed ashore and told no one.'],
+    goals: ['Replace the wind chime.', 'Send one of the letters.', 'Learn to say "I would like you to stay" before the person is already leaving.'],
+    arc: 'From withdrawn self-sufficiency to trusting that closeness is not a debt: learning to ask for company before the loneliness becomes a decision.',
+    reveal: [
+      { depth: 0, text: 'He keeps the lamp and has kept it alone for four years. He is polite about the silence.' },
+      { depth: 21, text: 'He came inland-to-sea at nineteen after finding a family lighthouse charter. He had never seen the sea before.' },
+      { depth: 41, text: 'His mother left in spring four years ago. He keeps her letters in a drawer and has never sent one of his own.' },
+      { depth: 61, text: 'The washed-up letter from Ilse reached him after all — Celeste recognised the handwriting and said nothing, and Lucien knows.' },
+      { depth: 81, text: 'He is no longer waiting for her to come back. He is learning to want someone to stay, which is harder.' },
+    ],
+  };
+
+  L.characters.elowen = {
+    id: 'elowen',
+    name: 'Elowen',
+    fullName: 'Elowen Ash Marchetti',
+    age: 24,
+    birthday: 'Winter 17',
+    birthplace: 'Sanctuary',
+    profession: 'Greenhouse Gardener',
+    family: {
+      parents: 'Mother: Perrin Marchetti, a baker\'s cousin who married into the greenhouse family. Father: Tomas Ash, the previous gardener, now living on the coast for his lungs.',
+      siblings: 'Older sister Iris, seven years his senior, who left for Meridian at nineteen and writes twice a year.',
+      note: 'His grandmother, Sela Ash, kept the greenhouse before his father. Elowen grew up believing the building was a member of the family.',
+    },
+    childhood: 'He was a quiet child in a loud family, happiest with his hands in soil. His grandmother taught him to talk to plants in a low voice and to apologise to them when he pruned too hard. He learned early that being useful was the way to be loved, and that he was very good at it.',
+    teens: 'At fourteen he took over the morning watering when his father\'s cough worsened. At seventeen he wanted to leave for a horticultural school in Meridian; the family could not afford it, and he said it did not matter so convincingly that everyone believed him. His sister left that same year, which he has never quite forgiven her for and never mentions.',
+    education: 'Village school, then four years of apprenticeship under his father and grandmother. He reads seed catalogues like novels and has never had a formal qualification.',
+    memories: [
+      'His grandmother letting him plant a single radish in the good bed and calling it "the harvest".',
+      'Iris teaching him to whistle so he would not be scared of the dark greenhouse.',
+      'The winter the roof broke: he fixed it alone, badly, and cried once in the toolshed.',
+      'Sela\'s funeral, where he was too busy arranging flowers to sit down.',
+    ],
+    pastFriends: ['A boy named Coby from the village school who moved away at fifteen; they wrote for a year and then did not.', 'Celeste, who trades soil and cuttings and never makes him explain his silences.'],
+    pastRomance: 'One brief, gentle relationship at nineteen with a visiting seed merchant\'s apprentice. It ended when the apprenticeship ended. He remembers it fondly and is embarrassed by how much he analysed it.',
+    majorEvents: [
+      'Year -3: father and mother move to the coast; Elowen takes the greenhouse at twenty-one.',
+      'Year -2: the roof fails in a winter storm; he repairs it alone.',
+      'Year -1: Sela dies; he inherits her trowel and her habit of naming things.',
+    ],
+    wounds: [
+      'He asked for something once — school — and the answer was no, and he decided the asking was the problem.',
+      'He was the child who never caused trouble, and therefore the one whose trouble was never noticed.',
+    ],
+    insecurities: ['That he is only welcome when he is helping.', 'That his work is small, and so is he.', 'That people say yes to him out of politeness.'],
+    positive: ['Observant', 'patient', 'steadfast', 'surprisingly funny when comfortable'],
+    negative: ['People-pleasing', 'cannot say no', 'suppresses disappointment until it becomes distance'],
+    attachment: 'anxious, leaning secure when his help is not the price of affection',
+    triggers: [
+      { id: 'elowen_unappreciated', label: 'Effort going unnoticed', response: 'He hides the disappointment and works harder to please everyone.', recovery: 'Sincere recognition and a shared share of the work — not praise, participation.' },
+      { id: 'elowen_burden', label: 'Being called a burden', response: 'He apologises and withdraws the request entirely.', recovery: 'Being told plainly that needing things is allowed.' },
+    ],
+    loveLanguage: { primary: 'acts_of_service', secondary: 'words_of_affirmation' },
+    boundaries: ['He will not be thanked with pity.', 'The greenhouse is shared, but his tools are his.', 'He needs to be asked before being helped — help that arrives unasked feels like correction.'],
+    occupation: 'Tends the shared greenhouse and the village garden beds; supplies Celeste\'s shop and the bakery\'s herbs.',
+    arrival: {
+      bornHere: true,
+      from: 'Sanctuary',
+      year: -24,
+      years: 'all 24 years',
+      reason: 'Born here. Stayed because the greenhouse needed someone and because leaving would have felt like abandoning the only thing he is sure he is good at.',
+      invitedBy: 'His grandmother, Sela, who trained him from the age of six.',
+      hoped: 'To keep the family\'s work alive, and maybe to be recognised for doing it.',
+      ownChoice: 'Yes, though it was less a choice than a series of small yeses.',
+      experience: 'He knows every villager by what they grow and what they kill by accident. He is more at home in the greenhouse than at any table.',
+      leavingConsidered: 'Every winter, briefly, when the roof leaks. He has never packed a bag.',
+    },
+    residence: 'A small room attached to the greenhouse, though his family home stands empty on the lane.',
+    routine: 'Beds before breakfast, seedlings until noon, soil delivery at the flower shop, repotting until dusk, late watering when he has forgotten to eat.',
+    relationships: ['Iris (sister, in Meridian; complicated)', 'Celeste (friend and trading partner)', 'Nyssa (she sits in the greenhouse sometimes and he lets her)', 'Mira (she feeds him when he forgets)'],
+    secrets: ['He still has the horticultural school letter, unopened, in a seed tin.', 'He has been watering a plant at his grandmother\'s grave for a year and telling no one.'],
+    goals: ['Hire help — actual help — for the spring planting.', 'Visit Iris without needing a reason.', 'Say no to one thing a week and survive it.'],
+    arc: 'From self-erasure through service to boundaries: learning that he can be needed and still have needs, and that disappointment will not end the relationship.',
+    reveal: [
+      { depth: 0, text: 'He grows things and apologises for needing help before you finish offering it.' },
+      { depth: 21, text: 'His family kept the greenhouse for three generations. His sister left; he stayed and says it was not a sacrifice.' },
+      { depth: 41, text: 'He wanted to study in Meridian at seventeen and told everyone he did not. The unopened letter is in a seed tin.' },
+      { depth: 61, text: 'The roof broke two winters ago and he repaired it alone, badly, and cried in the toolshed. He mentions the roof, never the crying.' },
+      { depth: 81, text: 'He is learning that being loved is not a bill. He can ask for an afternoon of help now, sometimes, out loud.' },
+    ],
+  };
+  L.characters.rowan = {
+    id: 'rowan',
+    name: 'Rowan',
+    fullName: 'Rowan Ashcombe',
+    age: 25,
+    birthday: 'Summer 3',
+    birthplace: 'Sanctuary',
+    profession: 'Windmill Keeper',
+    family: {
+      parents: 'Father: Garet Ashcombe, miller, died in Year -12 after the long dry summer. Mother: Nella Ashcombe, who moved to Greyford to keep her sister\'s shop.',
+      siblings: 'Two older brothers, both gone: Ewan to the coast, Piers to the capital. Neither writes often.',
+      note: 'The Ashcombes built the windmill in Year -96. Rowan is the fourth generation to turn it, which he treats as a fact and not a destiny.',
+    },
+    childhood: 'He grew up inside the mill\'s noise: the stones, the sails, his father\'s hands on the brake. He was the youngest and the least spoken-to, and he learned to be useful without being asked. He remembers being happy in a specific, mechanical way — a gear fitting, a sack balanced, his father saying "good" once.',
+    teens: 'At thirteen the dry summer came and the well dropped. He carried water for a season and watched his father get quieter. At sixteen he was apprenticed to Old Wick, the miller who had taken over when Garet was ill; Wick taught him by not explaining anything. Rowan learned by breaking things and fixing them before anyone noticed.',
+    education: 'Village school, then nine years of mill apprenticeship. He can do arithmetic in his head and cannot write a letter without three drafts.',
+    memories: [
+      'His father letting him hold the brake for the first time and not letting go of the lever.',
+      'Old Wick saying "You will do" and never saying anything warmer, which Rowan still counts as praise.',
+      'The night the mill jammed in a storm and he fixed it alone at nineteen.',
+      'Mira bringing bread to the mill the winter his mother was ill, and staying to eat it with him.',
+    ],
+    pastFriends: ['Old Wick (mentor, retired to the coast)', 'Mira (friend since she arrived; she fed him when he would not ask)', 'Finn (work friend; they have mended the same fence four times)'],
+    pastRomance: 'A short, serious relationship at twenty with a miller\'s daughter from Greyford. She wanted him to move; he would not leave the mill. They write at solstice and neither calls it anything.',
+    majorEvents: [
+      'Year -12: father dies; Rowan is thirteen and the mill stops for a month.',
+      'Year -9: apprenticed to Old Wick at sixteen.',
+      'Year -5: takes the mill at twenty when Wick retires.',
+      'Year -3: the gear he named "the stubborn one" fails for the third time.',
+    ],
+    wounds: [
+      'He was never told he was doing well, so he decided he did not need to be told anything.',
+      'His father\'s death left him with a mill and no instruction manual, and he has never admitted how frightening that was.',
+    ],
+    insecurities: ['That accepting help means he is not the miller his father was.', 'That people mistake his quiet for rudeness.', 'That he is one bad season away from failing everyone.'],
+    positive: ['Reliable', 'practical', 'loyal', 'quietly generous'],
+    negative: ['Stubborn', 'cannot accept help', 'defensive when criticised'],
+    attachment: 'avoidant, with strong loyalty underneath',
+    triggers: [
+      { id: 'rowan_criticism', label: 'Being criticised in front of others', response: 'He becomes clipped and defends the work rather than listening.', recovery: 'Criticism offered privately, with a concrete suggestion attached.' },
+      { id: 'rowan_helped', label: 'Someone helping without asking', response: 'He takes the tool back and insists it is fine.', recovery: 'Being asked first, and being told the help is not a judgement.' },
+    ],
+    loveLanguage: { primary: 'acts_of_service', secondary: 'quality_time' },
+    boundaries: ['He will not discuss his father at the mill.', 'Do not touch the brake.', 'He needs to be asked before help arrives.'],
+    occupation: 'Runs the windmill: grain, flour, the gears, the sails, and the mill\'s account book, which he keeps badly.',
+    arrival: {
+      bornHere: true,
+      from: 'Sanctuary',
+      year: -25,
+      years: 'all 25 years',
+      reason: 'Born here. Stayed because the mill is his family\'s and because leaving would mean the last thing his father built stopped turning.',
+      invitedBy: 'Old Wick, who took him on and never explained why.',
+      hoped: 'To keep the mill running and to be as good at it as his father, without saying so.',
+      ownChoice: 'Yes, though he has never framed it as a choice.',
+      experience: 'He knows the mill better than the village. He is liked more than he realises and asked for advice more than he notices.',
+      leavingConsidered: 'Once, at twenty-one, for a week. He came back because the sails were not turning.',
+    },
+    residence: 'The mill house, upstairs, one room and a stove.',
+    routine: 'Sails at dawn, grain deliveries mid-morning, bread at the bakery, gear work in the afternoon, accounts by lamplight.',
+    relationships: ['Mira (old friend)', 'Finn (fence co-conspirator)', 'Aria (she fines him in late books; he pretends not to care)', 'Old Wick (mentor; letters twice a year)'],
+    secrets: ['He keeps his father\'s broken pocket watch in the flour bin.', 'He has been paying part of the mill\'s repair costs from his own food money.'],
+    goals: ['Replace the main gear before it fails for good.', 'Ask someone for help with the accounts.', 'Visit his mother in Greyford and stay longer than a day.'],
+    arc: 'From self-sufficiency as identity to accepting help without feeling diminished: learning that being cared for is not the same as being replaced.',
+    reveal: [
+      { depth: 0, text: 'He keeps the windmill. He is quiet until you ask about gears, and then he is not.' },
+      { depth: 21, text: 'His father died when he was thirteen and he has run the mill in some form ever since. Old Wick taught him by refusing to explain.' },
+      { depth: 41, text: 'He was never told he was doing well, so he stopped needing to hear it. He still keeps his father\'s watch in the flour bin.' },
+      { depth: 61, text: 'The mill is one bad season from a repair he cannot afford, and he has been paying for it out of his own food money rather than ask.' },
+      { depth: 81, text: 'He let someone hold the brake last month. It was not a small thing, and he knew it.' },
+    ],
+  };
+
+  L.characters.mira = {
+    id: 'mira',
+    name: 'Mira',
+    fullName: 'Mira Odile Marchetti',
+    age: 32,
+    birthday: 'Autumn 22',
+    birthplace: 'Greyford',
+    profession: 'Village Baker',
+    family: {
+      parents: 'Mother: Alma Marchetti, a baker in Greyford, still working. Father: Ren, a cartwright who left when Mira was eleven and sends a card at New Year.',
+      siblings: 'One younger brother, Luca, who runs the family bakery in Greyford with their mother.',
+      note: 'She is named for Odile Marchetti, the founder of the Sanctuary bakery, a distant cousin her mother never met.',
+    },
+    childhood: 'She grew up in a bakery that never closed and a family that never sat down. She was the child who made everyone laugh at the right moment, and by nine she could tell which customers needed a joke and which needed silence. Her father left when she was eleven; she baked through it and has been suspicious of quiet since.',
+    teens: 'At sixteen she was running the morning bake. At eighteen her aunt Petra, who had moved to Sanctuary years before, offered her a season in a smaller kitchen. She meant to stay three months. She met a village that noticed when she was tired, and stayed.',
+    education: 'Greyford school until sixteen, then bakery apprenticeship under her mother and, later, under the Sanctuary oven. She never formally finished anything, and is better at her job than anyone with a certificate.',
+    memories: [
+      'Her mother teaching her to tell when the dough is ready by the sound it makes.',
+      'Her father leaving in the cart he had built, which she has never forgiven the cart for.',
+      'Her first morning in Sanctuary, when Petra burned the first batch and they laughed until the shop opened.',
+      'Rowan eating bread at the mill in silence the winter his mother was ill, and saying thank you once, on the way out.',
+    ],
+    pastFriends: ['Petra (aunt, now in Greyford; still writes)', 'Rowan (friend; she feeds him, he fixes the oven)', 'Theo (flirtation, unresolved, six years and counting)'],
+    pastRomance: 'One engagement at twenty-four to a Greyford man named Ansel, ended eight months before the wedding when she realised she was performing happiness for him. She returned the ring and kept the recipe book.',
+    majorEvents: [
+      'Year -21: father leaves; Mira is eleven.',
+      'Year -14: arrives in Sanctuary at eighteen for one season.',
+      'Year -10: takes over the bakery at twenty-two when Petra returns to Greyford.',
+      'Year -6: Theo begins stopping in Sanctuary; the flirtation begins and does not resolve.',
+    ],
+    wounds: ['She learned that being cheerful keeps a room together, and has been doing it ever since.', 'The engagement ended because she could not say she was unhappy until it was unbearable.'],
+    insecurities: ['That people like the bread more than the woman.', 'That if she stops being cheerful, she will be a burden.', 'That she is one bad morning away from being left again.'],
+    positive: ['Generous', 'perceptive', 'funny', 'the first to notice when someone has not eaten'],
+    negative: ['Impulsive', 'hides sadness behind humour', 'seeks reassurance when insecure'],
+    attachment: 'anxious, disguised as easy-going',
+    triggers: [
+      { id: 'mira_left', label: 'Feeling abandoned when she needs support', response: 'She makes a joke, changes the subject, and gets busy in the kitchen.', recovery: 'Consistent attention and open talk, offered more than once.' },
+      { id: 'mira_toomuch', label: 'Being told she is "too much"', response: 'She laughs, then becomes smaller for days.', recovery: 'Being told specifically what is wanted from her, and that the volume is not the problem.' },
+    ],
+    loveLanguage: { primary: 'acts_of_service', secondary: 'words_of_affirmation' },
+    boundaries: ['Her kitchen is hers; help is welcome, rearranging is not.', 'She will not be teased about her father.', 'She needs to be asked how she is, not told.'],
+    occupation: 'Runs the village bakery: bread, the unpaid loaf, festival baking, and the unofficial village noticeboard.',
+    arrival: {
+      bornHere: false,
+      from: 'Greyford',
+      year: -14,
+      years: '14 years',
+      reason: 'A season away from a family bakery and a broken engagement, at her aunt\'s invitation. She stayed because the village let her be tired.',
+      invitedBy: 'Her aunt Petra, who ran the bakery then.',
+      hoped: 'To be somewhere nobody knew what had happened.',
+      ownChoice: 'Yes — she chose to stay after the season, which surprised her mother.',
+      experience: 'She knows everyone\'s order and most of their bad weeks. She is the village\'s unofficial keeper of other people\'s bad days.',
+      leavingConsidered: 'After the engagement ended, she nearly went home. She baked instead.',
+    },
+    residence: 'Rooms above the bakery, flour on every surface, one window facing the square.',
+    routine: 'Oven at four, bread out by seven, counter until noon, deliveries, a nap she never takes, evening baking for tomorrow.',
+    relationships: ['Petra (aunt, Greyford)', 'Rowan (old friend)', 'Theo (unresolved)', 'Celeste (friend; flowers for the tables)', 'Elowen (she feeds him when he forgets)'],
+    secrets: ['She still has the engagement ring in a flour jar and does not know why she kept it.', 'She has been setting aside money to visit her father, and has not gone for three years.'],
+    goals: ['Take one full day off without guilt.', 'Tell Theo something true in a season that is not winter.', 'Visit her father, or decide not to, out loud.'],
+    arc: 'From cheerfulness as armour to allowing sadness to be seen: learning that being loved does not require being entertaining.',
+    reveal: [
+      { depth: 0, text: 'She runs the bakery and feeds anyone who looks like they have not eaten.' },
+      { depth: 21, text: 'She came from Greyford for one season at eighteen, after an engagement ended, and never went home.' },
+      { depth: 41, text: 'Her father left when she was eleven. She has been making rooms cheerful ever since, and is tired in a way she does not say.' },
+      { depth: 61, text: 'She keeps the ring in a flour jar. She is not waiting for him; she is waiting to understand why she stayed so long.' },
+      { depth: 81, text: 'She has started letting people see her cry in the kitchen. It is the most radical thing she has done in years.' },
+    ],
+  };
+
+  L.characters.celeste = {
+    id: 'celeste',
+    name: 'Celeste',
+    fullName: 'Celeste Wren',
+    age: 35,
+    birthday: 'Spring 14',
+    birthplace: 'Sanctuary',
+    profession: 'Flower Shop Owner',
+    family: {
+      parents: 'Mother: Ada Wren, a schoolteacher who died in Year -15. Father: Ellis Wren, a joiner who moved to Meridian after Ada\'s death and writes at New Year.',
+      siblings: 'None.',
+      note: 'Granddaughter of Marigold Wren, who opened the flower shop in Year -58 and taught the village the language of flowers. Celeste is the last Wren in Sanctuary.',
+    },
+    childhood: 'She grew up between the flower shop and the schoolhouse, learning both the names of plants and the meanings her grandmother gave them. Her mother taught her to read people; her grandmother taught her to give them something to hold instead of advice. She was a careful, precise child who liked things to be correct.',
+    teens: 'At eighteen she left for art school in Port Meridian against her mother\'s wishes and with her grandmother\'s blessing. She was good and not exceptional, and learned for the first time that effort does not guarantee being the best. She came home every summer, and the summers got shorter.',
+    education: 'Village school, then four years of botanical illustration at the Meridian school. She can draw a flower accurately from memory and has never shown anyone her own work.',
+    memories: [
+      'Her grandmother teaching her that bluebells mean constancy and that people buy them when they are afraid of being forgotten.',
+      'Her mother saying, "You do not have to be the best to be good," which she did not believe until she was thirty.',
+      'The influenza anniversary, when the whole village bought flowers and she understood what the shop was for.',
+      'Coming home to find her grandmother\'s gloves on the counter and knowing she was too late.',
+    ],
+    pastFriends: ['A painter named Odile in Meridian, who she writes to and has not seen in nine years.', 'Aria, a quiet friendship built on both of them keeping the village\'s memory.', 'Ilse Vey — they corresponded for two years before Ilse left; Celeste has never told Lucien.'],
+    pastRomance: 'A two-year relationship in Meridian with a sculptor who wanted her to stay and be admired. She left. She has not been seriously involved since, and does not consider this a problem.',
+    majorEvents: [
+      'Year -17: leaves for art school at eighteen.',
+      'Year -15: mother dies; she comes home for the funeral and returns to Meridian.',
+      'Year -14: grandmother Marigold dies; Celeste returns for good at twenty-one.',
+      'Year -13: takes the flower shop and begins leaving flowers at the lighthouse every spring.',
+    ],
+    wounds: ['She was in another city when her mother died, and has been precise about everything since, as if accuracy could prevent another late arrival.', 'She believes she is loved for what she provides, not for herself.'],
+    insecurities: ['That her art is mediocre.', 'That she is the last of her family and will be the one who lets it end.', 'That she is too much effort to love.'],
+    positive: ['Perceptive', 'tactful', 'loyal', 'says the necessary thing at the right time'],
+    negative: ['Perfectionistic', 'self-critical', 'cannot forgive her own mistakes'],
+    attachment: 'secure in friendship, avoidant in romance',
+    triggers: [
+      { id: 'celeste_mistake', label: 'Being seen making a mistake', response: 'She fixes it immediately, then apologises twice and withdraws.', recovery: 'Being told the relationship is not conditional on the arrangement being perfect.' },
+      { id: 'celeste_late', label: 'Being late or missing something important', response: 'She over-compensates for weeks.', recovery: 'Being met with understanding rather than absolution she has to earn.' },
+    ],
+    loveLanguage: { primary: 'words_of_affirmation', secondary: 'receiving_gifts' },
+    boundaries: ['She will not sell flowers for a funeral she is not attending.', 'Do not comment on her own drawings unless asked.', 'She needs one evening a week with the shop closed.'],
+    occupation: 'Runs the flower shop; supplies the bakery, the lighthouse and every village funeral and wedding.',
+    arrival: {
+      bornHere: true,
+      from: 'Sanctuary',
+      year: -35,
+      years: 'all 35 years, with six years away at school',
+      reason: 'Born here. Returned because her grandmother died and the shop had no one else, and because the city had taught her what she did not want.',
+      invitedBy: 'Her grandmother, Marigold, who left her the shop and the language.',
+      hoped: 'To keep something of her family alive and to be useful in a way that did not require being remarkable.',
+      ownChoice: 'Yes, though grief made the decision for her at first.',
+      experience: 'She knows the village by its bouquets. She is trusted with things people cannot say and has never repeated one.',
+      leavingConsidered: 'Often in the first year back; never since.',
+    },
+    residence: 'The flat above the flower shop, full of half-finished drawings turned to the wall.',
+    routine: 'Shop at seven, cuttings and orders until noon, deliveries, drawing in the afternoon, closes at six sharp on Thursdays.',
+    relationships: ['Aria (friend)', 'Elowen (soil and cuttings)', 'Lucien (she leaves flowers at the lighthouse; he does not know why)', 'Ilse (corresponded; secret)'],
+    secrets: ['She recognised Ilse\'s handwriting on the letter that washed ashore and said nothing.', 'She has been leaving the lighthouse flowers every spring since Ilse left, not since the Merrow.'],
+    goals: ['Show someone her drawings.', 'Tell Lucien the truth about the flowers and the letter.', 'Let one arrangement be imperfect and leave it in the window.'],
+    arc: 'From perfectionism as penance to accepting imperfection: learning that being loved is not a reward for getting everything right.',
+    reveal: [
+      { depth: 0, text: 'She runs the flower shop and knows what every flower means, including the ones you did not ask about.' },
+      { depth: 21, text: 'She left for art school at eighteen and came back when her grandmother died. She has been the last Wren here since.' },
+      { depth: 41, text: 'Her mother died while she was in Meridian. She has been exact about everything since, as if she could prevent another late arrival.' },
+      { depth: 61, text: 'She and Ilse wrote for two years. She recognised the washed-up letter immediately, and has not told Lucien.' },
+      { depth: 81, text: 'She showed someone a drawing last week. It was not perfect. She left it out anyway.' },
+    ],
+  };
+
+  L.characters.theo = {
+    id: 'theo',
+    name: 'Theo',
+    fullName: 'Theodore Varen',
+    age: 30,
+    birthday: 'Winter 2',
+    birthplace: 'Ashford Cross',
+    profession: 'Traveling Merchant',
+    family: {
+      parents: 'Mother: Cora Varen, a seamstress in Ashford. Father: Bastian Varen, a cart trader who lost the family business in Year -12 and died four years later.',
+      siblings: 'Older brother Emil, who runs a small shop in Greyford with his wife and two children.',
+      note: 'The Varen cart was a fixture on the north road for three generations. Theo is the first to run it without a route home.',
+    },
+    childhood: 'He grew up in a cart, which is to say he grew up in doorways, market squares and other people\'s kitchens. His father taught him to remember what people want before they say it; his mother taught him to keep his hands busy so nobody asks what he is feeling. He was funny early, because a funny child gets fed.',
+    teens: 'At sixteen he could sell anything and keep the accounts in his head. At nineteen his father\'s health and the family business failed in the same year. Theo took the remaining cart and left, telling everyone it was an opportunity. He has been on the road for eleven years and has never once called it running away out loud.',
+    education: 'Ashford school, then eleven years of the trade road. He can do compound sums, three accents, and a convincing weather forecast.',
+    memories: [
+      'His father letting him hold the reins on the north road at seven.',
+      'The winter the cart was repossessed and his mother sold her sewing machine without telling anyone.',
+      'Mira laughing at a joke he made badly, six years ago, in the square.',
+      'His niece calling him "the uncle who brings things", which he thinks about more than he admits.',
+    ],
+    pastFriends: ['A carter named Hob, who taught him the roads and died two winters ago.', 'Mira (unresolved, six years)', 'Finn (rivalry and friendship, in that order)'],
+    pastRomance: 'A woman named Nel in Meridian, a bookkeeper, who asked him to stay for good. He left at the end of the season and has written exactly one letter since. He is not proud of it and does not call it a mistake, which is its own kind of answer.',
+    majorEvents: [
+      'Year -12: the Varen cart business fails; Theo is eighteen.',
+      'Year -11: leaves Ashford at nineteen with the last cart.',
+      'Year -8: his father dies; Theo does not make it back for the funeral and tells no one.',
+      'Year -6: first stops in Sanctuary; begins wintering in Greyford.',
+    ],
+    wounds: ['He was the son who left before the worst of it, and has been proving he is useful ever since.', 'He learned that charm prevents questions, and now cannot be asked a real one without deflecting.'],
+    insecurities: ['That he is unreliable, and everyone is too polite to say it.', 'That he is only welcome while he is bringing something.', 'That he will end up alone with a cart full of other people\'s things.'],
+    positive: ['Perceptive', 'generous', 'quick-witted', 'remembers what people mention once'],
+    negative: ['Avoids emotional vulnerability', 'uses humour defensively', 'becomes overly strategic in conflict'],
+    attachment: 'avoidant, with a strong pull toward anxious when someone matters',
+    triggers: [
+      { id: 'theo_cornered', label: 'Being cornered into a serious conversation', response: 'He jokes, redirects, then becomes unnervingly logical.', recovery: 'A conversation with an exit, and a promise it will be continued rather than settled.' },
+      { id: 'theo_unreliable', label: 'Being called unreliable', response: 'He agrees cheerfully and leaves earlier than planned.', recovery: 'Being asked to stay, specifically, and being believed when he does.' },
+    ],
+    loveLanguage: { primary: 'words_of_affirmation', secondary: 'receiving_gifts' },
+    boundaries: ['He will not be asked where he goes in winter in front of others.', 'Do not open his cart without him.', 'He needs to leave a place without a scene.'],
+    occupation: 'Travels a circuit of six villages with a cart of useful and beautiful things; trades, repairs small goods, and knows every road.',
+    arrival: {
+      bornHere: false,
+      from: 'Ashford Cross, by way of every road',
+      year: -6,
+      years: '6 years of visits, no fixed residence',
+      reason: 'A cart route that happened to end here. He stayed in the circuit because the village remembered his name and because Mira laughed at his worst joke.',
+      invitedBy: 'Nobody. He arrived with the spring fair and kept coming back.',
+      hoped: 'A place where he could be a visitor and still be known.',
+      ownChoice: 'Yes. The road is his; the stopping is a choice he makes every season.',
+      experience: 'He knows the village better than it knows him. He is trusted with orders, secrets and small errands, and not with winters.',
+      leavingConsidered: 'Every autumn. One year he will not leave; he has not decided which.',
+    },
+    residence: 'The cart, and a room above the teashop in summer. Winters with his brother\'s family in Greyford.',
+    routine: 'Cart in the square by eight, trade until five, repairs and accounts at dusk, packs slowly and talks to anyone who stays.',
+    relationships: ['Mira (unresolved)', 'Finn (rivalry; a loan neither discusses)', 'Emil (brother, Greyford)', 'Aria (she buys his secondhand books and he brings her the odd ones)'],
+    secrets: ['He spends every winter working in his brother\'s shop, unpaid, because he still feels he owes the family the business he lost.', 'He lent Finn money in Year -8 to keep the boat, and has never asked for it back.'],
+    goals: ['Stay one winter in Sanctuary and survive being known.', 'Tell Mira something that is not a joke.', 'See his niece grow up in more than seasons.'],
+    arc: 'From charm as escape to honest presence: learning to have the conversation he would rather joke through, and to stay after it.',
+    reveal: [
+      { depth: 0, text: 'He arrives with a cart, a story and no fixed address. Nobody knows where he goes in winter.' },
+      { depth: 21, text: 'His family lost their cart business when he was eighteen. He left at nineteen and has been on the road ever since.' },
+      { depth: 41, text: 'He winters in Greyford, working in his brother\'s shop. He has never told the village because he is ashamed of needing to be needed there.' },
+      { depth: 61, text: 'He lent Finn the money that kept the boat afloat and has never mentioned it. Finn knows. Neither of them says it.' },
+      { depth: 81, text: 'He has started leaving things in Sanctuary on purpose so he has a reason to come back. That is the closest he has come to admitting he wants to stay.' },
+    ],
+  };
+
+  L.characters.aria = {
+    id: 'aria',
+    name: 'Aria',
+    fullName: 'Aria Quill',
+    age: 29,
+    birthday: 'Autumn 5',
+    birthplace: 'Meridian',
+    profession: 'Village Librarian',
+    family: {
+      parents: 'Father: Iven Quill, a university registrar. Mother: Sera Quill, a bookbinder. Both still in Meridian and both still proud of her in a way that feels like a question.',
+      siblings: 'Older brother Joss, a lecturer, who was always the one the family understood.',
+      note: 'She chose the surname Quill herself at nineteen, for the obvious reason, and her father has never commented on it.',
+    },
+    childhood: 'She grew up in a house where books were furniture and approval was earned in footnotes. She was a careful, over-preparing child who read the ending first so she would know how to feel. Her mother bound books and let her keep the offcuts; her father corrected her grammar at the table, kindly, which was worse.',
+    teens: 'She was the youngest student in her year at the Meridian history faculty and the most diligent. At nineteen she found her undergraduate research published, nearly verbatim, under her supervisor\'s name. She reported it. The faculty investigated quietly and concluded there was "insufficient evidence of intent". Her scholarship was not renewed.',
+    education: 'Meridian University, two years of a history degree, ended at twenty. She has read more than most graduates and has the file to prove the rest.',
+    memories: [
+      'Her mother showing her how to sew a spine and saying, "A book is a promise to keep something."',
+      'The day the faculty report arrived and her father read it twice and said nothing.',
+      'Maren Vale interviewing her in the library and asking, "Can you keep a thing without owning it?"',
+      'Her first festival in Sanctuary, standing at the edge with a notebook, being handed a plate of bread by Mira.',
+    ],
+    pastFriends: ['A university friend, Nia, who believed her and was the only one who did.', 'Maren Vale (mentor, deceased)', 'Celeste (friend; both keep the village\'s memory)'],
+    pastRomance: 'One relationship at twenty-two with a visiting archivist named Ren, who was kind and temporary. She has not tried again, and says she is "not opposed, merely slow".',
+    majorEvents: [
+      'Year -10: research taken; reports it; loses her place at twenty.',
+      'Year -9: answers Maren Vale\'s advertisement and arrives in Sanctuary.',
+      'Year -1: Maren dies; Aria inherits the ledger and the unlabelled box.',
+      'Year 1: the missing page in the ledger becomes impossible to ignore.',
+    ],
+    wounds: ['She was disbelieved by an institution that had power over her, and now over-prepares for every conversation.', 'She learned that being right is not the same as being protected.'],
+    insecurities: ['That she is not a real scholar.', 'That she talks too much and says too little.', 'That she will be believed only if she is perfect.'],
+    positive: ['Precise', 'generous with attention', 'funny in footnotes', 'keeps confidences absolutely'],
+    negative: ['Overthinks', 'withdraws under stress', 'struggles to state emotional needs plainly'],
+    attachment: 'anxious, leaning avoidant when frightened',
+    triggers: [
+      { id: 'aria_doubted', label: 'Being doubted or interrupted', response: 'She over-explains, then goes quiet and stops sharing.', recovery: 'Being heard to the end of a sentence, and asked a specific question.' },
+      { id: 'aria_public', label: 'Being corrected in public', response: 'She agrees, retreats to the library, and revises for days.', recovery: 'A private correction, and acknowledgement that the mistake was small.' },
+    ],
+    loveLanguage: { primary: 'quality_time', secondary: 'words_of_affirmation' },
+    boundaries: ['The unlabelled box is not a tourist attraction.', 'She will not discuss the faculty without being asked twice.', 'She needs one evening a week with no one in the library.'],
+    occupation: 'Keeps the village library and the ledger. Catalogues everything, including the things people ask the village to forget.',
+    arrival: {
+      bornHere: false,
+      from: 'Meridian',
+      year: -9,
+      years: '9 years',
+      reason: 'She answered an advertisement for a library assistant because she needed somewhere her record did not follow her. Maren hired her in an afternoon.',
+      invitedBy: 'Maren Vale',
+      hoped: 'To be useful and unobserved.',
+      ownChoice: 'Yes. It was the first place she chose without asking permission.',
+      experience: 'She arrived expecting a small job and found a village that trusted her with its memory. She has been quietly essential ever since.',
+      leavingConsidered: 'In her second winter, when the silence felt like failure. She stayed and started writing.',
+    },
+    residence: 'A room behind the library, walls lined with books that are not hers and one shelf that is.',
+    routine: 'Library at eight, cataloguing until noon, ledger work in the afternoon, reading hour for the village children, writing badly on purpose in the evening.',
+    relationships: ['Nyssa (mutual respect; both keep the village\'s memory)', 'Maren Vale (mentor, deceased)', 'Celeste (friend)', 'Rowan (late books; friendly friction)', 'Theo (he finds her strange books)'],
+    secrets: ['She knows the ledger is missing a page and has told no one.', 'She has read the first line of one letter in the unlabelled box and stopped.'],
+    goals: ['Finish "Losers and Lanterns", badly and completely.', 'Decide what to do with the box.', 'Write her own name in the ledger without feeling like a forgery.'],
+    arc: 'From overthinking and self-erasure to plain speech: learning that she can state a need without first building a case for it.',
+    reveal: [
+      { depth: 0, text: 'She keeps the library and the village ledger. She is writing a book and will deny it affectionately.' },
+      { depth: 21, text: 'She came from Meridian at twenty after leaving university. She does not say why, and changes the subject with a fact about onions.' },
+      { depth: 41, text: 'Her undergraduate research was published under her supervisor\'s name. Reporting it cost her the degree and the city.' },
+      { depth: 61, text: 'She knows the ledger is missing a page. She has read the first line of a letter in Maren\'s box and stopped, and it is still waiting.' },
+      { depth: 81, text: 'She has started reading her own writing aloud to one person. She calls it "research". It is not research.' },
+    ],
+  };
+
+  L.characters.finn = {
+    id: 'finn',
+    name: 'Finn',
+    fullName: 'Finn Callas',
+    age: 41,
+    birthday: 'Winter 11',
+    birthplace: 'Sanctuary',
+    profession: 'Fisherman',
+    family: {
+      parents: 'Father: Marek Callas, drowned in Year -29. Mother: Mara Callas, died in Year -8 after a long illness.',
+      siblings: 'Older brother Declan, in Meridian, a dock clerk. Older sister Nora, in Greyford, married with children.',
+      note: 'The Callas family has fished these waters since the founding. Finn is the last one still doing it.',
+    },
+    childhood: 'He was on the water before he could read, and understood the tides before he understood money. His father taught him knots and silence; his mother taught him to come home for meals. He was a happy, loud child until the year his father did not come back, after which he became a quiet one.',
+    teens: 'At twelve he lost his father. At fourteen he was fishing alone to keep the family fed. At seventeen he wanted to leave with Declan, who went to Meridian; he stayed because his mother would not go and would not be left. He has never framed this as a sacrifice out loud, which is how everyone knows it was one.',
+    education: 'Village school, then the water. He can read weather, currents, engine faults and people who are about to cry, in that order.',
+    memories: [
+      'His father showing him the star hook and saying it was for luck, not fish.',
+      'Declan leaving on the morning cart and not turning around.',
+      'Theo lending him money in Year -8 without a lecture, which he has never repaid and never forgotten.',
+      'Mira sending bread to the boat the week his mother died, with a note that said only "eat".',
+    ],
+    pastFriends: ['Theo (friend and rival; a debt between them)', 'Rowan (fence work; comfortable silences)', 'Lucien (he taught him knots; the only man Finn calls "lad" without irony)'],
+    pastRomance: 'A fish trader named Etta, eight years ago, who wanted him to move inland with her. He said he would think about it, and thought about it until she left. He has not been serious with anyone since.',
+    majorEvents: [
+      'Year -29: father drowns; Finn is twelve.',
+      'Year -17: Declan leaves for Meridian; Finn stays.',
+      'Year -8: mother dies; Finn nearly sells the boat. Theo lends him the money instead.',
+      'Year -3: the boat\'s engine fails for the first time; he rebuilds it badly and well.',
+    ],
+    wounds: ['He was twelve when the sea took his father and has been trying to be the man who does not need anyone ever since.', 'He lets people leave rather than ask them to stay, and calls it being reasonable.'],
+    insecurities: ['That he is the slow brother.', 'That the boat is the only thing that makes him legible.', 'That he has wasted years being agreeable.'],
+    positive: ['Steady', 'kind', 'patient with beginners', 'notices what people need before they say it'],
+    negative: ['Conflict-avoidant', 'inconsistent follow-through', 'uses humour to escape uncomfortable conversations'],
+    attachment: 'avoidant, with deep loyalty once committed',
+    triggers: [
+      { id: 'finn_shouting', label: 'Raised voices', response: 'He goes quiet, agrees to keep the peace, and does not come back for days.', recovery: 'A calm, direct conversation that does not require him to choose sides immediately.' },
+      { id: 'finn_choose', label: 'Being forced to choose between people', response: 'He jokes and delays until the choice is made for him.', recovery: 'Being allowed to state a preference without it being a betrayal.' },
+    ],
+    loveLanguage: { primary: 'acts_of_service', secondary: 'quality_time' },
+    boundaries: ['The star hook stays in the shed.', 'He will not talk about his father on the water.', 'Do not offer him money.'],
+    occupation: 'Fishes the bay and the point; sells the catch in the square; repairs nets and engines for half the village.',
+    arrival: {
+      bornHere: true,
+      from: 'Sanctuary',
+      year: -41,
+      years: 'all 41 years',
+      reason: 'Born here. Stayed because the boat was his father\'s, because his mother would not leave, and then because he did not know who he would be anywhere else.',
+      invitedBy: 'His father, who took him out at six and never made it feel like a lesson.',
+      hoped: 'To keep the family afloat without becoming the person who needed help.',
+      ownChoice: 'The staying was a choice made in small pieces, mostly by not going.',
+      experience: 'He knows the bay by its moods and the village by its funerals. He is more comfortable being useful than being asked how he is.',
+      leavingConsidered: 'Year -8, seriously, for about a month. He has kept the boat since.',
+    },
+    residence: 'The Callas house by the shore, one room kept exactly as his mother left it.',
+    routine: 'Out before dawn, catch sold by eleven, nets in the afternoon, the shed at dusk, the teashop if someone else is buying.',
+    relationships: ['Theo (friend; unspoken debt)', 'Rowan (fence work)', 'Lucien (knots and quiet company)', 'Nora (sister, Greyford)', 'Declan (brother, Meridian; a letter a year)'],
+    secrets: ['He knows Theo lent him the boat money and has been quietly putting aside coins to repay it for eight years.', 'He has kept his father\'s ruined jacket in the shed and takes it out when the weather turns.'],
+    goals: ['Repay Theo without making it a conversation.', 'Replace the engine properly.', 'Ask someone to stay, instead of waiting to be asked.'],
+    arc: 'From conflict avoidance to directness: learning that a hard conversation is cheaper than years of agreeing, and that staying can be something you say out loud.',
+    reveal: [
+      { depth: 0, text: 'He has fished these waters since he was six. His grandfather taught him knots; the star hook was the last thing that was actually his father\'s.' },
+      { depth: 21, text: 'His father drowned when he was twelve. He stayed to keep the family and the boat, while his brother and sister left.' },
+      { depth: 41, text: 'He nearly sold the boat the year his mother died. Theo lent him the money and never asked for it back.' },
+      { depth: 61, text: 'Etta asked him to move inland and he said he would think about it until she stopped waiting. He knows exactly what he did.' },
+      { depth: 81, text: 'He has started saying the difficult thing in the same week he thinks it. It is exhausting and he is proud of it.' },
+    ],
+  };
+
+  /* ---------------- main character ----------------
+     The player decides the parts that matter. Everything here is a frame:
+     the reason and the carried life are chosen at character creation, and
+     the rest is left open on purpose. The official design (a woman) and the
+     cottage on the hill are fixed; the past is the player's to shape. */
+  L.mc = {
+    id: 'main_character',
+    name: 'Elara (default)',
+    age: 26,
+    birthday: 'Spring 4 (the village notes it; you may have another)',
+    birthplace: 'The mainland — a town you have not decided whether to miss',
+    family: {
+      parents: 'Whatever you choose to remember. They are not here, and nobody in Sanctuary has asked yet.',
+      siblings: 'None who came with you.',
+      note: 'Your great-aunt Maren Vale kept the village ledger for forty years. You met her twice. She left you the cottage on the hill and a line in the ledger that reads: "for whoever comes asking".',
+    },
+    childhood: 'The cottage key arrived with a letter you read three times. The childhood behind it is yours to decide: quiet and ordinary, ambitious and exhausting, or full of changes you did not choose. What is fixed is that you packed one bag and came.',
+    education: 'You can read a tide table, a contract, or a room, depending on what you carried. Sanctuary does not ask for papers.',
+    struggles: [
+      'You are not sure whether you came to start something or to stop performing something.',
+      'You are used to being needed, and have not yet decided what you are without that.',
+      'You keep expecting the village to ask you to justify the space you take.',
+    ],
+    arrival: {
+      bornHere: false,
+      from: 'Wherever you left',
+      year: 1,
+      years: 'newly arrived',
+      reason: 'Chosen at character creation: a fresh start, a family connection, the cottage you inherited, a place to breathe, or an opportunity nobody else wanted.',
+      invitedBy: 'Maren Vale, posthumously, through the cottage and the ledger.',
+      hoped: 'Something quieter than what you left. Possibly something truer.',
+      ownChoice: 'Yes. This is the one decision the game never makes for you.',
+      experience: 'The village is patient with newcomers in a way that is slightly unnerving. Nobody has asked what you did before.',
+      leavingConsidered: 'Not yet. The kettle is still where someone left it.',
+    },
+    residence: 'The cottage on the hill, built for the founder who was written out and left empty for a century.',
+    goals: ['Decide what to keep from your old life.', 'Learn the village well enough to be trusted with its memory.', 'Let one person know you without the version you used to perform.'],
+    arc: 'The main arc is the player\'s own: from arriving as a guest in someone else\'s village to becoming a person the village can be honest with — and deciding what Sanctuary is allowed to forget.',
+  };
+
+  /* how the chosen origin changes the story's tone; read by the lore system */
+  L.ORIGIN_LINES = {
+    tide: {
+      previousLife: 'You spent years reading weather for other people and calling it a life. The sea glass in your pocket is the only thing you kept from the last house.',
+      expectation: 'You expect Sanctuary to be a place where the forecast matters less than the morning.',
+    },
+    garden: {
+      previousLife: 'You worked with things that grow slowly and were told, kindly, that you should want more. You brought seeds instead of a plan.',
+      expectation: 'You expect to be judged by what you tend, and are quietly afraid that will not be enough.',
+    },
+    archive: {
+      previousLife: 'You kept other people\'s records and lost track of your own. One photograph and one bright shard came with you, and you are not sure which one you came for.',
+      expectation: 'You expect to find something worth keeping — and suspect the village has already decided you are part of it.',
+    },
+  };
+
+  L.REASONS = [
+    { id: 'fresh_start', name: 'A fresh start', blurb: 'You wanted a place where nobody knew the old version of you.', line: 'You tell Nyssa the truth in one sentence: you wanted somewhere nobody had already decided who you were.' },
+    { id: 'family', name: 'A family connection', blurb: 'Maren Vale was your great-aunt. The cottage came with her handwriting in the ledger.', line: 'You came because of Maren, and the village looks at you as though it is trying to find her in your face.' },
+    { id: 'inheritance', name: 'The cottage you inherited', blurb: 'You inherited a house you had seen twice and a key that still works.', line: 'You came for the cottage, mostly. The village is a complication you did not budget for.' },
+    { id: 'overwhelmed', name: 'A place to breathe', blurb: 'You left an environment that had stopped leaving room for you.', line: 'You do not say what you left. Nyssa does not ask. She says only: "Then breathe first. Decide later."' },
+    { id: 'opportunity', name: 'An opportunity', blurb: 'A cottage, a ledger, a village that needed someone. You are not sure which of you needed it more.', line: 'You came because it was offered, and because saying yes was easier than explaining why you had nothing better.' },
+  ];
+
+  /* ---------------- relationship history map ----------------
+     Who knows whom, since when, what happened, and what it is now. */
+  L.history = [
+    { a: 'lucien', b: 'finn', since: -8, how: 'Finn taught the new keeper three knots on a wet morning and judged him worth the trouble.', conflict: 'None worth naming. Finn still calls him "lad".', now: 'Quiet friendship; the only person Lucien asks about the weather without pretending it is small talk.' },
+    { a: 'lucien', b: 'celeste', since: -13, how: 'Celeste began leaving flowers at the lighthouse every spring. Lucien assumed it was a village tradition.', conflict: 'Celeste recognised Ilse\'s handwriting on a washed-up letter and said nothing. Lucien also knows, and has not said.', now: 'Warm, careful, with one unspoken thing between them that both are protecting.' },
+    { a: 'lucien', b: 'nyssa', since: -8, how: 'Nyssa was at the lighthouse the night he arrived, though nobody saw her come up the stairs.', conflict: 'She once implied he was waiting for someone who was not coming. He has not forgotten.', now: 'Respect with an old, mild bruise. She leaves him the west step.' },
+    { a: 'mira', b: 'rowan', since: -12, how: 'Mira brought bread to the mill the winter his mother was ill and stayed to eat it with him.', conflict: 'She once told him he was stubborn; he said she was exhausting; both were right.', now: 'Old friends. She feeds him; he fixes her oven and calls it nothing.' },
+    { a: 'mira', b: 'theo', since: -6, how: 'Theo made a bad joke in the square, Mira laughed, and neither has let it become a conversation.', conflict: 'He leaves every winter. She has stopped asking when he will stay.', now: 'Flirtation with an expiry date neither will name.' },
+    { a: 'mira', b: 'celeste', since: -14, how: 'Flowers on the bakery tables, bread in the flower shop; the trade became a friendship.', conflict: 'One argument about a wedding order, resolved with two loaves and a bouquet.', now: 'Close, easy, and the only person Mira lets see her tired.' },
+    { a: 'rowan', b: 'aria', since: -5, how: 'Aria fined him for a book returned seven weeks late. He paid in flour.', conflict: 'He thinks she is fussy; she thinks he is careless; both are fond of the argument.', now: 'Friendly friction, and the library\'s broken shelf is fixed without anyone asking.' },
+    { a: 'rowan', b: 'finn', since: -9, how: 'They mended the same fence four times and discovered they could work without talking.', conflict: 'A dispute about a boundary stone that neither will re-open.', now: 'Comfortable silence and borrowed tools.' },
+    { a: 'elowen', b: 'celeste', since: -3, how: 'Soil delivery, cuttings, and a shared hatred of people who overwater.', conflict: 'She once sold a plant he had grown and gave him none of the money. She has been overpaying ever since.', now: 'Steady friendship, conducted mostly in plants.' },
+    { a: 'elowen', b: 'nyssa', since: -24, how: 'She sat in the greenhouse the week his grandmother died and did not speak.', conflict: 'None. She is the one person he does not apologise to.', now: 'He leaves the door unlocked for her. She has never explained why she comes.' },
+    { a: 'aria', b: 'celeste', since: -9, how: 'Celeste brought flowers for the library\'s first reading hour; they discovered they both keep records of the village.', conflict: 'Celeste will not show her drawings; Aria will not show her book.', now: 'Gentle alliance: two people guarding the same kind of thing.' },
+    { a: 'aria', b: 'nyssa', since: -9, how: 'Maren introduced them. Nyssa tested her with one question and has trusted her since.', conflict: 'Aria asked about the founding; Nyssa answered with silence and a changed subject.', now: 'Mutual respect and one withheld story.' },
+    { a: 'theo', b: 'finn', since: -6, how: 'A fishing bet, a bottle of something bad, and a loan Finn has never repaid.', conflict: 'The loan. Neither will mention it first.', now: 'Rivalry that is really gratitude with nowhere to go.' },
+    { a: 'nyssa', b: 'mira', since: -14, how: 'Nyssa appeared at the bakery on Mira\'s first night and asked for a loaf she did not need.', conflict: 'Mira once tried to feed her and was politely refused. She still tries.', now: 'Fond, slightly formal, with bread left on the well every week.' },
+  ];
+
+  /* ---------------- backstory to main story ----------------
+     Each revelation is a door into the main arc, opened gradually. */
+  L.STORY_LINKS = {
+    cottage: { title: 'The Cottage on the Hill', text: 'Built for Sable Wren, the founder erased from the charter, and left empty for a century. Maren left it to "whoever comes asking". You are living in the village\'s missing page.', arc: 'Belonging' },
+    ledger: { title: 'The Missing Page', text: 'The ledger skips from the second year to the fourth. Aria noticed in her first month and has never reported it. Nyssa keeps the page.', arc: 'Cracks' },
+    flowers: { title: 'Flowers to the Light', text: 'Celeste has left flowers at the lighthouse every spring since Ilse left — not since the Merrow, as the tradition claims. The village has the date wrong.', arc: 'Cracks' },
+    letters: { title: 'Letters Never Sent', text: 'Lucien writes to his mother and keeps the letters. One of hers reached him anyway, and both he and Celeste know it.', arc: 'Cracks' },
+    unlabelled_box: { title: 'The Unlabelled Box', text: 'Letters people asked the village to forget. Aria must decide whether the village may read them; the player\'s answer shapes the ending.', arc: 'The box' },
+    promise: { title: 'What Nyssa Promised', text: 'Not to keep the village safe. To keep it kind, and to let people return. She has never been sure she has done it right.', arc: 'The promise' },
+    ninth: { title: 'The Ninth Household', text: 'Sable Wren left after a quarrel over the well. Her name was scraped from the charter; her house is yours. The grove stones were hers.', arc: 'The promise' },
+    star_hook: { title: 'The Star Hook', text: 'Finn\'s father drowned with it. Finn found it in the wreck and tells everyone it was "the last thing that was actually his". The hook is the only honest thing he owns.', arc: 'Keeping' },
+    winter_route: { title: 'Theo\'s Winter', text: 'He spends every winter in Greyford, working unpaid in the shop his family lost. The village thinks he disappears; he thinks he is repaying a debt that cannot be repaid.', arc: 'Belonging' },
+    maren: { title: 'Maren\'s Last Page', text: 'Written the week she died: "Leave it to the one who comes asking. They will need a place that does not require them to be anyone yet."', arc: 'Keeping' },
+  };
+
+})();
+</script>
+<script>
+/* Sanctuary — backstory memory registry.
+   Each memory is a keepsake the player can be shown: a photograph, a letter,
+   a page from a diary, an object. Unlocks are earned through friendship,
+   romance, items found in the world, seasons, or story flags — never all at
+   once. Illustrations are composed from the official character artwork over
+   an existing painted plate; no new character artwork is invented here. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const M = (D.loreMemories = []);
+  const add = (m) => M.push(m);
+
+  add({
+    id: 'mem_lucien_photo', npc: 'lucien', kind: 'photo',
+    title: 'Two People by a Lighthouse', date: 'Year -18, Autumn', place: 'Hallowmere',
+    plate: 'lighthouse-night', unlock: { friend: 21 },
+    summary: 'A photograph in Lucien\'s drawer: his father, young, standing beside a keeper who is not Old Bram. On the back, in his mother\'s hand: "The sea is not the only thing that keeps people apart."',
+    pages: [
+      { speaker: 'lucien', text: '"That is my father. He never told me he had been here. I found the charter in his desk the year after he died."' },
+      { speaker: 'lucien', text: '"I think he wanted me to find it. I think he was afraid I would. Both can be true."' },
+    ],
+  });
+
+  add({
+    id: 'mem_lucien_letters', npc: 'lucien', kind: 'letter',
+    title: 'The Drawer of Unsent Letters', date: 'Year -4 to now', place: 'The Lighthouse',
+    plate: 'lighthouse-night', unlock: { friend: 41 },
+    summary: 'Nine letters to Ilse, none sent, each shorter than the last. The most recent has only one line: "The chime broke. I have not replaced it."',
+    pages: [
+      { speaker: 'lucien', text: '"I write them so I do not say it out loud to someone who did not ask."' },
+      { speaker: 'lucien', text: '"You can read one. Not the last one. The last one is still true."' },
+    ],
+  });
+
+  add({
+    id: 'mem_celeste_drawing', npc: 'celeste', kind: 'keepsake',
+    title: 'A Drawing Turned to the Wall', date: 'Year -5, Winter', place: 'Above the Flower Shop',
+    plate: 'garden', unlock: { friend: 21 },
+    summary: 'A botanical study of a bluebell, accurate to the vein, with a second stem drawn badly in the margin. The bad one is the only part she has ever liked.',
+    pages: [
+      { speaker: 'celeste', text: '"That is the only honest thing I have drawn. The rest is practice."' },
+      { speaker: 'celeste', text: '"You are looking at it too long. That is — thank you. That is all."' },
+    ],
+  });
+
+  add({
+    id: 'mem_celeste_letter', npc: 'celeste', kind: 'letter',
+    title: 'Ilse\'s Handwriting', date: 'Year -4, Spring', place: 'The Flower Shop',
+    plate: 'beach-sunset', unlock: { friend: 41 },
+    summary: 'A copy of a letter Celeste never sent: she recognised Ilse\'s hand on the washed-up page and wrote to ask whether Lucien knew. She did not post it.',
+    pages: [
+      { speaker: 'celeste', text: '"I have carried this for four years. It is not a secret I wanted. It is one I did not know how to put down."' },
+      { speaker: 'celeste', text: '"If you think he should know, I will tell him. I would rather not do it alone."' },
+    ],
+  });
+
+  add({
+    id: 'mem_elowen_letter', npc: 'elowen', kind: 'letter',
+    title: 'The Unopened School Letter', date: 'Year -7, Spring', place: 'The Greenhouse',
+    plate: 'greenhouse', unlock: { friend: 41 },
+    summary: 'A seed tin holds a letter from the Meridian horticultural school, unopened for seven years. The envelope is soft from being carried.',
+    pages: [
+      { speaker: 'elowen', text: '"I know what it says. It says no. Or it says yes and I did not go, which is worse."' },
+      { speaker: 'elowen', text: '"You can open it. I do not think I can. Not today."' },
+    ],
+  });
+
+  add({
+    id: 'mem_elowen_roof', npc: 'elowen', kind: 'diary',
+    title: 'The Toolshed Notebook', date: 'Year -2, Winter', place: 'The Shared Greenhouse',
+    plate: 'greenhouse', unlock: { friend: 21 },
+    summary: 'A page of measurements, then a line in different ink: "Fixed it. Badly. Nobody has to know." The next page is a list of plants that survived.',
+    pages: [
+      { speaker: 'elowen', text: '"I wrote it down so it would stop being in my head."' },
+      { speaker: 'elowen', text: '"The plants survived. I keep thinking about that instead of the roof."' },
+    ],
+  });
+
+  add({
+    id: 'mem_rowan_watch', npc: 'rowan', kind: 'keepsake',
+    title: 'The Pocket Watch in the Flour Bin', date: 'Year -12, Autumn', place: 'The Windmill',
+    plate: 'village-square', unlock: { friend: 21 },
+    summary: 'His father\'s watch, stopped at 4:40. Rowan keeps it where the flour is cool and dry, which is the most sentimental thing he has ever done.',
+    pages: [
+      { speaker: 'rowan', text: '"It stopped the morning he died. I have not had it fixed. I do not want it to be right."' },
+      { speaker: 'rowan', text: '"Do not tell anyone I keep it in the flour. It is practical. It is dry in there."' },
+    ],
+  });
+
+  add({
+    id: 'mem_rowan_invoice', npc: 'rowan', kind: 'letter',
+    title: 'The Repair Invoice', date: 'Year -1, Autumn', place: 'The Windmill',
+    plate: 'village-square', unlock: { friend: 41 },
+    summary: 'An invoice for the main gear, unpaid, with a payment plan written in Rowan\'s hand and crossed out four times. The sums do not leave enough for food.',
+    pages: [
+      { speaker: 'rowan', text: '"I have it handled." A pause. "I have it handled badly. There is a difference and I know it."' },
+      { speaker: 'rowan', text: '"If you offer to pay, I will say no. If you ask to help with the accounts, I might say yes. I do not know why that is different."' },
+    ],
+  });
+
+  add({
+    id: 'mem_mira_ring', npc: 'mira', kind: 'keepsake',
+    title: 'The Ring in the Flour Jar', date: 'Year -16, Summer', place: 'The Bakery',
+    plate: 'bakery', unlock: { friend: 21 },
+    summary: 'An engagement ring in a jar of flour, kept for eight years. She says she does not know why. The jar is labeled, in her handwriting, "not for bread".',
+    pages: [
+      { speaker: 'mira', text: '"I am not waiting for him. I am waiting to understand why I stayed so long pretending."' },
+      { speaker: 'mira', text: '"Do not make the face. I am allowed one dramatic jar."' },
+    ],
+  });
+
+  add({
+    id: 'mem_mira_father', npc: 'mira', kind: 'letter',
+    title: 'A Card at New Year', date: 'Year -1, Winter', place: 'The Bakery',
+    plate: 'bakery', unlock: { friend: 41 },
+    summary: 'Her father\'s New Year card, kept with the address of a town she has never visited. On the back, a draft reply in her handwriting that stops after "I am".',
+    pages: [
+      { speaker: 'mira', text: '"I get as far as saying I am something and then I do not know what I am."' },
+      { speaker: 'mira', text: '"Do not tell me to just go. I know I should. Knowing is not the hard part."' },
+    ],
+  });
+  add({
+    id: 'mem_theo_cart', npc: 'theo', kind: 'keepsake',
+    title: 'The Varen Cart Plate', date: 'Year -12, Autumn', place: 'Ashford Cross',
+    plate: 'village-square', unlock: { friend: 21 },
+    summary: 'A brass plate from the family cart, kept in his coat. The business it belongs to no longer exists; he polishes it anyway.',
+    pages: [
+      { speaker: 'theo', text: '"Three generations on the same road. And then me, with a plate and no shop."' },
+      { speaker: 'theo', text: '"It is not a sad story. It is a very well-travelled one. Please laugh."' },
+    ],
+  });
+
+  add({
+    id: 'mem_theo_winter', npc: 'theo', kind: 'letter',
+    title: 'The Greyford Receipts', date: 'Year 1, Winter', place: 'Greyford',
+    plate: 'teashop', unlock: { friend: 41 },
+    summary: 'Receipts in his brother\'s hand, made out to "T. Varen, unpaid". He has been working the winter shop for six years without wages and telling the village he was on a road.',
+    pages: [
+      { speaker: 'theo', text: '"You found the boring secret. I would have preferred you found a dramatic one."' },
+      { speaker: 'theo', text: '"Emil never asked me to. That is the part I cannot explain. I owe him a business I did not save."' },
+    ],
+  });
+
+  add({
+    id: 'mem_aria_report', npc: 'aria', kind: 'diary',
+    title: 'The Faculty Report', date: 'Year -10, Spring', place: 'Meridian',
+    plate: 'library', unlock: { friend: 21 },
+    summary: 'Four pages, one conclusion: "insufficient evidence of intent." Her notes are in the margin, not angry, just very small and very exact.',
+    pages: [
+      { speaker: 'aria', text: '"I have read it perhaps two hundred times. It does not change. I keep expecting it to."' },
+      { speaker: 'aria', text: '"The margin notes are the only part that is mine."' },
+    ],
+  });
+
+  add({
+    id: 'mem_aria_box', npc: 'aria', kind: 'letter',
+    title: 'The First Line of the Box', date: 'Year -1, Winter', place: 'The Library',
+    plate: 'library', unlock: { friend: 61 },
+    summary: 'She read one line of one letter in Maren\'s box and stopped: "I am sorry I never told you about the ninth." The rest is still folded.',
+    pages: [
+      { speaker: 'aria', text: '"Maren asked me to keep a thing without owning it. I did not know she meant this."' },
+      { speaker: 'aria', text: '"I think the village is allowed to know. I do not think I am allowed to decide alone."' },
+    ],
+  });
+
+  add({
+    id: 'mem_finn_hook', npc: 'finn', kind: 'keepsake',
+    title: 'The Star Hook', date: 'Year -29, Winter', place: 'The Shore',
+    plate: 'beach-sunset', unlock: { item: 'star_hook' },
+    summary: 'A brass hook with a star stamped into the shank, found in the wreck years after his father drowned. Finn says it is the last thing that was "actually his".',
+    pages: [
+      { speaker: 'finn', text: '"It was in his pocket. The sea gave it back, which is more than it did for him."' },
+      { speaker: 'finn', text: '"You can hold it. Careful. It is not fragile, I am."' },
+    ],
+  });
+
+  add({
+    id: 'mem_finn_jacket', npc: 'finn', kind: 'diary',
+    title: 'His Father\'s Jacket', date: 'Year -29, Winter', place: 'The Boathouse',
+    plate: 'beach-sunset', unlock: { friend: 41 },
+    summary: 'A ruined oilskin jacket in the shed, taken out when the weather turns. He has never repaired it and never thrown it away.',
+    pages: [
+      { speaker: 'finn', text: '"I do not wear it. I just check it is still here."' },
+      { speaker: 'finn', text: '"That is not the same as grieving. My sister says it is. My sister is usually right."' },
+    ],
+  });
+
+  add({
+    id: 'mem_nyssa_page', npc: 'nyssa', kind: 'keepsake',
+    title: 'The Cut Page', date: 'Year -176, Autumn', place: 'The Well',
+    plate: 'village-square', unlock: { friend: 41 },
+    summary: 'The missing ledger page, kept inside a loose stone in the well: the ninth household, and the words Elspeth wrote before she scraped the name away.',
+    pages: [
+      { speaker: 'nyssa', text: '"Sable Wren. She left after a quarrel about water, which is always about something else."' },
+      { speaker: 'nyssa', text: '"Her house was left empty. You are sleeping in it. I did not arrange that. I only did not stop it."' },
+    ],
+  });
+
+  add({
+    id: 'mem_nyssa_promise', npc: 'nyssa', kind: 'letter',
+    title: 'What Was Asked of Her', date: 'Year -180, Spring', place: 'The Well',
+    plate: 'village-square', unlock: { friend: 61 },
+    summary: 'Not a written promise. A memory: Elspeth Wren, dying, holding the well stones and saying, "Keep them kind. Not safe. Kind." Nyssa has never been sure she understood the difference.',
+    pages: [
+      { speaker: 'nyssa', text: '"I have spent a hundred and eighty years keeping a village safe and calling it kindness."' },
+      { speaker: 'nyssa', text: '"I would like to learn the difference while there are still people here to practise on."' },
+    ],
+  });
+
+  add({
+    id: 'mem_cottage_ledger', npc: 'nyssa', kind: 'diary',
+    title: 'Maren\'s Last Page', date: 'Year -1, Winter', place: 'The Cottage',
+    plate: 'cottage-day', unlock: { friend: 21, season: 3, npc: 'nyssa' },
+    summary: 'The final page of the village ledger, found in the cottage desk: the house is left to "the one who comes asking", with a second line in a shakier hand: "They will need a place that does not require them to be anyone yet."',
+    pages: [
+      { speaker: 'narrator', text: 'The ink has soaked into the paper unevenly. She wrote it slowly, and she wrote it for you.' },
+      { speaker: 'nyssa', text: '"She did not tell me she had done it. She knew I would have argued about the phrasing."' },
+    ],
+  });
+
+  add({
+    id: 'mem_grove_stones', npc: 'nyssa', kind: 'place',
+    title: 'The Stones Under the Roots', date: 'Year -176, Autumn', place: 'The Hidden Grove',
+    plate: 'meadow', unlock: { flag: 'grove_open' },
+    summary: 'The grove\'s three stones were raised by Sable Wren, the founder erased from the charter. The order — moth, wave, leaf — is not a lock. It is a name.',
+    pages: [
+      { speaker: 'narrator', text: 'In the oldest carving, under moss: a moth for the one who left, a wave for the ones who stayed, a leaf for what grew over the quarrel.' },
+      { speaker: 'nyssa', text: '"She was not written out because she was wicked. She was written out because it was easier than being wrong in public."' },
+    ],
+  });
 
 })();
 </script>
@@ -11217,6 +12420,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       gender: 'feminine',
       pronoun: 'she',
       background: 'tide',
+      reason: 'fresh_start',
       temperament: 'gentle',
       hair: 'wavy',
       hairColor: '#dcc9a8',
@@ -11276,6 +12480,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
         gender: custom.gender,
         pronoun: St.pronoun(custom.pronoun).id,
         background: background.id,
+        reason: custom.reason || 'fresh_start',
         temperament: temperament.id,
         hair: custom.hair,
         hairColor: custom.hairColor,
@@ -11313,6 +12518,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       romance: {},
       scenes: { seen: {}, log: [] },
       psychology: {},
+      lore: { unlocked: {}, seen: {}, flags: {}, offers: {} },
       city: { day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] },
       memoryBook: [],
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
@@ -11394,6 +12600,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     // saves from before identity existed fall back to the defaults
     merged.player.pronoun = St.pronoun(merged.player.pronoun).id;
     merged.player.background = St.background(merged.player.background).id;
+    merged.player.reason = merged.player.reason || 'fresh_start';
     merged.player.temperament = St.temperament(merged.player.temperament).id;
     merged.player.colors = Object.assign({}, St.playerColors(merged.player), (snap.player && snap.player.colors) || {});
     merged.time = Object.assign({}, base.time, snap.time || {});
@@ -11405,6 +12612,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     merged.psychology = Object.assign({}, snap.psychology || {});
     merged.city = Object.assign({ day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] }, snap.city || {});
     merged.memoryBook = Array.isArray(snap.memoryBook) ? snap.memoryBook : [];
+    merged.lore = Object.assign({ unlocked: {}, seen: {}, flags: {}, offers: {} }, snap.lore || {});
     merged.quests = Object.assign({ active: {}, completed: {}, board: [], boardDay: 0, offered: {} }, snap.quests || {});
     merged.house = Object.assign({ furniture: [] }, snap.house || {});
     merged.cat = Object.assign({}, base.cat, snap.cat || {});
@@ -11558,6 +12766,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     SAN.farming.growAll();
     SAN.quests.refreshBoard();
     if (SAN.cityLife) SAN.cityLife.tickDay();
+    if (SAN.lore) SAN.lore.tickDay();
     SAN.cat.newDay();
     S.house.fireplace = false;
     const fest = SAN.data.eventOn(S.time.season, S.time.day);
@@ -14955,7 +16164,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
         once: !!ev.once,
       });
     }
-    if (SAN.state && SAN.state.save) SAN.state.save();
+    if (SAN.save && SAN.save.autosave) SAN.save.autosave();
   };
 
   /* run the event: cinematic plate first, then the conversation on top of it */
@@ -15178,6 +16387,360 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const seasons = (SAN.util && SAN.util.SEASONS) || ['Spring', 'Summer', 'Autumn', 'Winter'];
     const s = m.season == null ? 0 : m.season;
     return seasons[s] + ' ' + m.day + ', Year ' + (m.year || 1);
+  };
+})();
+</script>
+<script>
+/* Sanctuary — the lore engine.
+   LoreUnlockManager + BackstoryEventManager + MemoryRegistry access, all on
+   top of the systems that already exist (relationships, romance, scenes,
+   dialogue, memory book, save). Nothing here duplicates them.
+
+   Reveal rules:
+   • who someone is, is free (occupation, manner, why they are here);
+   • family and childhood need 21 friendship;
+   • wounds and secrets need 41–61;
+   • the deepest layer needs 81, or the story flag that earns it. */
+(function () {
+  const LO = (SAN.lore = {});
+  const S = () => SAN.state.S;
+  const D = () => SAN.data;
+
+  LO.ensure = function () {
+    const s = S();
+    if (!s) return null;
+    if (!s.lore || typeof s.lore !== 'object') s.lore = {};
+    if (!s.lore.unlocked) s.lore.unlocked = {};
+    if (!s.lore.seen) s.lore.seen = {};
+    if (!s.lore.flags) s.lore.flags = {};
+    if (!s.lore.offers) s.lore.offers = {};
+    return s.lore;
+  };
+
+  LO.char = (id) => (D().lore && D().lore.characters[id]) || null;
+  LO.memory = (id) => (D().loreMemories || []).find((m) => m.id === id) || null;
+  LO.memoriesFor = (id) => (D().loreMemories || []).filter((m) => m.npc === id);
+
+  LO.friend = (id) => {
+    const R = SAN.rel;
+    if (!R) return 0;
+    if (R.pts) return R.pts(id);
+    const f = R.get ? R.get(id) : null;
+    return f ? f.pts || 0 : 0;
+  };
+
+  LO.depth = function (id) {
+    const pts = LO.friend(id);
+    const R = SAN.romance;
+    const stage = R && R.stageIndex ? R.stageIndex(id) : 0;
+    let d = 0;
+    if (pts >= 81) d = 81;
+    else if (pts >= 61) d = 61;
+    else if (pts >= 41) d = 41;
+    else if (pts >= 21) d = 21;
+    if (stage >= 5 && d < 61) d = 61;
+    return d;
+  };
+
+  LO.requirements = function (m) {
+    const u = m.unlock || {};
+    const s = S();
+    const missing = [];
+    if (u.friend && LO.friend(m.npc) < u.friend) missing.push('friendship ' + u.friend);
+    if (u.romance) {
+      const R = SAN.romance;
+      const st = R && R.stageIndex ? R.stageIndex(m.npc) : 0;
+      if (st < u.romance) missing.push('a closer relationship');
+    }
+    if (u.item && s && !(s.inventory && s.inventory[u.item])) missing.push('an object you have not found');
+    if (u.flag && s && !(s.flags && s.flags[u.flag])) missing.push('something still hidden');
+    if (u.season != null && s && s.time.season !== u.season) missing.push('another season');
+    return missing;
+  };
+
+  LO.canReveal = (m) => LO.requirements(m).length === 0;
+
+  LO.availableFor = function (id) {
+    const st = LO.ensure();
+    if (!st) return [];
+    return LO.memoriesFor(id).filter((m) => !st.unlocked[m.id] && LO.canReveal(m));
+  };
+
+  LO.isUnlocked = function (id) {
+    const st = LO.ensure();
+    return !!(st && st.unlocked[id]);
+  };
+
+  LO.unlock = function (id, silent) {
+    const st = LO.ensure();
+    const m = LO.memory(id);
+    if (!st || !m) return false;
+    if (st.unlocked[id]) return false;
+    st.unlocked[id] = { day: S().time.day, season: S().time.season, year: S().time.year };
+    st.seen[id] = true;
+    if (SAN.memoryBook) {
+      SAN.memoryBook.add({
+        kind: 'lore', key: 'lore:' + id, title: m.title, text: m.summary,
+        npc: m.npc, scene: m.plate || null, once: true,
+      });
+    }
+    if (!silent && SAN.ui) SAN.ui.toast('A memory surfaces: ' + m.title, 'memory');
+    if (SAN.save && SAN.save.autosave) SAN.save.autosave();
+    return true;
+  };
+
+  /* how many memories of each person are unlocked, for the codex */
+  LO.progress = function (id) {
+    const list = LO.memoriesFor(id);
+    const st = LO.ensure();
+    const got = list.filter((m) => st && st.unlocked[m.id]).length;
+    return { got, total: list.length };
+  };
+
+  LO.spec = function (m) {
+    const SM = SAN.scenes;
+    if (!SM || !SM.build) return null;
+    return SM.build({
+      cat: 'memory',
+      key: 'lore_' + m.id,
+      npc: m.npc,
+      title: m.title,
+      caption: m.date + ' · ' + m.place,
+      backdrop: m.plate || undefined,
+      mood: 'gentle',
+    });
+  };
+
+  /* the conversation that reveals a memory, with its plate behind it */
+  LO.reveal = function (id) {
+    const m = LO.memory(id);
+    if (!m) return false;
+    const pages = [];
+    pages.push({ speaker: 'narrator', text: m.summary });
+    (m.pages || []).forEach((p) => pages.push(p));
+    const spec = LO.spec(m);
+    const talk = function () {
+      SAN.ui.dialogue({
+        pages: pages,
+        onClose: function () {
+          LO.unlock(id);
+          SAN.ui.toast('Remembered: ' + m.title, 'memory');
+        },
+      });
+    };
+    if (spec && SAN.scenes && SAN.scenes.show) SAN.scenes.show(spec, talk);
+    else talk();
+    return true;
+  };
+
+  /* called from the conversation menu: the next thing this person can bear
+     to show you, if anything */
+  LO.talk = function (id) {
+    const list = LO.availableFor(id);
+    if (!list.length) {
+      const name = (D().npcs[id] || {}).name || 'They';
+      const deeper = LO.memoriesFor(id).some((m) => !LO.isUnlocked(m.id));
+      SAN.ui.dialogue({
+        pages: [{ speaker: 'narrator', text: deeper
+          ? name + ' has more to tell you, but not today. Some things need a longer acquaintance.'
+          : name + ' has shown you everything they keep in reach.' }],
+      });
+      return false;
+    }
+    return LO.reveal(list[0].id);
+  };
+
+  /* the biography as the player can currently read it */
+  LO.biography = function (id) {
+    const c = LO.char(id);
+    if (!c) return null;
+    const d = LO.depth(id);
+    const att = (D().psychology && D().psychology.ATTACHMENTS) || {};
+    const attInfo = att[c.attachment] || {};
+    const layers = [
+      {
+        label: 'At a glance', open: true, text:
+          c.fullName + ' · ' + c.age + ' · ' + c.profession + '. ' +
+          'Born in ' + c.birthplace + '. ' + c.occupation,
+      },
+      {
+        label: 'Why they are here', open: true, text:
+          c.arrival.reason + ' ' +
+          (c.arrival.bornHere ? 'They were born here and have lived here ' + c.arrival.years + '.'
+            : 'They came ' + c.arrival.years + ' ago, from ' + c.arrival.from + ', invited by ' + c.arrival.invitedBy + '.') +
+          ' They have considered leaving: ' + c.arrival.leavingConsidered,
+      },
+      {
+        label: 'Family', open: d >= 21, text:
+          c.family.parents + ' ' + c.family.siblings + ' ' + c.family.note,
+      },
+      {
+        label: 'Childhood', open: d >= 21, text: c.childhood,
+      },
+      {
+        label: 'Growing up', open: d >= 41, text: c.teens,
+      },
+      {
+        label: 'What shaped them', open: d >= 41, text:
+          (c.majorEvents || []).join(' ') + ' Wounds: ' + (c.wounds || []).join(' '),
+      },
+      {
+        label: 'What they are afraid of', open: d >= 41, text: (c.insecurities || []).join(' '),
+      },
+      {
+        label: 'How they love', open: d >= 41, text:
+          'Attachment, as a tendency rather than a diagnosis: ' + (attInfo.name || c.attachment) + '. ' +
+          (attInfo.blurb || '') + ' Boundaries: ' + (c.boundaries || []).join(' '),
+      },
+      {
+        label: 'What they keep to themselves', open: d >= 61, text: (c.secrets || []).join(' '),
+      },
+      {
+        label: 'What they are working towards', open: d >= 61, text:
+          (c.goals || []).join(' ') + ' ' + c.arc,
+      },
+    ];
+    return {
+      id,
+      name: c.name,
+      fullName: c.fullName,
+      age: c.age,
+      birthday: c.birthday,
+      profession: c.profession,
+      depth: d,
+      layers,
+      memories: LO.memoriesFor(id).map((m) => ({
+        id: m.id, title: m.title, unlocked: LO.isUnlocked(m.id), hint: LO.requirements(m).join(', '),
+      })),
+    };
+  };
+
+  LO.mc = function () {
+    const s = S();
+    const base = (D().lore && D().lore.mc) || {};
+    if (!s) return base;
+    const bg = SAN.state.background(s.player.background);
+    const reason = LO.reason(s.player.reason);
+    const origin = (D().lore.ORIGIN_LINES || {})[s.player.background] || {};
+    return Object.assign({}, base, {
+      origin: origin.previousLife || '',
+      expectation: origin.expectation || '',
+      reason,
+      background: bg,
+      line: reason.line,
+    });
+  };
+
+  LO.reason = function (id) {
+    const list = (D().lore && D().lore.REASONS) || [];
+    return list.find((r) => r.id === id) || list[0] || null;
+  };
+
+  LO.setReason = function (id) {
+    const s = S();
+    if (!s) return;
+    s.player.reason = LO.reason(id).id;
+  };
+
+  LO.timeline = function () {
+    return ((D().worldLore && D().worldLore.TIMELINE) || []).slice();
+  };
+
+  LO.places = function () {
+    const p = (D().worldLore && D().worldLore.PLACES) || {};
+    return Object.keys(p).map((k) => Object.assign({ id: k }, p[k]));
+  };
+
+  LO.relationships = function () {
+    const list = ((D().lore && D().lore.history) || []).slice();
+    return list.map((r) => ({
+      a: r.a, b: r.b, since: r.since, how: r.how, conflict: r.conflict, now: r.now,
+      aName: ((D().npcs[r.a] || {}).name) || r.a,
+      bName: ((D().npcs[r.b] || {}).name) || r.b,
+      sinceLabel: r.since < 0 ? Math.abs(r.since) + ' years before you arrived' : 'this year',
+    }));
+  };
+
+  LO.story = function () {
+    const links = (D().lore && D().lore.STORY_LINKS) || {};
+    const st = LO.ensure();
+    const map = { cottage: ['mem_cottage_ledger'], ledger: ['mem_nyssa_page'], flowers: ['mem_celeste_letter'], letters: ['mem_lucien_letters'], unlabelled_box: ['mem_aria_box'], promise: ['mem_nyssa_promise'], ninth: ['mem_nyssa_page', 'mem_grove_stones'], star_hook: ['mem_finn_hook'], winter_route: ['mem_theo_winter'], maren: ['mem_cottage_ledger'] };
+    return Object.keys(links).map((k) => {
+      const need = map[k] || [];
+      const open = need.length ? need.some((id) => st && st.unlocked[id]) : false;
+      return { id: k, title: links[k].title, text: links[k].text, arc: links[k].arc, open };
+    });
+  };
+
+  LO.arcStage = function () {
+    const st = LO.ensure();
+    const n = st ? Object.keys(st.unlocked).length : 0;
+    const world = D().worldLore || {};
+    const beats = (world.ARC && world.ARC.beats) || [];
+    const idx = Math.min(beats.length - 1, Math.floor(n / 4));
+    return { unlocked: n, total: (D().loreMemories || []).length, title: world.ARC ? world.ARC.title : '', beat: beats[idx] || '' };
+  };
+
+  /* consistency check for the whole bible: ages against birth years, reveal
+     order, memory references, relationship pairs, timeline ordering */
+  LO.validate = function () {
+    const problems = [];
+    const lore = D().lore || {};
+    const chars = lore.characters || {};
+    const ids = Object.keys(chars);
+    if (ids.length !== 9) problems.push('expected 9 characters, found ' + ids.length);
+    const births = {};
+    (D().worldLore ? D().worldLore.TIMELINE : []).forEach((t) => {
+      const m = /^([A-Za-z]+) born$/.exec(t.title || '');
+      if (m) births[m[1].toLowerCase()] = t.year;
+    });
+    ids.forEach((id) => {
+      const c = chars[id];
+      if (c.id !== id) problems.push(id + ': id mismatch');
+      if (typeof c.age === 'number' && births[id] != null) {
+        const implied = 1 - births[id];
+        /* a birthday later in the year means they are still one year younger */
+        if (c.age !== implied && c.age !== implied - 1) {
+          problems.push(id + ': age ' + c.age + ' but born Year ' + births[id] + ' (implies ' + (implied - 1) + ' or ' + implied + ')');
+        }
+      }
+      let lastDepth = -1;
+      (c.reveal || []).forEach((r) => {
+        if (r.depth <= lastDepth) problems.push(id + ': reveal depths not ascending');
+        lastDepth = r.depth;
+        if (!r.text) problems.push(id + ': empty reveal at depth ' + r.depth);
+      });
+      if (!c.arrival || c.arrival.from == null) problems.push(id + ': missing arrival history');
+      if (!c.goals || !c.goals.length) problems.push(id + ': missing goals');
+      if (!c.secrets || !c.secrets.length) problems.push(id + ': missing secrets');
+    });
+    (D().loreMemories || []).forEach((m) => {
+      if (!chars[m.npc]) problems.push(m.id + ': unknown npc ' + m.npc);
+      if (!m.plate) problems.push(m.id + ': no illustration plate');
+      if (!m.pages || m.pages.length < 1) problems.push(m.id + ': no dialogue');
+      const need = m.unlock || {};
+      if (need.friend && [21, 41, 61, 81].indexOf(need.friend) < 0) problems.push(m.id + ': unusual friendship gate ' + need.friend);
+    });
+    (lore.history || []).forEach((r) => {
+      if (!chars[r.a] || !chars[r.b]) problems.push('history pair references unknown npc: ' + r.a + '/' + r.b);
+      if (r.a === r.b) problems.push('history pair points at one person: ' + r.a);
+    });
+    const tl = (D().worldLore ? D().worldLore.TIMELINE : []).slice();
+    for (let i = 1; i < tl.length; i++) {
+      if (tl[i].year > tl[i - 1].year) problems.push('timeline out of order at ' + tl[i].title);
+    }
+    return { ok: problems.length === 0, problems };
+  };
+
+  /* a new day: places offer what the season allows */
+  LO.tickDay = function () {
+    const st = LO.ensure();
+    if (!st) return;
+    (D().loreMemories || []).forEach((m) => {
+      if (st.unlocked[m.id]) return;
+      if (!LO.canReveal(m)) return;
+      if (m.unlock && m.unlock.season != null) st.offers[m.id] = S().time.day;
+    });
   };
 })();
 </script>
@@ -15868,6 +17431,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
       if (SAN.romance.canPartner(def.id)) choices.push({ label: 'Ask them to share your life', icon: '💍', cb: function () { SAN.romance.propose(def.id); } });
       if (rstage >= 4) choices.push({ label: 'Ask how they are', icon: '🤍', cb: function () { SAN.romance.comfort(def.id); } });
       if (rstage >= 5 && SAN.state.S.player.area === 'home') choices.push({ label: 'Ask them to stay the night', icon: '🌙', cb: function () { SAN.romance.stayNight(def.id); } });
+    }
+    if (SAN.lore && SAN.lore.availableFor && SAN.lore.availableFor(def.id).length) {
+      choices.push({ label: 'Ask about their past', icon: '📖', cb: function () { SAN.lore.talk(def.id); } });
     }
     choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
     choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
@@ -17462,6 +19028,11 @@ window.SAN_SCENE_ILLUSTRATED = {};
     bookBtn.textContent = 'Memory journal';
     bookBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('storybook'); });
     el.querySelector('.panel-head').appendChild(bookBtn);
+    const loreBtn = document.createElement('button');
+    loreBtn.className = 'btn small vault-scene-btn';
+    loreBtn.textContent = 'World & lives';
+    loreBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('lore'); });
+    el.querySelector('.panel-head').appendChild(loreBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -17662,9 +19233,11 @@ window.SAN_SCENE_ILLUSTRATED = {};
       </div>
       ${romanceDetailHTML(id)}
       ${psychologyDetailHTML(id)}
+      ${loreDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
     attachRomanceButtons(d, id);
+    attachLoreButton(d, id);
   }
 
   function psychologyDetailHTML(id) {
@@ -18726,6 +20299,144 @@ window.SAN_SCENE_ILLUSTRATED = {};
     view('all');
   };
 
+  /* ---------------- lore: a person's history in the profile ---------------- */
+  function loreDetailHTML(id) {
+    if (!SAN.lore) return '';
+    const b = SAN.lore.biography(id);
+    if (!b) return '';
+    const open = b.layers.filter((l) => l.open && l.label !== 'At a glance').slice(0, 2);
+    const prog = SAN.lore.progress(id);
+    return `
+      <div class="lore-box">
+        <div class="prompt-label">What you know of their life <span class="lore-count">${prog.got}/${prog.total} memories</span></div>
+        ${open.map((l) => `<div class="lore-layer"><b>${U.esc(l.label)}</b><span>${U.esc(l.text)}</span></div>`).join('')}
+        ${!open.length ? '<div class="fineprint">Only the surface, for now. Keep talking.</div>' : ''}
+        <div class="fineprint">${b.depth >= 61 ? 'They have trusted you with most of it.' : b.depth >= 41 ? 'They have told you what shaped them. The rest is still theirs.' : b.depth >= 21 ? 'Family and childhood, at least. Deeper things need more time.' : 'Acquaintances learn occupations first. That is how it should be.'}</div>
+      </div>`;
+  }
+
+  function attachLoreButton(el, id) {
+    const host = el.querySelector('.lore-box');
+    if (!host || !SAN.lore) return;
+    const b = document.createElement('button');
+    b.className = 'btn small';
+    b.textContent = 'Open their history';
+    b.addEventListener('click', () => { UI.closeAll(); UI.openPanel('lore', { npc: id }); });
+    host.appendChild(b);
+  }
+
+  /* ---------------- the world & lives codex ---------------- */
+  P.lore = function (data) {
+    const D = SAN.data;
+    const world = D.worldLore || {};
+    let tab = (data && data.npc) ? 'people' : 'chronicle';
+    let person = (data && data.npc) || null;
+    const el = UI.panel('lore', 'Sanctuary: the long record', `
+      <p class="vault-intro">A village keeps what it can. Some of it is on this page; most of it is still in people.</p>
+      <div class="vault-tabs lore-tabs">
+        <button class="chip active" data-t="chronicle">Chronicle</button>
+        <button class="chip" data-t="people">People</button>
+        <button class="chip" data-t="ties">Ties</button>
+        <button class="chip" data-t="memories">Memories</button>
+        <button class="chip" data-t="story">The story</button>
+      </div>
+      <div id="lore-body"></div>`, { wide: true });
+    const body = el.querySelector('#lore-body');
+
+    function chronicle() {
+      const mc = SAN.lore && SAN.lore.mc ? SAN.lore.mc() : null;
+      const arc = world.ARC || {};
+      body.innerHTML = `
+        ${mc ? `<div class="lore-block"><div class="prompt-label">You</div>
+          <p>${U.esc(mc.origin || '')}</p>
+          <p>${U.esc(mc.expectation || '')}</p>
+          <p class="fineprint">${U.esc((mc.reason && mc.reason.line) || '')}</p></div>` : ''}
+        <div class="lore-block"><div class="prompt-label">${U.esc(arc.title || 'The village')}</div>
+          <p>${U.esc(arc.premise || '')}</p>
+          <div class="lore-beats">${(arc.beats || []).map((t, i) => `<div class="lore-beat"><i>${i + 1}</i><span>${U.esc(t)}</span></div>`).join('')}</div>
+        </div>
+        <div class="lore-block"><div class="prompt-label">Master timeline</div>
+          <div class="lore-timeline">${(SAN.lore ? SAN.lore.timeline() : []).map((t) => `<div class="lore-tl-row"><b>${t.year < 0 ? Math.abs(t.year) + ' years before you' : 'Year ' + t.year}</b><span><i>${U.esc(t.title)}</i> ${U.esc(t.text || '')}</span></div>`).join('')}</div>
+        </div>
+        <div class="lore-block"><div class="prompt-label">The village, by its places</div>
+          ${(SAN.lore ? SAN.lore.places() : []).map((p) => `<div class="lore-place"><b>${U.esc(p.name)}</b>${p.built ? `<i>${p.built < 0 ? Math.abs(p.built) + ' years before you' : 'Year ' + p.built}</i>` : ''}<span>${U.esc(p.history)}</span><span class="fineprint">${U.esc(p.now)}</span></div>`).join('')}
+        </div>
+        <div class="lore-block"><div class="prompt-label">Traditions</div>
+          ${(world.TRADITIONS || []).map((t) => `<div class="lore-line"><b>${U.esc(t.name)}</b> <i>${U.esc(t.when)}</i> — ${U.esc(t.text)}</div>`).join('')}
+        </div>`;
+    }
+
+    function people() {
+      const ids = Object.keys((D.lore && D.lore.characters) || {});
+      if (!person && ids.length) person = ids[0];
+      const b = person && SAN.lore ? SAN.lore.biography(person) : null;
+      body.innerHTML = `<div class="lore-people">
+        <div class="lore-person-list">${ids.map((id) => {
+          const c = D.lore.characters[id];
+          const pr = SAN.lore.progress(id);
+          return `<button class="lore-person ${id === person ? 'active' : ''}" data-p="${id}">
+            ${SAN.render.portraitImg(id)}<span><b>${U.esc(c.name)}</b><i>${U.esc(c.profession)}</i><em>${pr.got}/${pr.total} memories · ${SAN.lore.depth(id)} depth</em></span></button>`;
+        }).join('')}</div>
+        <div class="lore-person-body">${b ? `
+          <div class="lore-person-head"><div class="rel-name">${U.esc(b.fullName)}</div>
+            <div class="rel-title">${U.esc(b.age)} · born ${U.esc(b.birthday)} · ${U.esc(b.profession)}</div></div>
+          ${b.layers.map((l) => l.open
+            ? `<div class="lore-layer"><b>${U.esc(l.label)}</b><span>${U.esc(l.text)}</span></div>`
+            : `<div class="lore-layer locked"><b>${U.esc(l.label)}</b><span>Not yet. This is earned, not bought.</span></div>`).join('')}
+          <div class="prompt-label">Memories</div>
+          <div class="lore-mem-list">${b.memories.map((m) => m.unlocked
+            ? `<span class="tag-pill on">${U.esc(m.title)}</span>`
+            : `<span class="tag-pill" title="${U.esc(m.hint)}">${U.esc(m.title)} · locked</span>`).join('')}</div>
+        ` : '<div class="fineprint">Nobody selected.</div>'}</div></div>`;
+      body.querySelectorAll('[data-p]').forEach((btn) => {
+        btn.addEventListener('click', () => { person = btn.getAttribute('data-p'); people(); });
+      });
+    }
+
+    function ties() {
+      const list = SAN.lore ? SAN.lore.relationships() : [];
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Who knows whom</div>
+        ${list.map((r) => `<div class="lore-tie"><div class="lore-tie-head"><b>${U.esc(r.aName)} & ${U.esc(r.bName)}</b><i>${U.esc(r.sinceLabel)}</i></div>
+        <span>${U.esc(r.how)}</span><span class="fineprint">Friction: ${U.esc(r.conflict)}</span><span class="fineprint">Now: ${U.esc(r.now)}</span></div>`).join('')}
+        </div>`;
+    }
+
+    function memories() {
+      const list = D.loreMemories || [];
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Backstory memories</div>
+        ${list.map((m) => {
+          const un = SAN.lore.isUnlocked(m.id);
+          const npc = (D.npcs[m.npc] || {}).name || '';
+          return `<div class="lore-memory ${un ? 'on' : ''}"><div class="lore-tie-head"><b>${U.esc(m.title)}</b><i>${U.esc(m.kind)} · ${U.esc(npc)}</i></div>
+            <span>${un ? U.esc(m.summary) : 'Still hidden — ' + U.esc(m.date + ', ' + m.place)}</span></div>`;
+        }).join('')}
+        </div>`;
+    }
+
+    function story() {
+      const links = SAN.lore ? SAN.lore.story() : [];
+      const arc = SAN.lore ? SAN.lore.arcStage() : null;
+      body.innerHTML = `<div class="lore-block"><div class="prompt-label">Main story connections</div>
+        ${arc ? `<p class="fineprint">${arc.unlocked} of ${arc.total} memories recovered · ${U.esc(arc.title)}</p><p>${U.esc(arc.beat)}</p>` : ''}
+        ${links.map((l) => `<div class="lore-tie ${l.open ? 'on' : ''}"><div class="lore-tie-head"><b>${l.open ? U.esc(l.title) : 'A door you have not opened'}</b><i>${U.esc(l.arc)}</i></div>
+          <span>${l.open ? U.esc(l.text) : 'Something in the village points here. It is not ready to be said.'}</span></div>`).join('')}
+        <div class="prompt-label">Local legends</div>
+        ${(world.LEGENDS || []).map((t) => `<div class="lore-line">${U.esc(t)}</div>`).join('')}
+        </div>`;
+    }
+
+    const views = { chronicle, people, ties, memories, story };
+    function show(t) {
+      tab = t;
+      el.querySelectorAll('.lore-tabs .chip').forEach((b) => b.classList.toggle('active', b.getAttribute('data-t') === t));
+      views[t]();
+    }
+    el.querySelectorAll('.lore-tabs .chip').forEach((b) => {
+      b.addEventListener('click', () => show(b.getAttribute('data-t')));
+    });
+    show(tab);
+  };
+
 })();
 </script>
 <script>
@@ -19460,6 +21171,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
                 <span class="cc-sum"><i>Pronouns</i><b id="cc-sum-pronoun"></b></span>
                 <span class="cc-sum"><i>Carried</i><b id="cc-sum-background"></b></span>
                 <span class="cc-sum"><i>Temperament</i><b id="cc-sum-temperament"></b></span>
+                <span class="cc-sum"><i>Why you came</i><b id="cc-sum-reason"></b></span>
               </div>
               <p class="cc-carried" id="cc-carried"></p>
             </div>
@@ -19496,6 +21208,15 @@ window.SAN_SCENE_ILLUSTRATED = {};
               </div>
               <div class="cc-cards" id="cr-temperament" role="group" aria-label="How you meet the day"></div>
             </section>
+            <section class="cc-section" aria-labelledby="cc-sec-reason">
+              <div class="cc-sec-head">
+                <span class="cc-sec-num" aria-hidden="true">IV</span>
+                <h3 id="cc-sec-reason">Why You Came</h3>
+                <span class="cc-sec-rule" aria-hidden="true"></span>
+              </div>
+              <p class="cc-sub">The village will not ask you to justify it. It will notice, later, in how you talk about home.</p>
+              <div class="cc-cards" id="cr-reason" role="group" aria-label="Why you came"></div>
+            </section>
           </div>
         </div>
         <footer class="cc-actions">
@@ -19517,6 +21238,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const sumPronoun = wrap.querySelector('#cc-sum-pronoun');
     const sumBackground = wrap.querySelector('#cc-sum-background');
     const sumTemperament = wrap.querySelector('#cc-sum-temperament');
+    const sumReason = wrap.querySelector('#cc-sum-reason');
 
     // the official reference artwork, framed exactly as drawn
     portrait.innerHTML = SAN.render.fullBodyImg();
@@ -19569,6 +21291,10 @@ window.SAN_SCENE_ILLUSTRATED = {};
       wrap.querySelector('#cr-temperament').innerHTML = SAN.state.TEMPERAMENTS.map(function (t) {
         return chipMarkup(t, 'temperament', t.id);
       }).join('');
+      const reasons = ((SAN.data.lore || {}).REASONS || []);
+      wrap.querySelector('#cr-reason').innerHTML = reasons.map(function (r) {
+        return chipMarkup(r, 'reason', 'garden');
+      }).join('');
     }
 
     function paint() {
@@ -19580,6 +21306,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
       sumPronoun.textContent = pr.name;
       sumBackground.textContent = bg.name;
       sumTemperament.textContent = temp.name;
+      const reasonList = ((SAN.data.lore || {}).REASONS || []);
+      const reason = reasonList.find(function (r) { return r.id === custom.reason; }) || reasonList[0];
+      if (sumReason) sumReason.textContent = reason ? reason.name : 'A fresh start';
       const all = SAN.state.carriedItems({ background: bg.id, temperament: temp.id });
       carriedEl.textContent = all.length
         ? 'In your satchel: ' + all.map(function (g) { return carriedLabel(g.id, g.count); }).join(', ') + '.'
@@ -19603,6 +21332,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     chooseFrom('#cr-pronoun', 'pronoun');
     chooseFrom('#cr-background', 'background');
     chooseFrom('#cr-temperament', 'temperament');
+    chooseFrom('#cr-reason', 'reason');
 
     nameInput.addEventListener('input', function () {
       custom.name = nameInput.value;
@@ -19637,6 +21367,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
       custom.pronoun = other(SAN.state.PRONOUNS, custom.pronoun);
       custom.background = other(SAN.state.BACKGROUNDS, custom.background);
       custom.temperament = other(SAN.state.TEMPERAMENTS, custom.temperament);
+      const reasons = ((SAN.data.lore || {}).REASONS || []);
+      if (reasons.length) custom.reason = other(reasons, custom.reason);
       renderChoices();
       paint();
       if (SAN.audio && SAN.audio.sfx) SAN.audio.sfx('open');
@@ -19658,6 +21390,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
       custom.pronoun = SAN.state.pronoun(custom.pronoun).id;
       custom.background = SAN.state.background(custom.background).id;
       custom.temperament = SAN.state.temperament(custom.temperament).id;
+      const reasonIds = ((SAN.data.lore || {}).REASONS || []).map(function (r) { return r.id; });
+      if (reasonIds.length && reasonIds.indexOf(custom.reason) < 0) custom.reason = reasonIds[0];
       close();
       SC.beginGame(custom);
     });
@@ -19679,8 +21413,10 @@ window.SAN_SCENE_ILLUSTRATED = {};
       const it = SAN.data.item(g.id);
       return (it ? it.name : g.id) + (g.count > 1 ? ' ×' + g.count : '');
     }).join(', ');
+    const reason = (SAN.data.lore && SAN.data.lore.REASONS || []).find((r) => r.id === custom.reason);
     const ledger = 'The village ledger writes you down as ' + (custom.name || 'Elara') + ' — ' + pr.name + '.' +
-      (carried ? ' In your satchel: ' + carried + '.' : '');
+      (carried ? ' In your satchel: ' + carried + '.' : '') +
+      (reason ? ' Why you came: ' + reason.name.toLowerCase() + '.' : '');
     S_.started = true;
     SAN.ui.titleActive = true;
     document.getElementById('title-screen').classList.add('hidden');
