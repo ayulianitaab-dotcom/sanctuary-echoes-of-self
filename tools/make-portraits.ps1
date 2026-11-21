@@ -72,7 +72,7 @@ $crops = @(
 
   # nine NPCs — NPC Lineup Reference; centres from the name plaques
   @{ sheet = "lineup"; id = "nyssa";  mood = "neutral"; x = 80;  y = 120; w = 240; h = 328 }
-  @{ sheet = "lineup"; id = "liora";  mood = "neutral"; x = 382; y = 120; w = 240; h = 328 }
+  @{ sheet = "lineup"; id = "lucien";  mood = "neutral"; x = 382; y = 120; w = 240; h = 328 }
   @{ sheet = "lineup"; id = "elowen"; mood = "neutral"; x = 674; y = 120; w = 240; h = 328 }
   @{ sheet = "lineup"; id = "rowan";  mood = "neutral"; x = 969; y = 120; w = 240; h = 328 }
   @{ sheet = "lineup"; id = "mira";   mood = "neutral"; x = 1255; y = 120; w = 240; h = 328 }

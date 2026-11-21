@@ -54,9 +54,9 @@
       },
     },
 
-    liora: {
+    lucien: {
       traits: ['steady', 'warm', 'braced for departure'],
-      history: 'She came inland-to-sea at nineteen and stayed. Her mother left in spring, four years ago, and Liora has kept a lamp for strangers ever since.',
+      history: 'He came inland-to-sea at nineteen and stayed. His mother left in spring, four years ago, and Lucien has kept a lamp for strangers ever since.',
       timeLines: {
         morning: '"The tide went out further than usual. I always take that personally, which is silly."',
         afternoon: '"Afternoon light makes the lens look like it is full of honey. I polish it slower than I need to."',
@@ -72,30 +72,30 @@
         21: {
           title: 'The West Step',
           pages: [
-            { speaker: 'liora', text: '"You can sit here. It is not reserved. I only say that because I used to pretend it was."' },
-            { speaker: 'liora', text: 'She does not move over to make room. She has already left space.' },
+            { speaker: 'lucien', text: '"You can sit here. It is not reserved. I only say that because I used to pretend it was."' },
+            { speaker: 'lucien', text: 'He does not move over to make room. He has already left space.' },
           ],
         },
         41: {
           title: 'A Door Left Unlocked',
           pages: [
-            { speaker: 'liora', text: '"I have been thinking about why I keep the lamp lit for strangers and not for — anyone else."' },
-            { speaker: 'liora', text: '"I think it is easier to be needed by people who cannot leave. Ships always leave."' },
-            { speaker: 'narrator', text: 'She looks at you, then away. "That was more than I meant to say. You can stay anyway."' },
+            { speaker: 'lucien', text: '"I have been thinking about why I keep the lamp lit for strangers and not for — anyone else."' },
+            { speaker: 'lucien', text: '"I think it is easier to be needed by people who cannot leave. Ships always leave."' },
+            { speaker: 'narrator', text: 'He looks at you, then away. "That was more than I meant to say. You can stay anyway."' },
           ],
         },
         61: {
           title: 'The Photograph',
           pages: [
-            { speaker: 'liora', text: '"I found the photograph again. I put it in a drawer with the letters, which is progress, or at least tidying."' },
-            { speaker: 'liora', text: '"I used to think if I stopped waiting, it meant I agreed with how she left. I do not think that anymore. Mostly."' },
+            { speaker: 'lucien', text: '"I found the photograph again. I put it in a drawer with the letters, which is progress, or at least tidying."' },
+            { speaker: 'lucien', text: '"I used to think if I stopped waiting, it meant I agreed with how she left. I do not think that anymore. Mostly."' },
           ],
         },
         81: {
           title: 'Someone To Look For',
           pages: [
-            { speaker: 'liora', text: '"When you are out walking, I find myself checking the path. Not because I am worried."' },
-            { speaker: 'liora', text: '"Because there is somebody I would be glad to see. That is different. I had to learn the difference."' },
+            { speaker: 'lucien', text: '"When you are out walking, I find myself checking the path. Not because I am worried."' },
+            { speaker: 'lucien', text: '"Because there is somebody I would be glad to see. That is different. I had to learn the difference."' },
           ],
         },
       },
@@ -103,7 +103,7 @@
 
     elowen: {
       traits: ['observant', 'self-reliant', 'easily embarrassed by kindness'],
-      history: 'She rebuilt the greenhouse roof alone last winter and tells everyone it was fine. She keeps a cutting of every plant that survived her.',
+      history: 'He rebuilt the greenhouse roof alone last winter and tells everyone it was fine. He keeps a cutting of every plant that survived him.',
       timeLines: {
         morning: '"Morning is for checking who made it through the night. Plants are very honest about that."',
         afternoon: '"I have been repotting since noon. My hands smell like soil and I have forgotten to eat. Again."',
@@ -134,19 +134,18 @@
           title: 'The Sister',
           pages: [
             { speaker: 'elowen', text: '"My sister sends letters. I answer them with plant advice, because plant advice is safe."' },
-            { speaker: 'elowen', text: '"She wrote: \'I do not need you to be useful, I need you to be my sister.\' I have not answered that one yet. I will."' },
+            { speaker: 'elowen', text: '"She wrote: \'I do not need you to be useful, I need you to be my brother.\' I have not answered that one yet. I will."' },
           ],
         },
         81: {
           title: 'Two Pairs Of Hands',
           pages: [
             { speaker: 'elowen', text: '"The starflower came back this year. I did not do that alone."' },
-            { speaker: 'elowen', text: 'She says it plainly, without apologising, and goes back to the trays. It is the most she has ever said.' },
+            { speaker: 'elowen', text: 'He says it plainly, without apologising, and goes back to the trays. It is the most he has ever said.' },
           ],
         },
       },
     },
-
     rowan: {
       traits: ['curious', 'self-critical', 'kind in a sideways way'],
       history: 'He took over the windmill from a man who never explained anything. He has been reverse-engineering the gears, and his own thoughts, ever since.',
@@ -429,7 +428,7 @@
      ========================================================= */
   D.chatter = [
     { a: 'mira', b: 'nyssa', lines: ['"You never eat anything I bake." / "I eat the idea of it, Mira. Constantly."', '"That is not the compliment you think it is."'] },
-    { a: 'liora', b: 'finn', lines: ['"Anything biting?" / "One carp. He looked at me with real disappointment."', '"Carp are like that."'] },
+    { a: 'lucien', b: 'finn', lines: ['"Anything biting?" / "One carp. He looked at me with real disappointment."', '"Carp are like that."'] },
     { a: 'elowen', b: 'celeste', lines: ['"The starflower took." / "Of course it did. You asked it nicely."', '"I did not — I just watered it."'] },
     { a: 'rowan', b: 'aria', lines: ['"Do you have anything about gears?" / "Only about people who talk about gears."', '"That is basically the same book."'] },
     { a: 'theo', b: 'mira', lines: ['"I have a jar of honey from the meadow." / "You have a jar of honey from somewhere. Fixed it for you."'] },

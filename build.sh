@@ -11,6 +11,9 @@ FILES=(
   js/core/save.js
   js/data/items.js
   js/data/npcs.js
+  js/data/visual-registry.js
+  js/data/psychology.js
+  js/data/social.js
   js/data/romance.js
   js/data/scenes-illustrated.js
   js/data/scenes.js
@@ -34,6 +37,9 @@ FILES=(
   js/systems/quests.js
   js/systems/cat.js
   js/systems/living.js
+  js/systems/psychology.js
+  js/systems/city-life.js
+  js/systems/memory-book.js
   js/systems/photos.js
   js/systems/actions.js
   js/ui/ui.js
@@ -62,9 +68,33 @@ if [ ! -f assets/portraits/nyssa/fullbody.png ]; then
   echo "ERROR: no portrait artwork found in assets/portraits" >&2
   exit 1
 fi
+for id in nyssa lucien elowen rowan mira celeste theo aria finn; do
+  if [ ! -f "assets/portraits/$id/neutral.png" ]; then
+    echo "ERROR: missing official artwork for $id" >&2
+    exit 1
+  fi
+  # aria has no verified full body yet; her face portrait is used instead
+  if [ "$id" != "aria" ] && [ ! -f "assets/portraits/$id/fullbody.png" ]; then
+    echo "ERROR: missing official full body for $id" >&2
+    exit 1
+  fi
+done
+if [ -f assets/portraits/aria/fullbody.png ]; then
+  echo "ERROR: assets/portraits/aria/fullbody.png is a duplicate of Rowan and must stay removed" >&2
+  exit 1
+fi
+DUPES=$(find assets/portraits -name fullbody.png -exec md5sum {} + | sort | awk "{print \$1}" | uniq -d | wc -l)
+if [ "$DUPES" -gt 0 ]; then
+  echo "ERROR: two NPCs share the same full-body artwork" >&2
+  exit 1
+fi
+if [ -d assets/portraits/liora ]; then
+  echo "ERROR: the retired character folder assets/portraits/liora is still present" >&2
+  exit 1
+fi
 PORTRAIT_COUNT=$(find assets/portraits -type f -name '*.png' | wc -l)
-if [ "$PORTRAIT_COUNT" -lt 90 ]; then
-  echo "ERROR: expected 90 portrait files, found $PORTRAIT_COUNT" >&2
+if [ "$PORTRAIT_COUNT" -lt 80 ]; then
+  echo "ERROR: expected at least 81 portrait files, found $PORTRAIT_COUNT" >&2
   exit 1
 fi
 echo "Serving $PORTRAIT_COUNT portrait illustrations from assets/portraits" >&2

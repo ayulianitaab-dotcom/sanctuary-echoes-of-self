@@ -26,7 +26,9 @@
     return e === 'webp' ? 'webp' : 'jpg';
   };
   SM.backdropSrc = function (key) {
-    return D().backdropPath(key, SM.ext());
+    const path = D().backdropPath(key, SM.ext());
+    // versioned so a regenerated plate is never masked by the browser cache
+    return SAN.visual && SAN.visual.url ? SAN.visual.url(path) : path;
   };
 
   function safeImg(src) {
@@ -62,7 +64,7 @@
     const npc = npcId && SAN.data.npcs[npcId] ? SAN.data.npcs[npcId] : null;
     const cast = [];
     if (!o.noPlayer) cast.push({ who: 'player', side: 'left', src: playerArt(), label: (s && s.player.name) || 'You', mood: o.playerMood || 'neutral' });
-    if (npc) cast.push({ who: npcId, side: 'right', src: npcArt(npcId), label: npc.name, mood: o.npcMood || 'gentle' });
+    if (npc) cast.push({ who: npcId, side: 'right', src: npcArt(npcId), label: npc.name, mood: o.npcMood || 'gentle', bust: !!npc.fullBodyMissing });
     if (o.withCat) cast.push({ who: 'mochi', side: 'right', src: catArt(), label: s && s.cat ? s.cat.name : 'Mochi', mood: 'happy', small: true });
     return {
       id,
@@ -181,7 +183,7 @@
       spec.actors.forEach((a) => {
         if (!a.src) return;
         const img = document.createElement('img');
-        img.className = 'scene-actor ' + (a.side === 'left' ? 'left' : 'right') + (a.small ? ' small' : '');
+        img.className = 'scene-actor ' + (a.side === 'left' ? 'left' : 'right') + (a.small ? ' small' : '') + (a.bust ? ' bust' : '');
         img.src = a.src;
         img.alt = a.label || '';
         img.draggable = false;

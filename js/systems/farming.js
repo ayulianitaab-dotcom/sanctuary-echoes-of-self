@@ -30,7 +30,7 @@
     const key = F.key(plot.area, plot.x, plot.y);
     let st = S.farm.plots[key];
     if (plot.area === 'greenhouse' && !S.unlocked.greenhouse_beds) {
-      SAN.ui.toast('These beds are Elowen\'s for now. She might share them later.', 'info');
+      SAN.ui.toast('These beds are Elowen\'s for now. He might share them later.', 'info');
       return false;
     }
     if (!st || !st.tilled) {

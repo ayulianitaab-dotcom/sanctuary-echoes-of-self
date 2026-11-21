@@ -137,6 +137,7 @@
         const mv = SAN.input.moveVector();
         SAN.world.update(dt, mv);
         SAN.living.update(dt);
+        if (SAN.cityLife) SAN.cityLife.update(dt);
         const ch = SAN.world.area && SAN.world.area.grid[Math.floor(SAN.world.player.y)] && SAN.world.area.grid[Math.floor(SAN.world.player.y)][Math.floor(SAN.world.player.x)];
         petalCooldown -= dt;
         if (ch === ',' && petalCooldown <= 0 && SAN.world.player.moving) {

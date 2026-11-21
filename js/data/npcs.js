@@ -4,7 +4,7 @@
   const N = (D.npcs = {});
 
   N.nyssa = {
-    id: 'nyssa', name: 'Nyssa', title: 'Village Guardian', pronoun: 'she',
+    id: 'nyssa', name: 'Nyssa', title: 'Village Guardian', gender: 'feminine', pronoun: 'she',
     colors: { hair: '#e9e4ff', skin: '#efe6ff', eye: '#b9a6f0', dress: '#a7b6d8', accent: '#fff6e2', ribbon: '#d9c8f2' },
     hair: 'wavy', accessory: 'halo', glow: true,
     personality: 'Ancient, patient, and quietly amused by humans.',
@@ -32,12 +32,13 @@
     gift: { love: '"Ah. You remembered something I said. That is the real gift."', like: '"Kind of you. I will put it where the light falls."', neutral: '"I will find a use for it. Guardians are very good at finding uses."', dislike: '"...I will treasure it. Dutifully."' },
   };
 
-  N.liora = {
-    id: 'liora', name: 'Liora', title: 'Lighthouse Keeper', age: 27,
-    colors: { hair: '#e7d9bd', skin: '#f6ddc9', eye: '#8fb3d9', dress: '#5c7599', accent: '#eef3fb', ribbon: '#d8c3a0' },
-    hair: 'long', accessory: 'clip',
-    personality: 'Steady, warm, and a little afraid of being left behind — though she would call it "being sensible".',
-    bio: 'She keeps the lamp burning so no ship has to guess where the shore is. She has kept it burning alone for four years.',
+  N.lucien = {
+    id: 'lucien', name: 'Lucien', title: 'Lighthouse Keeper', age: 27,
+    gender: 'masculine', pronoun: 'he',
+    colors: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a' },
+    hair: 'short', accessory: 'none',
+    personality: 'Quiet, mature, and a little afraid of being left behind — though he would call it "being sensible".',
+    bio: 'He keeps the lamp burning so no ship has to guess where the shore is. He has kept it burning alone for four years.',
     loves: ['pearl', 'memoryfish', 'lavender_tea', 'sea_glass'],
     likes: ['shell', 'daisy', 'moon_cookie', 'bread', 'silverfin'],
     dislikes: ['carp', 'stone'],
@@ -52,7 +53,7 @@
     ],
     ifRain: { area: 'lighthouse', x: 18, y: 12 },
     greetings: {
-      0: ['"Careful on the rocks — they get slick after rain." She smiles, but keeps one hand on the railing.', '"You are the new one. The cottage on the hill, yes? I hope it is warm."'],
+      0: ['"Careful on the rocks — they get slick after rain." He smiles, but keeps one hand on the railing.', '"You are the new one. The cottage on the hill, yes? I hope it is warm."'],
       21: ['"Oh — you again. That came out wrong. I meant it pleasantly."', '"I was just thinking about the tide. It always comes back. I like things that come back."'],
       41: ['"I saved you a seat on the west step. The sunset is better there."', '"People ask why I stay out here alone. I have started saying: because the light needs someone. That is only half true."'],
       61: ['"You always knock. I notice that. Most people just walk in and assume I am fine."', '"If you ever need to sit somewhere dark and quiet, the lamp room is yours."'],
@@ -60,27 +61,27 @@
     },
     daily: ['"The lamp needs polishing again. It is a good excuse to think."', '"I found a bottle on the shore this morning. Empty, sadly. Or maybe luckily."'],
     topics: [
-      { id: 'liora_sea', min: 0, lines: ['"I grew up inland. I had never seen the sea until the night I arrived here."', '"It was so loud I could not hear myself worry. I have stayed near it ever since."'] },
-      { id: 'liora_letters', min: 25, lines: ['"I used to write letters to people who had already left. I never sent them."', '"Not because I was angry. Because I did not want to be a burden at their new address."'] },
-      { id: 'liora_light', min: 45, lines: ['"My mother said a lighthouse is a promise you make to strangers."', '"I used to think that meant I had to be strong all the time. I am trying to think it means I only have to be here."'] },
-      { id: 'liora_alone', min: 65, lines: ['"Sometimes I am lonely and it does not mean anything is wrong with my life."', '"It just means I am a person who would like some company. That took me years to be able to say."'] },
-      { id: 'liora_trust', min: 85, lines: ['"I am learning that people can leave and still love you. And that some people simply do not leave."', '"You are the second kind. I am still getting used to it."'] },
+      { id: 'lucien_sea', min: 0, lines: ['"I grew up inland. I had never seen the sea until the night I arrived here."', '"It was so loud I could not hear myself worry. I have stayed near it ever since."'] },
+      { id: 'lucien_letters', min: 25, lines: ['"I used to write letters to people who had already left. I never sent them."', '"Not because I was angry. Because I did not want to be a burden at their new address."'] },
+      { id: 'lucien_light', min: 45, lines: ['"My mother said a lighthouse is a promise you make to strangers."', '"I used to think that meant I had to be strong all the time. I am trying to think it means I only have to be here."'] },
+      { id: 'lucien_alone', min: 65, lines: ['"Sometimes I am lonely and it does not mean anything is wrong with my life."', '"It just means I am a person who would like some company. That took me years to be able to say."'] },
+      { id: 'lucien_trust', min: 85, lines: ['"I am learning that people can leave and still love you. And that some people simply do not leave."', '"You are the second kind. I am still getting used to it."'] },
     ],
     gift: {
-      love: '"Oh. You — this is exactly right. How did you know?" She holds it carefully, like a small animal.',
+      love: '"Oh. You — this is exactly right. How did you know?" He holds it carefully, like a small animal.',
       like: '"Thank you. I will keep it on the windowsill where I can see it from the stairs."',
       neutral: '"That is thoughtful. Truly."',
-      dislike: '"...Ah. Thank you. I will find somewhere for it." She does not.',
+      dislike: '"...Ah. Thank you. I will find somewhere for it." He does not.',
     },
     questline: 'lighthouse',
   };
-
   N.elowen = {
     id: 'elowen', name: 'Elowen', title: 'Greenhouse Gardener', age: 24,
-    colors: { hair: '#9d7a5a', skin: '#eecfb4', eye: '#7fa06b', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
-    hair: 'braid', accessory: 'leaf',
-    personality: 'Quiet, observant, and fiercely self-reliant in a way that costs her.',
-    bio: 'She can name every plant in Sanctuary and will apologise for needing help before you finish offering it.',
+    gender: 'masculine', pronoun: 'he',
+    colors: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
+    hair: 'short', accessory: 'leaf',
+    personality: 'Quiet, observant, and fiercely self-reliant in a way that costs him.',
+    bio: 'He can name every plant in Sanctuary and will apologise for needing help before you finish offering it.',
     loves: ['seed_starflower', 'snowdrop', 'flower_salad', 'glow_moss'],
     likes: ['seed_moonpetal', 'clay', 'fiber', 'daisy', 'plant_fern'],
     dislikes: ['honey_cake', 'music_box'],
@@ -94,8 +95,8 @@
     ],
     ifRain: { area: 'greenhouse', x: 14, y: 12 },
     greetings: {
-      0: ['She looks up, startled, then nods at you over a tray of seedlings.', '"The greenhouse door sticks. You have to lift it."'],
-      21: ['"Oh. You. Hello." She wipes her hands twice. "Sorry. Dirt."', '"The bluebells are doing well. I thought you would want to know. I do not know why I thought that."'],
+      0: ['He looks up, startled, then nods at you over a tray of seedlings.', '"The greenhouse door sticks. You have to lift it."'],
+      21: ['"Oh. You. Hello." He wipes his hands twice. "Sorry. Dirt."', '"The bluebells are doing well. I thought you would want to know. I do not know why I thought that."'],
       41: ['"I saved a cutting for you. It is nothing. It is a little thing." It is clearly not nothing.', '"You can sit if you want. I will not talk much. It is not personal."'],
       61: ['"I almost asked you for help yesterday. I practised in my head. Then I did it myself and cried a bit."', '"You do not have to be useful here. I am trying to learn that myself."'],
       81: ['"When the roof leaked I thought: I should tell someone. And the someone was you. That is new for me."', '"You are safe to be quiet with. Do you know how rare that is?"'],
@@ -108,16 +109,15 @@
       { id: 'elowen_growth', min: 70, lines: ['"Nothing here grows because I am good. It grows because I keep showing up."', '"You keep showing up too. I notice."'] },
     ],
     gift: {
-      love: 'She goes very still. "You — I have been trying to find one of these for weeks. Thank you." Her ears are red.',
+      love: 'He goes very still. "You — I have been trying to find one of these for weeks. Thank you." His ears are red.',
       like: '"This is lovely. I will — um. I will put it with the others."',
       neutral: '"Thank you. I will find a place for it."',
-      dislike: 'She turns it over, clearly puzzled. "Oh. Thank you." She puts it down gently, like it might be fragile.',
+      dislike: 'He turns it over, clearly puzzled. "Oh. Thank you." He puts it down gently, like it might be fragile.',
     },
     questline: 'greenhouse',
   };
-
   N.rowan = {
-    id: 'rowan', name: 'Rowan', title: 'Windmill Keeper', age: 25,
+    id: 'rowan', name: 'Rowan', title: 'Windmill Keeper', age: 25, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#8a6a4b', skin: '#f0d3ba', eye: '#b58a4e', dress: '#9b7c56', accent: '#f6efe1', ribbon: '#c8a878' },
     hair: 'short', accessory: 'none',
     personality: 'Curious, quick-minded, and trapped in loops of "what if I had said it differently".',
@@ -158,7 +158,7 @@
   };
 
   N.mira = {
-    id: 'mira', name: 'Mira', title: 'Village Baker', age: 32,
+    id: 'mira', name: 'Mira', title: 'Village Baker', age: 32, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#c07a4e', skin: '#f2d2b6', eye: '#7d5a3c', dress: '#d8a37b', accent: '#fff3e3', ribbon: '#e8c9a0' },
     hair: 'bun', accessory: 'apron',
     personality: 'Generous, cheerful, and the village\'s unofficial keeper of everyone\'s bad days.',
@@ -198,7 +198,7 @@
   };
 
   N.celeste = {
-    id: 'celeste', name: 'Celeste', title: 'Flower Shop Owner', age: 35,
+    id: 'celeste', name: 'Celeste', title: 'Flower Shop Owner', age: 35, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#7d6b8f', skin: '#e8cfc0', eye: '#a07fb5', dress: '#b39ac2', accent: '#fbf4ff', ribbon: '#d9c3e8' },
     hair: 'wavy', accessory: 'flower',
     personality: 'Gentle, perceptive, speaks in flowers and very long pauses.',
@@ -239,7 +239,7 @@
   };
 
   N.theo = {
-    id: 'theo', name: 'Theo', title: 'Traveling Merchant', age: 30,
+    id: 'theo', name: 'Theo', title: 'Traveling Merchant', age: 30, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#4c4a5e', skin: '#d9b391', eye: '#8c7d5c', dress: '#5f5a7a', accent: '#e9dcc6', ribbon: '#a8916a' },
     hair: 'ponytail', accessory: 'scarf',
     personality: 'Mysterious, theatrical, and hiding a surprising amount of genuine kindness.',
@@ -266,7 +266,7 @@
       { id: 'theo_roads', min: 0, lines: ['"I have been to towns where the only thing anyone wanted to buy was certainty."', '"I do not stock it. Bad margins."'] },
       { id: 'theo_cart', min: 25, lines: ['"The cart is older than I am. My father drove it. He was a much worse salesman."', '"He once sold a man a map to a place that was not real. The man found it. Father was furious."'] },
       { id: 'theo_staying', min: 45, lines: ['"People think leaving is freedom. Mostly it is just a different set of rooms to be yourself in."', '"Unless you are very careful. Or very lucky. Or, occasionally, both."'] },
-      { id: 'theo_truth', min: 70, lines: ['"I sold the lighthouse a lamp once. Liora paid in seashells because she did not have the coins."', '"I kept the shells. Do not tell her. It would ruin my reputation."'] },
+      { id: 'theo_truth', min: 70, lines: ['"I sold the lighthouse a lamp once. Lucien paid in seashells because he did not have the coins."', '"I kept the shells. Do not tell him. It would ruin my reputation."'] },
     ],
     gift: {
       love: 'He actually stops moving. "Now that is worth the cart."',
@@ -278,7 +278,7 @@
   };
 
   N.aria = {
-    id: 'aria', name: 'Aria', title: 'Village Librarian', age: 29,
+    id: 'aria', name: 'Aria', title: 'Village Librarian', age: 29, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#5b4636', skin: '#e6c6a8', eye: '#6f8fa8', dress: '#6a7f96', accent: '#f2ead9', ribbon: '#c2a67c' },
     hair: 'bob', accessory: 'glasses',
     personality: 'Dry, warm, and hopelessly fond of forgotten things.',
@@ -318,7 +318,7 @@
   };
 
   N.finn = {
-    id: 'finn', name: 'Finn', title: 'Fisherman', age: 41,
+    id: 'finn', name: 'Finn', title: 'Fisherman', age: 41, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#6a6a70', skin: '#e3ba96', eye: '#5f8c85', dress: '#5f7f78', accent: '#eaf2ec', ribbon: '#b98d5e' },
     hair: 'short', accessory: 'cap',
     personality: 'Easygoing, friendly, gives advice like he is telling you a story about someone else.',
@@ -357,7 +357,49 @@
     questline: null,
   };
 
-  D.npcOrder = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+  D.npcOrder = ['nyssa', 'lucien', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+
+  /* =========================================================
+     OFFICIAL CHARACTER REGISTRY
+     The nine canonical identities of Sanctuary. Every system —
+     dialogue, schedules, romance, events, assets — reads identity
+     from here. Gender is canonical and never follows the player's
+     pronouns; romance stays open to everyone regardless of gender.
+     ========================================================= */
+  D.OFFICIAL_ROSTER = {
+    nyssa: { name: 'Nyssa', gender: 'female', pronoun: 'she', profession: 'Village Guardian' },
+    lucien: { name: 'Lucien', gender: 'male', pronoun: 'he', profession: 'Lighthouse Keeper' },
+    elowen: { name: 'Elowen', gender: 'male', pronoun: 'he', profession: 'Greenhouse Gardener' },
+    rowan: { name: 'Rowan', gender: 'male', pronoun: 'he', profession: 'Windmill Keeper' },
+    mira: { name: 'Mira', gender: 'female', pronoun: 'she', profession: 'Village Baker' },
+    celeste: { name: 'Celeste', gender: 'female', pronoun: 'she', profession: 'Flower Shop Owner' },
+    theo: { name: 'Theo', gender: 'male', pronoun: 'he', profession: 'Traveling Merchant' },
+    aria: { name: 'Aria', gender: 'female', pronoun: 'she', profession: 'Village Librarian' },
+    finn: { name: 'Finn', gender: 'male', pronoun: 'he', profession: 'Fisherman' },
+  };
+
+  D.registry = function (id) {
+    const entry = D.OFFICIAL_ROSTER[id];
+    const npc = N[id];
+    if (!entry || !npc) return null;
+    return Object.assign({ id }, entry, { title: npc.title, art: npc.art, expressions: npc.expressions });
+  };
+
+  D.validateRoster = function () {
+    const problems = [];
+    const ids = Object.keys(D.OFFICIAL_ROSTER);
+    if (ids.length !== 9) problems.push('expected 9 NPCs, registry has ' + ids.length);
+    const male = ids.filter((id) => D.OFFICIAL_ROSTER[id].gender === 'male').length;
+    const female = ids.filter((id) => D.OFFICIAL_ROSTER[id].gender === 'female').length;
+    if (male !== 5) problems.push('expected 5 male NPCs, found ' + male);
+    if (female !== 4) problems.push('expected 4 female NPCs, found ' + female);
+    ids.forEach((id) => {
+      if (!N[id]) problems.push(id + ' is in the registry but has no NPC definition');
+      else if (N[id].title !== D.OFFICIAL_ROSTER[id].profession) problems.push(id + ' has the wrong profession');
+    });
+    if (N.liora) problems.push('Liora still exists as an active NPC');
+    return problems;
+  };
 
   /* =========================================================
      OFFICIAL CHARACTER ARTWORK — one registry per character
@@ -381,9 +423,13 @@
     surprised: 'surprised.png',
   };
 
+  // these two official sets ship nine files: no separate surprised face
+  const NPC_ART_GAPS = { lucien: ['surprised'], elowen: ['surprised'] };
+
   D.npcArt = function (id) {
     const expressions = {};
     Object.keys(NPC_ART_FILES).forEach((mood) => {
+      if ((NPC_ART_GAPS[id] || []).indexOf(mood) >= 0) return;
       expressions[mood] = 'assets/portraits/' + id + '/' + NPC_ART_FILES[mood];
     });
     return { fullBody: 'assets/portraits/' + id + '/fullbody.png', expressions };
@@ -395,6 +441,11 @@
     N[id].fullBody = N[id].art.fullBody;
     N[id].expressions = Object.keys(N[id].art.expressions);
   });
+
+  /* Aria's full-body file in the repository is a duplicate of Rowan's
+     artwork. Until a verified full body exists, she renders from her own
+     official neutral portrait instead of another character's body. */
+  if (N.aria) { N.aria.fullBodyMissing = true; N.aria.art.fullBody = ''; N.aria.fullBody = ''; }
 
   D.FRIEND_TIERS = [
     { min: 0, name: 'Stranger' },
@@ -412,8 +463,8 @@
   /* refined anime palette — silver/lavender/navy/rose fantasy tones */
   const PALETTE = {
     nyssa: { hair: '#ece9f6', skin: '#f7efe9', eye: '#c3b2e8', dress: '#ded8f0', accent: '#fffaf0', ribbon: '#cbb8e6' },
-    liora: { hair: '#4b3a5c', skin: '#f6e2d2', eye: '#8063b4', dress: '#3f4a6e', accent: '#e4e9f4', ribbon: '#a9b4d0' },
-    elowen: { hair: '#f2b9c6', skin: '#f8e6da', eye: '#7fae86', dress: '#cfdcc2', accent: '#fbf4e4', ribbon: '#e8a9b8' },
+    lucien: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a' },
+    elowen: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
     rowan: { hair: '#4a3328', skin: '#f0d6bc', eye: '#c68a4a', dress: '#46506b', accent: '#cbb79a', ribbon: '#8a6d52' },
     mira: { hair: '#8a5a3c', skin: '#f7ddc7', eye: '#d9a95e', dress: '#e8cfd0', accent: '#fbf1e4', ribbon: '#c98f7a' },
     celeste: { hair: '#e9d095', skin: '#f8e4d0', eye: '#9dbb8f', dress: '#e6d3e8', accent: '#f8f2e2', ribbon: '#d9be7a' },
@@ -441,15 +492,15 @@
       hair: 'wavy', accessory: 'flower', extras: [], glow: true,
       colors: { hair: '#ece9f6', skin: '#f7efe9', eye: '#bda6ea', dress: '#e8e4f3', accent: '#fffaf0', ribbon: '#cbb8e6', trim: '#d9b06a', accColor: '#ece3fb', accColor2: '#e0c070' },
     },
-    // deep plum wavy hair, violet eyes, deep purple gown, gold floral ornament
-    liora: {
-      hair: 'wavy', accessory: 'flower', extras: [],
-      colors: { hair: '#4b3159', skin: '#f6e2d2', eye: '#ab8ed6', dress: '#4e3a63', accent: '#f4eef8', ribbon: '#c9a86a', trim: '#c9a86a', accColor: '#c9a86a', accColor2: '#8a6a3f' },
+    // dark navy hair with violet sheen, grey-lavender eyes, navy coat, cream shirt, antique gold
+    lucien: {
+      hair: 'short', accessory: 'none', extras: ['lantern'],
+      colors: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a', trim: '#c9a86a', accColor: '#c9a86a', accColor2: '#8a6a3f' },
     },
-    // pink wavy hair with white daisies, green eyes, white pinafore over green skirt
+    // short brown hair, emerald eyes, cream shirt, sage-green work apron
     elowen: {
-      hair: 'wavy', accessory: 'flower', extras: [],
-      colors: { hair: '#f0b8c4', skin: '#f8e6da', eye: '#7fae86', dress: '#94b487', accent: '#faf6ea', ribbon: '#e8a9b8', trim: '#7d9a72', accColor: '#fffdf8', accColor2: '#f0d98a' },
+      hair: 'short', accessory: 'leaf', extras: [],
+      colors: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0', trim: '#5f7a54', accColor: '#efe7d2', accColor2: '#b9c9a0' },
     },
     // near-black short hair, amber eyes, charcoal-navy coat over a white shirt
     rowan: {
@@ -494,7 +545,7 @@
   });
 
   // distinct silhouettes: the three men wear tailored tunics/coats
-  ['rowan', 'theo', 'finn'].forEach((id) => {
+  ['lucien', 'elowen', 'rowan', 'theo', 'finn'].forEach((id) => {
     if (!N[id]) return;
     N[id].gender = 'masculine';
     N[id].outfit = 'tunic';

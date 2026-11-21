@@ -94,7 +94,7 @@
     if (done.length && S_.world.favorDay[id] !== S_.time.day) {
       S_.world.favorDay[id] = S_.time.day;
       const ch = {
-        liora: '"You came back. You keep coming back. I am starting to believe it is a habit and not a favour."',
+        lucien: '"You came back. You keep coming back. I am starting to believe it is a habit and not a favour."',
         elowen: '"The beds you helped with are still growing. I keep expecting you to want something for it. You never do."',
         rowan: '"I used the thing you said. The reframe. It worked for about an hour, which is a record."',
         mira: '"You are the only person who has ever asked me how I am and waited for the answer."',
@@ -245,7 +245,7 @@
       if (!npc) return;
       SAN.ui.dialogue({
         pages: [
-          { speaker: 'narrator', text: 'Elowen is sitting on the bench by the pond with her hands in her lap. She is crying, very quietly, the way people do when they have practised not making noise.' },
+          { speaker: 'narrator', text: 'Elowen is sitting on the bench by the pond with his hands in his lap. He is crying, very quietly, the way people do when they have practised not making noise.' },
           { speaker: 'elowen', text: '"Oh. Hello." She wipes her face with her sleeve. "It is the soil. It is not — it is fine."' },
         ],
         choices: [
@@ -445,7 +445,7 @@
       SAN.ui.dialogue({
         pages: [
           { speaker: 'narrator', text: 'The square is full of lanterns. Nobody announced this. Somebody simply started, and everyone else brought a light.' },
-          { speaker: 'narrator', text: 'Mira is handing out something warm. Liora has come down from the lighthouse without being asked. Rowan is standing in the middle of it, not analysing anything.' },
+          { speaker: 'narrator', text: 'Mira is handing out something warm. Lucien has come down from the lighthouse without being asked. Rowan is standing in the middle of it, not analysing anything.' },
           { speaker: 'narrator', text: 'Nobody asks you to do anything. You are allowed to just be here.' },
         ],
       });

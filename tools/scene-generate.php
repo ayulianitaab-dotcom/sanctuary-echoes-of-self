@@ -64,8 +64,8 @@ $style = 'High-quality anime visual novel background illustration, romantic Vict
 
 /* full illustrations: id => [category, prompt, npc, mood] */
 $scenes = [
-    'romance/liora-first-date' => ['romance', 'Liora and the player character on the lighthouse beach at sunset, standing a careful step apart, warm wind, hopeful smiles, anime visual novel key art.', 'liora', 'gentle'],
-    'romance/liora-confession' => ['romance', 'Liora and the player character close together in the lamp room at night, brass light on their faces, one honest confession, tender and quiet.', 'liora', 'surprised'],
+    'romance/lucien-first-date' => ['romance', 'Lucien and the player character on the lighthouse beach at sunset, standing a careful step apart, warm wind, hopeful smiles, anime visual novel key art.', 'lucien', 'gentle'],
+    'romance/lucien-confession' => ['romance', 'Lucien and the player character close together in the lamp room at night, brass light on their faces, one honest confession, tender and quiet.', 'lucien', 'surprised'],
     'romance/elowen-first-date' => ['romance', 'Elowen and the player character in the greenhouse after closing, holding seedlings, shy eye contact, soft green light.', 'elowen', 'gentle'],
     'romance/mira-cooking' => ['romance', 'Mira and the player character behind the bakery counter, flour on their sleeves, laughing over a shared loaf, warm dawn light.', 'mira', 'happy'],
 ];

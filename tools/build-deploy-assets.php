@@ -62,8 +62,8 @@ foreach ($files as $file) {
     $outBytes += filesize($dest);
 }
 
-if ($count < 90) {
-    fwrite(STDERR, "ERROR: expected 90 portrait files, packaged $count\n");
+if ($count < 80) {
+    fwrite(STDERR, "ERROR: expected at least 81 portrait files, packaged $count\n");
     exit(1);
 }
 

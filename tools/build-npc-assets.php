@@ -16,7 +16,13 @@
 require_once __DIR__ . '/lib/image-pipeline.php';
 
 $root = dirname(__DIR__);
-$sheetPath = $root . '/assets/characters/npc/source-lineup.webp';
+// RETIRED: this sheet still shows Liora and the female Elowen, so it must not
+// rebuild the official portraits. It is kept, unmodified, in docs/reference
+// for history only.
+$sheetPath = $root . '/docs/reference/retired-npc-lineup.webp';
+fwrite(STDERR, "build-npc-assets is retired: assets/portraits is now the official artwork.\n");
+fwrite(STDERR, "The old lineup sheet (Liora, female Elowen) must not be sliced again.\n");
+exit(1);
 $outRoot = $root . '/assets/portraits';
 $debugDir = $root . '/.tmp-npc-assets';
 
@@ -57,7 +63,7 @@ for ($x = 0; $x <= $W; $x++) {
 }
 sort($centers);
 
-$ids = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+$ids = ['nyssa', 'lucien', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
 if (count($centers) !== count($ids)) {
     fwrite(STDERR, 'expected ' . count($ids) . ' cards, found ' . count($centers) . " name plaques\n");
     exit(1);

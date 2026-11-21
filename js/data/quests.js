@@ -42,45 +42,45 @@
 
   /* ================= QUESTLINE A: LIGHTHOUSE ================= */
   q({
-    id: 'lh_1', title: 'The Light That Waits', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'Liora has been keeping the lamp alone for four years. The wind chime on her porch has been silent since the storm. She says it does not matter.',
+    id: 'lh_1', title: 'The Light That Waits', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'Lucien has been keeping the lamp alone for four years. The wind chime on his porch has been silent since the storm. He says it does not matter.',
     objectives: [
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Ask Liora about the quiet wind chime' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Ask Lucien about the quiet wind chime' },
       { kind: 'collect', target: 'shell', qty: 2, label: 'Gather 2 spiral shells from the shore' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Bring the shells back to Liora' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Bring the shells back to Lucien' },
     ],
-    rewards: { money: 220, items: [['lighthouse_key', 1]], friendship: { liora: 12 }, unlock: 'lighthouse_key' },
+    rewards: { money: 220, items: [['lighthouse_key', 1]], friendship: { lucien: 12 }, unlock: 'lighthouse_key' },
     next: 'lh_2',
   });
   q({
-    id: 'lh_2', title: 'Letters Never Sent', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'A faded photograph washed up on the beach. Two people by a lighthouse, a heart drawn on the back. Liora goes very quiet when she sees it.',
+    id: 'lh_2', title: 'Letters Never Sent', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'A faded photograph washed up on the beach. Two people by a lighthouse, a heart drawn on the back. Lucien goes very quiet when he sees it.',
     objectives: [
       { kind: 'collect', target: 'old_photo', qty: 1, label: 'Find the photo on the eastern shore' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Show Liora the photograph' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Show Lucien the photograph' },
       { kind: 'flag', target: 'lh_letter_choice', qty: 1, label: 'Decide what to do with the unsent letters' },
     ],
-    rewards: { money: 260, friendship: { liora: 14 }, items: [['sea_glass', 2]], recipe: 'craft_memlantern' },
+    rewards: { money: 260, friendship: { lucien: 14 }, items: [['sea_glass', 2]], recipe: 'craft_memlantern' },
     next: 'lh_3',
   });
   q({
-    id: 'lh_3', title: 'A Light You Keep', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'The lamp needs lighting at dusk. Liora has always done it alone. She has not asked you to come. She has not not asked either.',
+    id: 'lh_3', title: 'A Light You Keep', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'The lamp needs lighting at dusk. Lucien has always done it alone. He has not asked you to come. He has not not asked either.',
     objectives: [
       { kind: 'visit', target: 'lighthouse', qty: 1, label: 'Climb to the lighthouse lamp room' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Light the lamp with Liora' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Light the lamp with Lucien' },
       { kind: 'decorate', target: 'any', qty: 1, label: 'Place something warm in your home' },
     ],
-    rewards: { money: 450, items: [['pearl', 1], ['lamp_glow', 1]], friendship: { liora: 18 }, achievement: 'lighthouse_keeper' },
+    rewards: { money: 450, items: [['pearl', 1], ['lamp_glow', 1]], friendship: { lucien: 18 }, achievement: 'lighthouse_keeper' },
     next: null,
   });
 
   /* ================= QUESTLINE B: GREENHOUSE ================= */
   q({
     id: 'gh_1', title: 'The Door Left Open', giver: 'elowen', type: 'story', line: 'Greenhouse',
-    desc: 'Elowen has been clearing the greenhouse alone. She says she is nearly done. The pile of weeds says otherwise.',
+    desc: 'Elowen has been clearing the greenhouse alone. He says he is nearly done. The pile of weeds says otherwise.',
     objectives: [
-      { kind: 'talk', target: 'elowen', qty: 1, label: 'Offer Elowen help (she will refuse)' },
+      { kind: 'talk', target: 'elowen', qty: 1, label: 'Offer Elowen help (he will refuse)' },
       { kind: 'flag', target: 'gh_help_choice', qty: 1, label: 'Decide how to help without taking over' },
       { kind: 'collect', target: 'fiber', qty: 3, label: 'Bring 3 bundles of soft fiber for the beds' },
     ],
@@ -100,7 +100,7 @@
   });
   q({
     id: 'gh_3', title: 'What We Grew', giver: 'elowen', type: 'story', line: 'Greenhouse',
-    desc: 'Something is flowering in the shared greenhouse. Elowen has not said whether she is proud. Her hands say it for her.',
+    desc: 'Something is flowering in the shared greenhouse. Elowen has not said whether he is proud. His hands say it for him.',
     objectives: [
       { kind: 'harv_greenhouse', target: 'any', qty: 1, label: 'Harvest a crop from the greenhouse' },
       { kind: 'talk', target: 'elowen', qty: 1, label: 'Sit with Elowen among the flowers' },
@@ -208,7 +208,7 @@
     { id: 'friend_sanctuary', name: 'A Friend in Sanctuary', desc: 'Reach Friend with any villager.', icon: 'heart' },
     { id: 'letters_never_sent', name: 'Letters Never Sent', desc: 'Complete chapter two of the lighthouse story.', icon: 'letter' },
     { id: 'little_things', name: 'Little Things Matter', desc: 'Care for a memory stone three times.', icon: 'stone' },
-    { id: 'lighthouse_keeper', name: 'The Lighthouse Keeper', desc: 'Light the lamp with Liora.', icon: 'lamp' },
+    { id: 'lighthouse_keeper', name: 'The Lighthouse Keeper', desc: 'Light the lamp with Lucien.', icon: 'lamp' },
     { id: 'trusted_hands', name: 'Trusted Hands', desc: 'Grow something together in the greenhouse.', icon: 'leaf' },
     { id: 'quiet_mind', name: 'A Quieter Mind', desc: 'Sit with Rowan through the quiet.', icon: 'wind' },
     { id: 'angler', name: 'Patient Waters', desc: 'Catch 15 fish.', icon: 'fish' },

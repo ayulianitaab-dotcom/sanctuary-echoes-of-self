@@ -220,7 +220,17 @@
         const item = RM.romanticGiftId();
         if (item) { SAN.state.removeItem(item, 1); extra = SAN.data.item(item).name; }
       }
-      const gain = RM.activityGain(id, actId);
+      let gain = RM.activityGain(id, actId);
+      /* love language: the same kind act lands differently with different people */
+      const langKind = {
+        gift: 'gift', hug: 'affection', cuddle: 'affection', kiss: 'affection', hand: 'affection',
+        stargaze: 'quality_time', dinner: 'quality_time', walk: 'quality_time', dance: 'quality_time',
+        comfort: 'listened', listen: 'listened', letter: 'words',
+      }[actId] || 'quality_time';
+      if (SAN.psychology) {
+        gain = Math.max(1, Math.round(gain * SAN.psychology.loveBoost(id, langKind)));
+        SAN.psychology.onEvent(id, langKind);
+      }
       RM.addAffection(id, gain, true);
       st.activityCount[actId] = (st.activityCount[actId] || 0) + 1;
       const line = RM.npcLine(id, actId);
@@ -629,4 +639,82 @@
     if (RM.stageIndex(id) >= 2) return 'Closer friendship first. Keep talking, keep showing up.';
     return 'Get to know them.';
   };
+  /* ---------------- endings and repairs ----------------
+     A breakup here is not a punishment screen. The friendship stays, the
+     person stays, and the door to talking again stays open. */
+  RM.canBreakUp = function (id) {
+    return RM.stageIndex(id) >= 5;
+  };
+
+  RM.breakUp = function (id) {
+    const npc = SAN.data.npcs[id];
+    const st = RM.state(id);
+    if (!npc || !st || !RM.canBreakUp(id)) return false;
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'This is the kind of conversation that has to be had in person, out loud, without a good time for it.' },
+        { speaker: 'player', text: 'I need to say something, and I would rather say it badly than not at all.' },
+      ],
+      choices: [
+        { label: 'End the romance, gently', icon: '🕊', cb: function () {
+          st.accepted = false;
+          st.committed = false;
+          st.partner = false;
+          st.reconcilable = true;
+          st.brokenDay = S().time.day;
+          st.brokenSeason = S().time.season;
+          if (SAN.psychology) SAN.psychology.onEvent(id, 'breakup');
+          RM.remember(id, 'You ended the romance with ' + npc.name + ', and tried to do it kindly.', 'breakup');
+          if (SAN.memoryBook) SAN.memoryBook.add({ kind: 'breakup', key: 'breakup:' + id + ':' + S().time.day, title: 'An ending, said out loud', text: 'You and ' + npc.name + ' stopped being lovers and stayed in each other\u2019s lives.', npc: id });
+          SAN.ui.dialogue({ pages: [
+            { speaker: id, text: '"I am not going to pretend this is nothing. But I would rather have known than guessed."', context: 'sad' },
+            { speaker: 'narrator', text: 'You part as people who were something to each other, which is not nothing.' },
+          ] });
+          SAN.save.autosave();
+        } },
+        { label: 'Decide not to say it today', icon: '✕', cb: function () {} },
+      ],
+    });
+    return true;
+  };
+
+  RM.canReconcile = function (id) {
+    const st = RM.state(id);
+    if (!st || !st.reconcilable || st.accepted) return false;
+    return RM.friendship(id) >= 55;
+  };
+
+  RM.reconcile = function (id) {
+    const npc = SAN.data.npcs[id];
+    const st = RM.state(id);
+    if (!npc || !st || !RM.canReconcile(id)) return false;
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'The two of you have been circling this for a while. Today the circle gets a door.' },
+        { speaker: id, text: '"I have been thinking about what we were. I am not asking for it back. I am asking whether we can talk honestly."' },
+      ],
+      choices: [
+        { label: 'Talk honestly', icon: '🤍', cb: function () {
+          st.reconcilable = false;
+          st.accepted = true;
+          st.datingDay = S().time.day;
+          st.datingSeason = S().time.season;
+          st.affection = Math.max(st.affection, 45);
+          if (SAN.psychology) {
+            SAN.psychology.onEvent(id, 'honest_talk');
+            SAN.psychology.onEvent(id, 'apology');
+          }
+          RM.remember(id, 'You and ' + npc.name + ' found your way back to each other, carefully.', 'reconcile');
+          SAN.ui.toast('You and ' + npc.name + ' are trying again.', 'friend');
+          SAN.save.autosave();
+        } },
+        { label: 'Ask for more time', icon: '◷', cb: function () {
+          SAN.psychology.onEvent(id, 'space_given');
+          SAN.ui.toast(npc.name + ' nods. "Time is allowed."', 'friend');
+        } },
+      ],
+    });
+    return true;
+  };
+
 })();

@@ -2975,6 +2975,13 @@
      published build re-encodes that same artwork to WebP (the host allows
      far less than the 27 MB of PNGs), and index.html declares which one to
      request: "png" locally, "webp" in deploy/public. */
+  // appended to local artwork URLs so a replaced file is never masked by cache
+  R.cacheBust = function (url) {
+    if (!url || !/^assets\//.test(url)) return url;
+    const v = SAN.visual && SAN.visual.VERSION ? SAN.visual.VERSION : '1';
+    return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
+  };
+
   R.assetExt = function () {
     const ext = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAIT_EXT : '';
     return ext === 'webp' ? 'webp' : 'png';
@@ -2989,8 +2996,12 @@
   // the illustrated full body registered for an NPC
   R.npcFullBodySrc = function (who) {
     const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    const visual = SAN.visual && SAN.visual.get ? SAN.visual.get(who) : null;
+    // never show another character's body: fall back to this character's face
+    if ((visual && visual.bustOnly) || (npc && npc.fullBodyMissing)) return R.portraitSrc(who, 'neutral');
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[who + '/fullbody']) return bundled[who + '/fullbody'];
+    if (visual && visual.fullBody) return SAN.visual.url(visual.fullBody);
     if (npc && npc.fullBody) return R.withAssetExt(npc.fullBody);
     if (!npc) return '';
     return R.withAssetExt('assets/portraits/' + who + '/fullbody.png');
@@ -3027,7 +3038,7 @@
       ` data-who="player" data-kind="fullbody">`;
   };
 
-  R.portraitSrc = function (who, mood) {
+  R.portraitSrcRaw = function (who, mood) {
     const id = who === 'player' ? 'player' : who;
     if (id === 'player') {
       const face = R.mainAssetSrc('face', mood);
@@ -3045,6 +3056,10 @@
       return R.withAssetExt(npc.art.expressions[m]);
     }
     return R.withAssetExt('assets/portraits/' + id + '/' + m + '.png');
+  };
+
+  R.portraitSrc = function (who, mood) {
+    return R.cacheBust(R.portraitSrcRaw(who, mood));
   };
 
   R.portraitImg = function (who, opts) {

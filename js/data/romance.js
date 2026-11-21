@@ -38,7 +38,7 @@
   R.ACTIVITY = (id) => R.ACTIVITIES.find((a) => a.id === id);
 
   /* a memory is written when something real happens */
-  R.romanceable = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+  R.romanceable = ['nyssa', 'lucien', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
 
   const N = (R.npcs = {});
 
@@ -100,58 +100,58 @@
   };
 
   /* =========================================================
-     LIORA — lighthouse keeper, steady and scared of being left
+     LUCIEN — lighthouse keeper, quiet, steady, afraid of being left
      ========================================================= */
-  N.liora = {
+  N.lucien = {
     adult: true, // every romanceable character is an adult; intimate scenes fade to black
-    style: 'warm, careful, and braver than she believes',
+    style: 'quiet, mature, and braver than he believes',
     pace: 1,
     boundaries: {
       pda: true,
       privateOnly: false,
-      note: 'She is fine being seen with you. She is not fine being a rumour.',
+      note: 'He is fine being seen with you. He is not fine being a rumour.',
     },
     refusals: {
-      private: '\"Not in the middle of the village. I have a reputation for being sensible.\"',
-      pace: '\"Slow down. I am not running. That is the whole point of me.\"',
-      low: '\"I like you. I am not ready for that, and I am allowed to say so.\"',
-      night: '\"The lamp needs me tonight. Ask me when the sky is clear.\"',
+      private: '"Not in the middle of the village. I have a reputation for being sensible."',
+      pace: '"Slow down. I am not running. That is the whole point of me."',
+      low: '"I like you. I am not ready for that, and I am allowed to say so."',
+      night: '"The lamp needs me tonight. Ask me when the sky is clear."',
     },
     lines: {
-      walk: 'She takes the sea path, then admits she chose it because the sunset is better there.',
-      hand: 'Her hands are rough from rope and lamp oil. She laces her fingers in yours anyway.',
-      hug: 'She holds on a beat longer than expected, then steps back and pretends she did not.',
-      stargaze: '\"Out there, a ship is using my lamp to find its way home. Feels strange to be the reason.\"',
-      dance: 'She counts the steps under her breath. Then stops counting.',
-      memory: 'You tell her about the night you left somewhere. She says, \"I know that night. I have been in it.\"',
-      gift: 'She puts it on the windowsill immediately, where she can see it from the stairs.',
-      dinner: 'She lights the good candle and pretends it was already there.',
-      kiss: 'She asks, \"Is this all right?\" before, and again after, and means it both times.',
-      cuddle: 'She falls asleep first, which she would be embarrassed about if she knew.',
-      cook: 'She is a terrible cook and a wonderful accomplice.',
-      fire: 'She tells you the story of every dent in the lamp room floor.',
-      craft: 'She makes a rope bracelet, badly, and ties it on your wrist herself.',
-      rain: 'She opens the window to hear it. \"Storms are just weather being honest.\"',
+      walk: 'He takes the sea path, then admits he chose it because the sunset is better there.',
+      hand: 'His hands are rough from rope and lamp oil. He laces his fingers in yours anyway.',
+      hug: 'He holds on a beat longer than expected, then steps back and pretends he did not.',
+      stargaze: '"Out there, a ship is using my lamp to find its way home. Feels strange to be the reason."',
+      dance: 'He counts the steps under his breath. Then stops counting.',
+      memory: 'You tell him about the night you left somewhere. He says, "I know that night. I have been in it."',
+      gift: 'He puts it on the windowsill immediately, where he can see it from the stairs.',
+      dinner: 'He lights the good candle and pretends it was already there.',
+      kiss: 'He asks, "Is this all right?" before, and again after, and means it both times.',
+      cuddle: 'He falls asleep first, which he would be embarrassed about if he knew.',
+      cook: 'He is a terrible cook and a wonderful accomplice.',
+      fire: 'He tells you the story of every dent in the lamp room floor.',
+      craft: 'He makes a rope bracelet, badly, and ties it on your wrist himself.',
+      rain: 'He opens the window to hear it. "Storms are just weather being honest."',
     },
-    morning: '\"Morning. The kettle is on. I am not good at this yet, but I am trying.\"',
-    goodnight: '\"Goodnight. If you cannot sleep, the lamp room is warm.\"',
-    comfort: 'She sits with you on the west step until you can breathe again.',
+    morning: '"Morning. The kettle is on. I am not good at this yet, but I am trying."',
+    goodnight: '"Goodnight. If you cannot sleep, the lamp room is warm."',
+    comfort: 'He sits with you on the west step until you can breathe again.',
     events: {
-      friend: ['\"I saved you a seat. I have started saving you a seat. That is a thing I do now.\"'],
-      story: ['\"Four years alone up here. I told myself it was duty.\"', '\"It was easier than asking someone to stay and hearing them say no.\"'],
-      date: ['She brings a blanket to the beach and apologises for the sand twice.', '\"I planned this. That is not something I usually admit.\"'],
-      commit: ['\"I have kept a light burning for strangers my whole life.\"', '\"I would like to keep one for you. Not as a duty. As a choice.\"'],
-      anniversary: ['\"Every year the lamp gets serviced. This is the only anniversary I look forward to.\"'],
+      friend: ['"I saved you a seat. I have started saving you a seat. That is a thing I do now."'],
+      story: ['"Four years alone up here. I told myself it was duty."', '"It was easier than asking someone to stay and hearing them say no."'],
+      date: ['He brings a blanket to the beach and apologises for the sand twice.', '"I planned this. That is not something I usually admit."'],
+      commit: ['"I have kept a light burning for strangers my whole life."', '"I would like to keep one for you. Not as a duty. As a choice."'],
+      anniversary: ['"Every year the lamp gets serviced. This is the only anniversary I look forward to."'],
     },
     confession: {
-      ask: 'You tell her you would like to be the person who keeps coming back.',
-      yes: ['\"Oh.\" Her eyes go bright and she laughs at herself. \"I practised a calm response. That is gone now.\"', '\"Yes. I want that. I have wanted it for a while.\"'],
-      notYet: '\"I need a little time. Not a no — a not yet. Please do not go far.\"',
+      ask: 'You tell him you would like to be the person who keeps coming back.',
+      yes: ['"Oh." His eyes go bright and he laughs at himself. "I practised a calm response. That is gone now."', '"Yes. I want that. I have wanted it for a while."'],
+      notYet: '"I need a little time. Not a no — a not yet. Please do not go far."',
     },
     home: {
-      cook: 'She burns the bread and you eat it anyway, both of you laughing.',
-      fire: 'She falls asleep against your shoulder and wakes up apologising.',
-      craft: 'She is hopeless with a needle and very proud of the crooked result.',
+      cook: 'He burns the bread and you eat it anyway, both of you laughing.',
+      fire: 'He falls asleep against your shoulder and wakes up apologising.',
+      craft: 'He is hopeless with a needle and very proud of the crooked result.',
     },
   };
 
@@ -165,53 +165,52 @@
     boundaries: {
       pda: false,
       privateOnly: true,
-      note: 'Affection is not a performance for her. It happens in greenhouses and kitchens.',
+      note: 'Affection is not a performance for him. It happens in greenhouses and kitchens.',
       noTouching: ['kiss', 'cuddle'],
     },
     refusals: {
-      private: '\"Not outside. Please. I do not want to be looked at while I feel something.\"',
-      pace: '\"That is a lot. In a good way. I still need a minute to hold it.\"',
-      low: '\"I like you. I am not there yet. I am not going to say it to be polite.\"',
-      night: '\"I have seedlings that need me at dawn. Another night.\"',
+      private: '"Not outside. Please. I do not want to be looked at while I feel something."',
+      pace: '"That is a lot. In a good way. I still need a minute to hold it."',
+      low: '"I like you. I am not there yet. I am not going to say it to be polite."',
+      night: '"I have seedlings that need me at dawn. Another night."',
     },
     lines: {
-      walk: 'She names every plant you pass. Half of them she apologises to.',
-      hand: 'She goes still, then holds on with the concentration of someone carrying something fragile.',
-      hug: 'She forgets to let go, then remembers, then looks at the floor.',
-      stargaze: '\"The stars are just very far plants. I know that is not accurate. I like it anyway.\"',
-      dance: 'She dances like she is being watched. Then you close the curtain, and she does not.',
-      memory: 'You tell her about asking for help and being refused. She says, \"That is why I stopped asking.\"',
-      gift: 'She turns it over twice. \"You noticed. Nobody notices the specific things.\"',
-      dinner: 'She brings vegetables from the greenhouse and refuses to be thanked.',
-      kiss: 'She asks if it is okay with her eyes before she moves, and waits for the answer.',
-      cuddle: 'She is tense for a minute, then goes soft, like soil after rain.',
-      cook: 'She cuts everything into perfect pieces and cannot explain why it matters.',
-      fire: 'She sits close enough that your sleeves touch, and pretends not to notice.',
-      craft: 'She makes a tiny pot by hand. \"For a cutting. Not for you. Maybe for you.\"',
-      rain: '\"The beds needed this,\" she says, and then stays at the window anyway.',
+      walk: 'He names every plant you pass. Half of them he apologises to.',
+      hand: 'He goes still, then holds on with the concentration of someone carrying something fragile.',
+      hug: 'He forgets to let go, then remembers, then looks at the floor.',
+      stargaze: '"The stars are just very far plants. I know that is not accurate. I like it anyway."',
+      dance: 'He dances like he is being watched. Then you close the curtain, and he does not.',
+      memory: 'You tell him about asking for help and being refused. He says, "That is why I stopped asking."',
+      gift: 'He turns it over twice. "You noticed. Nobody notices the specific things."',
+      dinner: 'He brings vegetables from the greenhouse and refuses to be thanked.',
+      kiss: 'He asks if it is okay with his eyes before he moves, and waits for the answer.',
+      cuddle: 'He is tense for a minute, then goes soft, like soil after rain.',
+      cook: 'He cuts everything into perfect pieces and cannot explain why it matters.',
+      fire: 'He sits close enough that your sleeves touch, and pretends not to notice.',
+      craft: 'He makes a tiny pot by hand. "For a cutting. Not for you. Maybe for you."',
+      rain: '"The beds needed this," he says, and then stays at the window anyway.',
     },
-    morning: '\"You are up. Good. I was going to be normal about it and then I saw you.\"',
-    goodnight: '\"Sleep well. I will be here in the morning. That is — that is fine, right?\"',
-    comfort: 'She does not say anything useful. She stays, and that is the useful part.',
+    morning: '"You are up. Good. I was going to be normal about it and then I saw you."',
+    goodnight: '"Sleep well. I will be here in the morning. That is — that is fine, right?"',
+    comfort: 'He does not say anything useful. He stays, and that is the useful part.',
     events: {
-      friend: ['\"I saved you a cutting. It is nothing.\" It is clearly not nothing.'],
-      story: ['\"When the roof broke I fixed it alone because asking felt like a bill I could not pay.\"', '\"You asked me to let you help and I have been thinking about it for weeks.\"'],
-      date: ['She takes you to the greenhouse after closing. It is the most personal place she has.', '\"I want you to see it. That is a big thing for me. Please do not make it weird.\"'],
-      commit: ['\"I have been alone on purpose for a long time. It stopped being a preference and became a habit.\"', '\"I would like to break it with you. Carefully.\"'],
-      anniversary: ['\"The lavender we planted is four years old now. So are we. Both still alive. Good.\"'],
+      friend: ['"I saved you a cutting. It is nothing." It is clearly not nothing.'],
+      story: ['"When the roof broke I fixed it alone because asking felt like a bill I could not pay."', '"You asked me to let you help and I have been thinking about it for weeks."'],
+      date: ['He takes you to the greenhouse after closing. It is the most personal place he has.', '"I want you to see it. That is a big thing for me. Please do not make it weird."'],
+      commit: ['"I have been alone on purpose for a long time. It stopped being a preference and became a habit."', '"I would like to break it with you. Carefully."'],
+      anniversary: ['"The lavender we planted is four years old now. So are we. Both still alive. Good."'],
     },
     confession: {
-      ask: 'You tell her you would like to be someone she does not have to do everything without.',
-      yes: ['She covers her face with both hands for a second. \"Okay. Okay. Yes.\"', '\"I am going to be bad at this. I want to be bad at it with you.\"'],
-      notYet: '\"I need time. I am not saying no. I am saying I need to be sure I mean it.\"',
+      ask: 'You tell him you would like to be someone he does not have to do everything without.',
+      yes: ['He covers his face with both hands for a second. "Okay. Okay. Yes."', '"I am going to be bad at this. I want to be bad at it with you."'],
+      notYet: '"I need time. I am not saying no. I am saying I need to be sure I mean it."',
     },
     home: {
-      cook: 'She arranges the vegetables by colour and you let her, because it makes her happy.',
-      fire: 'She brings a plant to the fire because \"it was cold\". You let that happen too.',
-      craft: 'She learns the stitch in one try and then teaches it back to you, patiently.',
+      cook: 'He arranges the vegetables by colour and you let him, because it makes him happy.',
+      fire: 'He brings a plant to the fire because "it was cold". You let that happen too.',
+      craft: 'He learns the stitch in one try and then teaches it back to you, patiently.',
     },
   };
-
   /* =========================================================
      ROWAN — windmill keeper, overthinking, generous
      ========================================================= */

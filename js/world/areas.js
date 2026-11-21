@@ -355,7 +355,7 @@
     }
     add(a, 'waterbarrel', 3, 8, { solid: true, interact: { type: 'sign', text: 'Cool rainwater, with a brass tap. Someone has tied a ribbon to it.' } });
     add(a, 'table', 3, 14, { w: 3, h: 2, solid: true, interact: { type: 'sign', text: 'Seed packets in careful rows, sorted by patience required.' } });
-    add(a, 'potstack', 24, 5, { solid: true, interact: { type: 'sign', text: 'Empty pots, stacked by size. Elowen stacks them when she is thinking.' } });
+    add(a, 'potstack', 24, 5, { solid: true, interact: { type: 'sign', text: 'Empty pots, stacked by size. Elowen stacks them when he is thinking.' } });
     add(a, 'potstack', 25, 7, { solid: true });
     add(a, 'vine', 20, 3, { w: 5, solid: true });
     add(a, 'vine', 21, 8, { w: 3, solid: true });
@@ -364,7 +364,7 @@
     add(a, 'plant', 24, 17, {});
     add(a, 'lamp', 9, 3, {});
     add(a, 'lamp', 19, 3, {});
-    add(a, 'memorialPlacard', 12, 15, { w: 2, solid: true, interact: { type: 'sign', text: '"For Elowen. Who grew this place. Who is allowed to be helped." — someone who loves her' } });
+    add(a, 'memorialPlacard', 12, 15, { w: 2, solid: true, interact: { type: 'sign', text: '"For Elowen. Who grew this place. Who is allowed to be helped." — someone who loves him' } });
     return a;
   }
 

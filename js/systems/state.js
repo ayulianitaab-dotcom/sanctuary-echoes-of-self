@@ -193,6 +193,9 @@
       friendship: {},
       romance: {},
       scenes: { seen: {}, log: [] },
+      psychology: {},
+      city: { day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] },
+      memoryBook: [],
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -236,9 +239,36 @@
     return copy;
   };
 
+  /* Saves written before the official registry can hold the old lighthouse
+     keeper. Rename the key once, keep every point, memory and unlocked event,
+     and never create a second NPC. Safe to run on every load. */
+  St.migrateSnapshot = function (snap) {
+    if (!snap || typeof snap !== 'object') return snap;
+    const out = Array.isArray(snap) ? [] : {};
+    Object.keys(snap).forEach((key) => {
+      let value = snap[key];
+      let next = key;
+      if (key === 'liora') next = 'lucien';
+      else if (/^liora[_-]/.test(key)) next = 'lucien' + key.slice(5);
+      if (typeof value === 'string') {
+        value = value.replace(/\bLiora\b/g, 'Lucien').replace(/\bliora-/g, 'lucien-');
+      } else if (value && typeof value === 'object') {
+        value = St.migrateSnapshot(value);
+      }
+      if (Object.prototype.hasOwnProperty.call(out, next)) {
+        const a = out[next];
+        if (typeof a === 'number' && typeof value === 'number') out[next] = Math.max(a, value);
+        else if (a && value && typeof a === 'object' && typeof value === 'object') out[next] = Object.assign({}, a, value);
+      } else {
+        out[next] = value;
+      }
+    });
+    return out;
+  };
+
   St.apply = function (snap) {
     if (!snap) return null;
-    const base = St.newGame({ player: snap.player, cat: snap.cat, settings: snap.settings, slot: snap.slot });
+    snap = St.migrateSnapshot(snap);    const base = St.newGame({ player: snap.player, cat: snap.cat, settings: snap.settings, slot: snap.slot });
     const merged = Object.assign({}, base, snap);
     // deep-ish repairs
     merged.player = Object.assign({}, base.player, snap.player || {});
@@ -253,6 +283,9 @@
     merged.unlocked = Object.assign({}, base.unlocked, snap.unlocked || {});
     merged.settings = Object.assign({}, base.settings, snap.settings || {});
     merged.farm = Object.assign({ plots: {} }, snap.farm || {});
+    merged.psychology = Object.assign({}, snap.psychology || {});
+    merged.city = Object.assign({ day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] }, snap.city || {});
+    merged.memoryBook = Array.isArray(snap.memoryBook) ? snap.memoryBook : [];
     merged.quests = Object.assign({ active: {}, completed: {}, board: [], boardDay: 0, offered: {} }, snap.quests || {});
     merged.house = Object.assign({ furniture: [] }, snap.house || {});
     merged.cat = Object.assign({}, base.cat, snap.cat || {});

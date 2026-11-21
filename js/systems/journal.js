@@ -11,7 +11,7 @@
       feel: 'Sometimes uncertainty makes the world feel very quiet, and being left with your own thoughts can be heavier than being alone.',
       support: 'Feeling alone does not mean something is wrong with you. It usually means you are someone who wants to be close to people — which is not a flaw.',
       prompts: ['Who is one person you feel safe being quiet with?', 'What would you want someone to say to you right now?'],
-      activity: { label: 'Spend quiet time at the lighthouse', type: 'visit', area: 'lighthouse', line: 'Liora keeps a light on for ships she will never meet. You could sit with her for a while.' },
+      activity: { label: 'Spend quiet time at the lighthouse', type: 'visit', area: 'lighthouse', line: 'Lucien keeps a light on for ships he will never meet. You could sit with him for a while.' },
     },
     {
       id: 'anxiety',
@@ -51,7 +51,7 @@
       feel: 'That voice is very convincing, and it is not a fair judge. You would not say those words to someone you love.',
       support: 'You are allowed to be a work in progress without it meaning anything terrible about your worth. Nothing you do in this village has to be earned.',
       prompts: ['What would you say to a friend who said this about themselves?', 'What is one thing you did today that took effort nobody saw?'],
-      activity: { label: 'Visit the Shared Greenhouse', type: 'visit', area: 'greenhouse', line: 'Elowen is learning that things can grow even when they are not perfect. She is not very good at asking for help yet either.' },
+      activity: { label: 'Visit the Shared Greenhouse', type: 'visit', area: 'greenhouse', line: 'Elowen is learning that things can grow even when they are not perfect. He is not very good at asking for help yet either.' },
     },
     {
       id: 'overwhelm',

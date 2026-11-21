@@ -9,7 +9,7 @@
      list only decides where each portrait stands and never duplicates data. */
   SC.TITLE_CAST = [
     { id: 'nyssa', wing: 'l' },
-    { id: 'liora', wing: 'l' },
+    { id: 'lucien', wing: 'l' },
     { id: 'elowen', wing: 'l' },
     { id: 'rowan', wing: 'l' },
     { id: 'mira', wing: 'r' },
@@ -38,7 +38,7 @@
     finn: { hover: 'happy', idle: ['smile'], look: true },
     theo: { hover: 'thinking', idle: ['serious'], look: true },
     elowen: { hover: 'gentle', idle: ['smile'], look: true },
-    liora: { hover: 'gentle', idle: ['serious', 'smile'], look: true },
+    lucien: { hover: 'gentle', idle: ['serious', 'smile'], look: true },
     mira: { hover: 'happy', idle: ['smile'], look: true },
     aria: { hover: 'thinking', idle: ['serious', 'gentle'], look: true },
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },

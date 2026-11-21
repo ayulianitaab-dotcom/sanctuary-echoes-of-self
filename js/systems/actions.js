@@ -229,7 +229,7 @@
       S_.flags.lamp_lit = true;
       S_.world.lampLit = true;
       A.lampScene();
-      SAN.quests.notify('talk', 'liora', 1);
+      SAN.quests.notify('talk', 'lucien', 1);
       return;
     }
     if (q && SAN.quests.isComplete('lh_3')) {
@@ -239,14 +239,14 @@
       SAN.ui.dialogue({
         pages: [
           { speaker: 'narrator', text: 'The great lamp is huge and quiet. The brass is warm from the sun.' },
-          { speaker: 'narrator', text: 'Liora usually lights it alone. Maybe you should ask her first.' },
+          { speaker: 'narrator', text: 'Lucien usually lights it alone. Maybe you should ask him first.' },
         ],
       });
       return;
     }
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'narrator', text: 'The lamp burns steady and low. Liora has already been up here today — you can tell by the fresh oil on the glass.' },
+        { speaker: 'narrator', text: 'The lamp burns steady and low. Lucien has already been up here today — you can tell by the fresh oil on the glass.' },
       ],
     });
   };
@@ -436,7 +436,7 @@
     }
     const ready = SAN.quests.readyTurnInsFor(def.id);
     if (ready.length) { A.turnInDialogue(ready[0].id); return; }
-    if (def.id === 'liora' && S_.quests.active.lh_2 && !S_.flags.lh_letter_choice && SAN.state.count('old_photo') > 0) { A.letterScene(npc); return; }
+    if (def.id === 'lucien' && S_.quests.active.lh_2 && !S_.flags.lh_letter_choice && SAN.state.count('old_photo') > 0) { A.letterScene(npc); return; }
     if (def.id === 'elowen' && S_.quests.active.gh_1 && !S_.flags.gh_help_choice) { A.helpScene(npc); return; }
     if (def.id === 'rowan' && S_.quests.active.wm_1 && !S_.flags.reframe_choice) { A.reframeScene(npc); return; }
     if (!firstTime) {
@@ -490,7 +490,7 @@
         context: i === 0 ? (closeFriend ? 'greeting' : 'responsibility') : undefined,
       }));
       const reaction = {
-        liora: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
+        lucien: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
         elowen: S_.flags.sat_with_elowen ? '"You sat with me by the pond. I have not forgotten, you know."' : null,
         rowan: S_.flags.reframe_choice ? '"I used the thing you said. It worked for about an hour. That is a record."' : null,
       }[def.id];
@@ -548,6 +548,8 @@
     const S_ = S();
     S_.dialogueSeen[def.id + '_' + topic.id] = true;
     SAN.rel.add(def.id, 2, true);
+    if (SAN.psychology) SAN.psychology.onEvent(def.id, 'listened');
+    if (SAN.memoryBook) SAN.memoryBook.add({ kind: 'conversation', key: 'talk:' + def.id + ':' + topic.id, title: 'A conversation with ' + def.name, text: topic.lines[0] || '', npc: def.id, once: true });
     const pages = topic.lines.map((l) => ({ speaker: def.id, text: l, context: 'memory' }));
     SAN.ui.dialogue({ pages, choices: [{ label: 'Not right now', icon: '✕', cb: function () { } }] });
   };
@@ -560,6 +562,7 @@
       return;
     }
     SAN.state.removeItem(itemId, 1);
+    if (SAN.psychology) SAN.psychology.onEvent(npcId, 'gift');
     if (!S_.world.gifts) S_.world.gifts = {};
     S_.world.gifts[npcId] = itemId;
     SAN.quests.notify('gift', npcId, 1, itemId);
@@ -603,24 +606,24 @@
     },
     lh_1: {
       pages: [
-        { speaker: 'liora', text: '"The wind chime on the porch has been silent since the last storm. One of the shells cracked."' },
-        { speaker: 'liora', text: '"It is a small thing. I keep meaning to fix it. I keep not doing it."' },
-        { speaker: 'liora', text: '"If you happen to find shells on the shore — two would do. No rush. I am not going anywhere."' },
+        { speaker: 'lucien', text: '"The wind chime on the porch has been silent since the last storm. One of the shells cracked."' },
+        { speaker: 'lucien', text: '"It is a small thing. I keep meaning to fix it. I keep not doing it."' },
+        { speaker: 'lucien', text: '"If you happen to find shells on the shore — two would do. No rush. I am not going anywhere."' },
       ],
       accept: 'I will look for shells.',
     },
     lh_2: {
       pages: [
-        { speaker: 'liora', text: '"You found a photograph." She does not take it. Her hands stay very still.' },
-        { speaker: 'liora', text: '"That is my mother. And me, before. She left in the spring, and I have been keeping a lamp for ships ever since, which is a strange way to wait for someone."' },
-        { speaker: 'liora', text: '"There are letters, too. In a drawer. I never sent them. I do not know if I want to read them. I do not know if I want you to."' },
+        { speaker: 'lucien', text: '"You found a photograph." He does not take it. His hands stay very still.' },
+        { speaker: 'lucien', text: '"That is my mother. And me, before. She left in the spring, and I have been keeping a lamp for ships ever since, which is a strange way to wait for someone."' },
+        { speaker: 'lucien', text: '"There are letters, too. In a drawer. I never sent them. I do not know if I want to read them. I do not know if I want you to."' },
       ],
       accept: 'We can decide together.',
     },
     lh_3: {
       pages: [
-        { speaker: 'liora', text: '"The lamp needs lighting at dusk. I have done it alone for four years."' },
-        { speaker: 'liora', text: '"I am not asking you to come. I am also not not asking. I am very bad at this part."' },
+        { speaker: 'lucien', text: '"The lamp needs lighting at dusk. I have done it alone for four years."' },
+        { speaker: 'lucien', text: '"I am not asking you to come. I am also not not asking. I am very bad at this part."' },
       ],
       accept: 'I will be there.',
     },
@@ -724,9 +727,9 @@
     main_first_plant: ['"You planted something. It will not thank you, which is honest of it."', '"Gardens teach patience in a way that is very hard to argue with."'],
     main_journal: ['"You wrote it. Good. That page belongs to you, no one else."', '"The forest stones will open to you now. Only if you want them to."'],
     main_meet: ['"Four names. You are becoming a person of this village."', '"They will remember you now. It is a small place. That is a gift, mostly."'],
-    lh_1: ['"You brought them. Two whole shells." Liora turns them over, and something in her face loosens.', '"I will fix the chime tomorrow. Or today. Thank you."'],
+    lh_1: ['"You brought them. Two whole shells." Lucien turns them over, and something in his face loosens.', '"I will fix the chime tomorrow. Or today. Thank you."'],
     lh_2: ['"I read them. Some of them." Her voice is careful, not broken.', '"She was not leaving me. She was leaving a situation. I have spent four years confusing those two things."', '"I am still learning. But the lamp is not the only thing that can stay lit, apparently."'],
-    lh_3: ['The lamp catches. Light spills out over the water in a long gold path.', '"I usually do this alone," Liora says, and then, quietly, "I think I have been doing too many things alone."'],
+    lh_3: ['The lamp catches. Light spills out over the water in a long gold path.', '"I usually do this alone," Lucien says, and then, quietly, "I think I have been doing too many things alone."'],
     gh_1: ['"You did not take over. You just — stayed." Elowen sounds puzzled by this, as if it were a rare species of plant.', '"Thank you. I hated that. I might do it again."'],
     gh_2: ['The two of you plant in silence, and it is the good kind.', '"I keep waiting for you to be annoyed with me," she says. "You keep not being."'],
     gh_3: ['The starflower opens in the afternoon light. It is small and entirely real.', '"I grew this. We grew this. I do not know which one to be proud of."', '"Both, I think. I am told you are allowed to have both."'],
@@ -780,8 +783,8 @@
   A.letterScene = function (npc) {
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'liora', text: 'She is holding the drawer handle. "I have not opened this since she left."' },
-        { speaker: 'liora', text: '"Do I read them? I genuinely do not know. I have been not-knowing for four years."' },
+        { speaker: 'lucien', text: 'He is holding the drawer handle. "I have not opened this since she left."' },
+        { speaker: 'lucien', text: '"Do I read them? I genuinely do not know. I have been not-knowing for four years."' },
       ],
       choices: [
         {
@@ -791,8 +794,8 @@
             SAN.ui.dialogue({
               pages: [
                 { speaker: 'narrator', text: 'The letters are short and ordinary. Weather. A recipe. An apology that arrives three sentences late.' },
-                { speaker: 'liora', text: '"She says she is sorry she was not braver." Liora laughs once, wetly. "She sounds exactly like me."' },
-                { speaker: 'liora', text: '"I think I have been waiting for a sentence that was never going to be written. This is not that sentence. But it is something."' },
+                { speaker: 'lucien', text: '"She says she is sorry she was not braver." Lucien laughs once, wetly. "She sounds exactly like me."' },
+                { speaker: 'lucien', text: '"I think I have been waiting for a sentence that was never going to be written. This is not that sentence. But it is something."' },
               ],
             });
           },
@@ -804,8 +807,8 @@
             SAN.ui.dialogue({
               pages: [
                 { speaker: 'narrator', text: 'She closes the drawer, gently, the way you close a door on a room someone is sleeping in.' },
-                { speaker: 'liora', text: '"Not today. Maybe not ever. I do not have to open a thing to be allowed to move on from it."' },
-                { speaker: 'liora', text: '"Thank you for not pushing. People always push. They think it is helping."' },
+                { speaker: 'lucien', text: '"Not today. Maybe not ever. I do not have to open a thing to be allowed to move on from it."' },
+                { speaker: 'lucien', text: '"Thank you for not pushing. People always push. They think it is helping."' },
               ],
             });
           },
@@ -902,24 +905,24 @@
     const S_ = S();
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'liora', text: 'Liora hands you the long brass lighter. "Your turn. If you want. You can hand it back."' },
+        { speaker: 'lucien', text: 'Lucien hands you the long brass lighter. "Your turn. If you want. You can hand it back."' },
         { speaker: 'narrator', text: 'The wick catches. The lamp room goes gold, then white, then gold again.' },
-        { speaker: 'liora', text: '"I have been the one who keeps the light for everyone. I did not think anyone would ever keep one for me."' },
-        { speaker: 'liora', text: '"You do not have to promise anything. I am trying to learn that people can be here without promising."' },
+        { speaker: 'lucien', text: '"I have been the one who keeps the light for everyone. I did not think anyone would ever keep one for me."' },
+        { speaker: 'lucien', text: '"You do not have to promise anything. I am trying to learn that people can be here without promising."' },
       ],
       choices: [
         {
           label: '"I am here."',
           cb: function () {
             SAN.quests.setFlag('lh_lamp_choice', 'here');
-            SAN.ui.dialogue({ pages: [{ speaker: 'liora', text: 'She nods, once, and looks out at the water. "That is enough. That is actually enough."' }] });
+            SAN.ui.dialogue({ pages: [{ speaker: 'lucien', text: 'He nods, once, and looks out at the water. "That is enough. That is actually enough."' }] });
           },
         },
         {
           label: '"I do not know how long I can stay."',
           cb: function () {
             SAN.quests.setFlag('lh_lamp_choice', 'honest');
-            SAN.ui.dialogue({ pages: [{ speaker: 'liora', text: '"That is the most honest thing anyone has said to me in years." She smiles. "I can work with honest."' }] });
+            SAN.ui.dialogue({ pages: [{ speaker: 'lucien', text: '"That is the most honest thing anyone has said to me in years." He smiles. "I can work with honest."' }] });
           },
         },
       ],

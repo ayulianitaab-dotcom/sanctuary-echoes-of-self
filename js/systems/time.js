@@ -54,6 +54,7 @@
     Object.keys(S.friendship).forEach((id) => { S.friendship[id].giftsToday = 0; });
     SAN.farming.growAll();
     SAN.quests.refreshBoard();
+    if (SAN.cityLife) SAN.cityLife.tickDay();
     SAN.cat.newDay();
     S.house.fireplace = false;
     const fest = SAN.data.eventOn(S.time.season, S.time.day);

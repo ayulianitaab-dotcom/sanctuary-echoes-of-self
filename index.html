@@ -2546,6 +2546,26 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
 .scene-card-cat { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: #a08a6a; }
 .scene-card-title { font-size: 13px; color: #4a3a2a; font-weight: 600; margin-top: 2px; }
 .scene-card-meta { font-size: 11px; color: #8a7a6a; margin-top: 3px; }
+/* a character whose official full body is missing shows a portrait card, never another body */
+.scene-actor.bust { height: 68%; bottom: 96px; border-radius: 16px; object-fit: cover; box-shadow: 0 18px 40px rgba(24, 14, 32, .5), 0 0 0 1px rgba(201, 173, 117, .55); }
+.rel-art-note { display: block; margin-top: 6px; font-size: 10.5px; letter-spacing: .04em; color: #a08a6a; text-align: center; }
+/* character psychology, city life and the memory journal */
+.psy-box { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: rgba(189, 168, 220, 0.1); border: 1px solid rgba(189, 168, 220, 0.35); }
+.psy-traits { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+.psy-meter { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #6d5f52; margin: 3px 0; }
+.psy-meter span { width: 96px; flex: none; }
+.psy-meter i { flex: 1; height: 6px; border-radius: 4px; background: linear-gradient(90deg, #c9ad75, #bda8dc); max-width: 160px; }
+.psy-meter b { width: 26px; text-align: right; font-weight: 600; color: #8a7761; }
+.psy-trigger, .psy-repair { margin-top: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.5; color: #6d5f52; background: rgba(226, 178, 156, 0.14); border-left: 3px solid #d9a98e; border-radius: 6px; }
+.psy-repair { background: rgba(201, 173, 117, 0.16); border-left-color: #c9ad75; }
+.book-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.book-entry { padding: 10px 12px; border-radius: 10px; background: rgba(255, 252, 246, 0.7); border: 1px solid rgba(201, 173, 117, 0.35); }
+.book-entry-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.book-entry-head b { font-size: 13.5px; color: #5f5245; }
+.book-entry-head span { font-size: 11px; color: #a08a6a; white-space: nowrap; }
+.book-entry-who { font-size: 11.5px; color: #8a7761; margin-top: 2px; }
+.book-entry-text { font-size: 12.5px; line-height: 1.55; color: #5f5245; margin-top: 5px; }
+.book-entry-meta { font-size: 10.5px; color: #a08a6a; margin-top: 5px; letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
@@ -3809,7 +3829,7 @@ window.SAN = window.SAN || {};
   const N = (D.npcs = {});
 
   N.nyssa = {
-    id: 'nyssa', name: 'Nyssa', title: 'Village Guardian', pronoun: 'she',
+    id: 'nyssa', name: 'Nyssa', title: 'Village Guardian', gender: 'feminine', pronoun: 'she',
     colors: { hair: '#e9e4ff', skin: '#efe6ff', eye: '#b9a6f0', dress: '#a7b6d8', accent: '#fff6e2', ribbon: '#d9c8f2' },
     hair: 'wavy', accessory: 'halo', glow: true,
     personality: 'Ancient, patient, and quietly amused by humans.',
@@ -3837,12 +3857,13 @@ window.SAN = window.SAN || {};
     gift: { love: '"Ah. You remembered something I said. That is the real gift."', like: '"Kind of you. I will put it where the light falls."', neutral: '"I will find a use for it. Guardians are very good at finding uses."', dislike: '"...I will treasure it. Dutifully."' },
   };
 
-  N.liora = {
-    id: 'liora', name: 'Liora', title: 'Lighthouse Keeper', age: 27,
-    colors: { hair: '#e7d9bd', skin: '#f6ddc9', eye: '#8fb3d9', dress: '#5c7599', accent: '#eef3fb', ribbon: '#d8c3a0' },
-    hair: 'long', accessory: 'clip',
-    personality: 'Steady, warm, and a little afraid of being left behind — though she would call it "being sensible".',
-    bio: 'She keeps the lamp burning so no ship has to guess where the shore is. She has kept it burning alone for four years.',
+  N.lucien = {
+    id: 'lucien', name: 'Lucien', title: 'Lighthouse Keeper', age: 27,
+    gender: 'masculine', pronoun: 'he',
+    colors: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a' },
+    hair: 'short', accessory: 'none',
+    personality: 'Quiet, mature, and a little afraid of being left behind — though he would call it "being sensible".',
+    bio: 'He keeps the lamp burning so no ship has to guess where the shore is. He has kept it burning alone for four years.',
     loves: ['pearl', 'memoryfish', 'lavender_tea', 'sea_glass'],
     likes: ['shell', 'daisy', 'moon_cookie', 'bread', 'silverfin'],
     dislikes: ['carp', 'stone'],
@@ -3857,7 +3878,7 @@ window.SAN = window.SAN || {};
     ],
     ifRain: { area: 'lighthouse', x: 18, y: 12 },
     greetings: {
-      0: ['"Careful on the rocks — they get slick after rain." She smiles, but keeps one hand on the railing.', '"You are the new one. The cottage on the hill, yes? I hope it is warm."'],
+      0: ['"Careful on the rocks — they get slick after rain." He smiles, but keeps one hand on the railing.', '"You are the new one. The cottage on the hill, yes? I hope it is warm."'],
       21: ['"Oh — you again. That came out wrong. I meant it pleasantly."', '"I was just thinking about the tide. It always comes back. I like things that come back."'],
       41: ['"I saved you a seat on the west step. The sunset is better there."', '"People ask why I stay out here alone. I have started saying: because the light needs someone. That is only half true."'],
       61: ['"You always knock. I notice that. Most people just walk in and assume I am fine."', '"If you ever need to sit somewhere dark and quiet, the lamp room is yours."'],
@@ -3865,27 +3886,27 @@ window.SAN = window.SAN || {};
     },
     daily: ['"The lamp needs polishing again. It is a good excuse to think."', '"I found a bottle on the shore this morning. Empty, sadly. Or maybe luckily."'],
     topics: [
-      { id: 'liora_sea', min: 0, lines: ['"I grew up inland. I had never seen the sea until the night I arrived here."', '"It was so loud I could not hear myself worry. I have stayed near it ever since."'] },
-      { id: 'liora_letters', min: 25, lines: ['"I used to write letters to people who had already left. I never sent them."', '"Not because I was angry. Because I did not want to be a burden at their new address."'] },
-      { id: 'liora_light', min: 45, lines: ['"My mother said a lighthouse is a promise you make to strangers."', '"I used to think that meant I had to be strong all the time. I am trying to think it means I only have to be here."'] },
-      { id: 'liora_alone', min: 65, lines: ['"Sometimes I am lonely and it does not mean anything is wrong with my life."', '"It just means I am a person who would like some company. That took me years to be able to say."'] },
-      { id: 'liora_trust', min: 85, lines: ['"I am learning that people can leave and still love you. And that some people simply do not leave."', '"You are the second kind. I am still getting used to it."'] },
+      { id: 'lucien_sea', min: 0, lines: ['"I grew up inland. I had never seen the sea until the night I arrived here."', '"It was so loud I could not hear myself worry. I have stayed near it ever since."'] },
+      { id: 'lucien_letters', min: 25, lines: ['"I used to write letters to people who had already left. I never sent them."', '"Not because I was angry. Because I did not want to be a burden at their new address."'] },
+      { id: 'lucien_light', min: 45, lines: ['"My mother said a lighthouse is a promise you make to strangers."', '"I used to think that meant I had to be strong all the time. I am trying to think it means I only have to be here."'] },
+      { id: 'lucien_alone', min: 65, lines: ['"Sometimes I am lonely and it does not mean anything is wrong with my life."', '"It just means I am a person who would like some company. That took me years to be able to say."'] },
+      { id: 'lucien_trust', min: 85, lines: ['"I am learning that people can leave and still love you. And that some people simply do not leave."', '"You are the second kind. I am still getting used to it."'] },
     ],
     gift: {
-      love: '"Oh. You — this is exactly right. How did you know?" She holds it carefully, like a small animal.',
+      love: '"Oh. You — this is exactly right. How did you know?" He holds it carefully, like a small animal.',
       like: '"Thank you. I will keep it on the windowsill where I can see it from the stairs."',
       neutral: '"That is thoughtful. Truly."',
-      dislike: '"...Ah. Thank you. I will find somewhere for it." She does not.',
+      dislike: '"...Ah. Thank you. I will find somewhere for it." He does not.',
     },
     questline: 'lighthouse',
   };
-
   N.elowen = {
     id: 'elowen', name: 'Elowen', title: 'Greenhouse Gardener', age: 24,
-    colors: { hair: '#9d7a5a', skin: '#eecfb4', eye: '#7fa06b', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
-    hair: 'braid', accessory: 'leaf',
-    personality: 'Quiet, observant, and fiercely self-reliant in a way that costs her.',
-    bio: 'She can name every plant in Sanctuary and will apologise for needing help before you finish offering it.',
+    gender: 'masculine', pronoun: 'he',
+    colors: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
+    hair: 'short', accessory: 'leaf',
+    personality: 'Quiet, observant, and fiercely self-reliant in a way that costs him.',
+    bio: 'He can name every plant in Sanctuary and will apologise for needing help before you finish offering it.',
     loves: ['seed_starflower', 'snowdrop', 'flower_salad', 'glow_moss'],
     likes: ['seed_moonpetal', 'clay', 'fiber', 'daisy', 'plant_fern'],
     dislikes: ['honey_cake', 'music_box'],
@@ -3899,8 +3920,8 @@ window.SAN = window.SAN || {};
     ],
     ifRain: { area: 'greenhouse', x: 14, y: 12 },
     greetings: {
-      0: ['She looks up, startled, then nods at you over a tray of seedlings.', '"The greenhouse door sticks. You have to lift it."'],
-      21: ['"Oh. You. Hello." She wipes her hands twice. "Sorry. Dirt."', '"The bluebells are doing well. I thought you would want to know. I do not know why I thought that."'],
+      0: ['He looks up, startled, then nods at you over a tray of seedlings.', '"The greenhouse door sticks. You have to lift it."'],
+      21: ['"Oh. You. Hello." He wipes his hands twice. "Sorry. Dirt."', '"The bluebells are doing well. I thought you would want to know. I do not know why I thought that."'],
       41: ['"I saved a cutting for you. It is nothing. It is a little thing." It is clearly not nothing.', '"You can sit if you want. I will not talk much. It is not personal."'],
       61: ['"I almost asked you for help yesterday. I practised in my head. Then I did it myself and cried a bit."', '"You do not have to be useful here. I am trying to learn that myself."'],
       81: ['"When the roof leaked I thought: I should tell someone. And the someone was you. That is new for me."', '"You are safe to be quiet with. Do you know how rare that is?"'],
@@ -3913,16 +3934,15 @@ window.SAN = window.SAN || {};
       { id: 'elowen_growth', min: 70, lines: ['"Nothing here grows because I am good. It grows because I keep showing up."', '"You keep showing up too. I notice."'] },
     ],
     gift: {
-      love: 'She goes very still. "You — I have been trying to find one of these for weeks. Thank you." Her ears are red.',
+      love: 'He goes very still. "You — I have been trying to find one of these for weeks. Thank you." His ears are red.',
       like: '"This is lovely. I will — um. I will put it with the others."',
       neutral: '"Thank you. I will find a place for it."',
-      dislike: 'She turns it over, clearly puzzled. "Oh. Thank you." She puts it down gently, like it might be fragile.',
+      dislike: 'He turns it over, clearly puzzled. "Oh. Thank you." He puts it down gently, like it might be fragile.',
     },
     questline: 'greenhouse',
   };
-
   N.rowan = {
-    id: 'rowan', name: 'Rowan', title: 'Windmill Keeper', age: 25,
+    id: 'rowan', name: 'Rowan', title: 'Windmill Keeper', age: 25, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#8a6a4b', skin: '#f0d3ba', eye: '#b58a4e', dress: '#9b7c56', accent: '#f6efe1', ribbon: '#c8a878' },
     hair: 'short', accessory: 'none',
     personality: 'Curious, quick-minded, and trapped in loops of "what if I had said it differently".',
@@ -3963,7 +3983,7 @@ window.SAN = window.SAN || {};
   };
 
   N.mira = {
-    id: 'mira', name: 'Mira', title: 'Village Baker', age: 32,
+    id: 'mira', name: 'Mira', title: 'Village Baker', age: 32, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#c07a4e', skin: '#f2d2b6', eye: '#7d5a3c', dress: '#d8a37b', accent: '#fff3e3', ribbon: '#e8c9a0' },
     hair: 'bun', accessory: 'apron',
     personality: 'Generous, cheerful, and the village\'s unofficial keeper of everyone\'s bad days.',
@@ -4003,7 +4023,7 @@ window.SAN = window.SAN || {};
   };
 
   N.celeste = {
-    id: 'celeste', name: 'Celeste', title: 'Flower Shop Owner', age: 35,
+    id: 'celeste', name: 'Celeste', title: 'Flower Shop Owner', age: 35, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#7d6b8f', skin: '#e8cfc0', eye: '#a07fb5', dress: '#b39ac2', accent: '#fbf4ff', ribbon: '#d9c3e8' },
     hair: 'wavy', accessory: 'flower',
     personality: 'Gentle, perceptive, speaks in flowers and very long pauses.',
@@ -4044,7 +4064,7 @@ window.SAN = window.SAN || {};
   };
 
   N.theo = {
-    id: 'theo', name: 'Theo', title: 'Traveling Merchant', age: 30,
+    id: 'theo', name: 'Theo', title: 'Traveling Merchant', age: 30, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#4c4a5e', skin: '#d9b391', eye: '#8c7d5c', dress: '#5f5a7a', accent: '#e9dcc6', ribbon: '#a8916a' },
     hair: 'ponytail', accessory: 'scarf',
     personality: 'Mysterious, theatrical, and hiding a surprising amount of genuine kindness.',
@@ -4071,7 +4091,7 @@ window.SAN = window.SAN || {};
       { id: 'theo_roads', min: 0, lines: ['"I have been to towns where the only thing anyone wanted to buy was certainty."', '"I do not stock it. Bad margins."'] },
       { id: 'theo_cart', min: 25, lines: ['"The cart is older than I am. My father drove it. He was a much worse salesman."', '"He once sold a man a map to a place that was not real. The man found it. Father was furious."'] },
       { id: 'theo_staying', min: 45, lines: ['"People think leaving is freedom. Mostly it is just a different set of rooms to be yourself in."', '"Unless you are very careful. Or very lucky. Or, occasionally, both."'] },
-      { id: 'theo_truth', min: 70, lines: ['"I sold the lighthouse a lamp once. Liora paid in seashells because she did not have the coins."', '"I kept the shells. Do not tell her. It would ruin my reputation."'] },
+      { id: 'theo_truth', min: 70, lines: ['"I sold the lighthouse a lamp once. Lucien paid in seashells because he did not have the coins."', '"I kept the shells. Do not tell him. It would ruin my reputation."'] },
     ],
     gift: {
       love: 'He actually stops moving. "Now that is worth the cart."',
@@ -4083,7 +4103,7 @@ window.SAN = window.SAN || {};
   };
 
   N.aria = {
-    id: 'aria', name: 'Aria', title: 'Village Librarian', age: 29,
+    id: 'aria', name: 'Aria', title: 'Village Librarian', age: 29, gender: 'feminine', pronoun: 'she',
     colors: { hair: '#5b4636', skin: '#e6c6a8', eye: '#6f8fa8', dress: '#6a7f96', accent: '#f2ead9', ribbon: '#c2a67c' },
     hair: 'bob', accessory: 'glasses',
     personality: 'Dry, warm, and hopelessly fond of forgotten things.',
@@ -4123,7 +4143,7 @@ window.SAN = window.SAN || {};
   };
 
   N.finn = {
-    id: 'finn', name: 'Finn', title: 'Fisherman', age: 41,
+    id: 'finn', name: 'Finn', title: 'Fisherman', age: 41, gender: 'masculine', pronoun: 'he',
     colors: { hair: '#6a6a70', skin: '#e3ba96', eye: '#5f8c85', dress: '#5f7f78', accent: '#eaf2ec', ribbon: '#b98d5e' },
     hair: 'short', accessory: 'cap',
     personality: 'Easygoing, friendly, gives advice like he is telling you a story about someone else.',
@@ -4162,7 +4182,49 @@ window.SAN = window.SAN || {};
     questline: null,
   };
 
-  D.npcOrder = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+  D.npcOrder = ['nyssa', 'lucien', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+
+  /* =========================================================
+     OFFICIAL CHARACTER REGISTRY
+     The nine canonical identities of Sanctuary. Every system —
+     dialogue, schedules, romance, events, assets — reads identity
+     from here. Gender is canonical and never follows the player's
+     pronouns; romance stays open to everyone regardless of gender.
+     ========================================================= */
+  D.OFFICIAL_ROSTER = {
+    nyssa: { name: 'Nyssa', gender: 'female', pronoun: 'she', profession: 'Village Guardian' },
+    lucien: { name: 'Lucien', gender: 'male', pronoun: 'he', profession: 'Lighthouse Keeper' },
+    elowen: { name: 'Elowen', gender: 'male', pronoun: 'he', profession: 'Greenhouse Gardener' },
+    rowan: { name: 'Rowan', gender: 'male', pronoun: 'he', profession: 'Windmill Keeper' },
+    mira: { name: 'Mira', gender: 'female', pronoun: 'she', profession: 'Village Baker' },
+    celeste: { name: 'Celeste', gender: 'female', pronoun: 'she', profession: 'Flower Shop Owner' },
+    theo: { name: 'Theo', gender: 'male', pronoun: 'he', profession: 'Traveling Merchant' },
+    aria: { name: 'Aria', gender: 'female', pronoun: 'she', profession: 'Village Librarian' },
+    finn: { name: 'Finn', gender: 'male', pronoun: 'he', profession: 'Fisherman' },
+  };
+
+  D.registry = function (id) {
+    const entry = D.OFFICIAL_ROSTER[id];
+    const npc = N[id];
+    if (!entry || !npc) return null;
+    return Object.assign({ id }, entry, { title: npc.title, art: npc.art, expressions: npc.expressions });
+  };
+
+  D.validateRoster = function () {
+    const problems = [];
+    const ids = Object.keys(D.OFFICIAL_ROSTER);
+    if (ids.length !== 9) problems.push('expected 9 NPCs, registry has ' + ids.length);
+    const male = ids.filter((id) => D.OFFICIAL_ROSTER[id].gender === 'male').length;
+    const female = ids.filter((id) => D.OFFICIAL_ROSTER[id].gender === 'female').length;
+    if (male !== 5) problems.push('expected 5 male NPCs, found ' + male);
+    if (female !== 4) problems.push('expected 4 female NPCs, found ' + female);
+    ids.forEach((id) => {
+      if (!N[id]) problems.push(id + ' is in the registry but has no NPC definition');
+      else if (N[id].title !== D.OFFICIAL_ROSTER[id].profession) problems.push(id + ' has the wrong profession');
+    });
+    if (N.liora) problems.push('Liora still exists as an active NPC');
+    return problems;
+  };
 
   /* =========================================================
      OFFICIAL CHARACTER ARTWORK — one registry per character
@@ -4186,9 +4248,13 @@ window.SAN = window.SAN || {};
     surprised: 'surprised.png',
   };
 
+  // these two official sets ship nine files: no separate surprised face
+  const NPC_ART_GAPS = { lucien: ['surprised'], elowen: ['surprised'] };
+
   D.npcArt = function (id) {
     const expressions = {};
     Object.keys(NPC_ART_FILES).forEach((mood) => {
+      if ((NPC_ART_GAPS[id] || []).indexOf(mood) >= 0) return;
       expressions[mood] = 'assets/portraits/' + id + '/' + NPC_ART_FILES[mood];
     });
     return { fullBody: 'assets/portraits/' + id + '/fullbody.png', expressions };
@@ -4200,6 +4266,11 @@ window.SAN = window.SAN || {};
     N[id].fullBody = N[id].art.fullBody;
     N[id].expressions = Object.keys(N[id].art.expressions);
   });
+
+  /* Aria's full-body file in the repository is a duplicate of Rowan's
+     artwork. Until a verified full body exists, she renders from her own
+     official neutral portrait instead of another character's body. */
+  if (N.aria) { N.aria.fullBodyMissing = true; N.aria.art.fullBody = ''; N.aria.fullBody = ''; }
 
   D.FRIEND_TIERS = [
     { min: 0, name: 'Stranger' },
@@ -4217,8 +4288,8 @@ window.SAN = window.SAN || {};
   /* refined anime palette — silver/lavender/navy/rose fantasy tones */
   const PALETTE = {
     nyssa: { hair: '#ece9f6', skin: '#f7efe9', eye: '#c3b2e8', dress: '#ded8f0', accent: '#fffaf0', ribbon: '#cbb8e6' },
-    liora: { hair: '#4b3a5c', skin: '#f6e2d2', eye: '#8063b4', dress: '#3f4a6e', accent: '#e4e9f4', ribbon: '#a9b4d0' },
-    elowen: { hair: '#f2b9c6', skin: '#f8e6da', eye: '#7fae86', dress: '#cfdcc2', accent: '#fbf4e4', ribbon: '#e8a9b8' },
+    lucien: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a' },
+    elowen: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0' },
     rowan: { hair: '#4a3328', skin: '#f0d6bc', eye: '#c68a4a', dress: '#46506b', accent: '#cbb79a', ribbon: '#8a6d52' },
     mira: { hair: '#8a5a3c', skin: '#f7ddc7', eye: '#d9a95e', dress: '#e8cfd0', accent: '#fbf1e4', ribbon: '#c98f7a' },
     celeste: { hair: '#e9d095', skin: '#f8e4d0', eye: '#9dbb8f', dress: '#e6d3e8', accent: '#f8f2e2', ribbon: '#d9be7a' },
@@ -4246,15 +4317,15 @@ window.SAN = window.SAN || {};
       hair: 'wavy', accessory: 'flower', extras: [], glow: true,
       colors: { hair: '#ece9f6', skin: '#f7efe9', eye: '#bda6ea', dress: '#e8e4f3', accent: '#fffaf0', ribbon: '#cbb8e6', trim: '#d9b06a', accColor: '#ece3fb', accColor2: '#e0c070' },
     },
-    // deep plum wavy hair, violet eyes, deep purple gown, gold floral ornament
-    liora: {
-      hair: 'wavy', accessory: 'flower', extras: [],
-      colors: { hair: '#4b3159', skin: '#f6e2d2', eye: '#ab8ed6', dress: '#4e3a63', accent: '#f4eef8', ribbon: '#c9a86a', trim: '#c9a86a', accColor: '#c9a86a', accColor2: '#8a6a3f' },
+    // dark navy hair with violet sheen, grey-lavender eyes, navy coat, cream shirt, antique gold
+    lucien: {
+      hair: 'short', accessory: 'none', extras: ['lantern'],
+      colors: { hair: '#2b3358', skin: '#f3dfc9', eye: '#b6a6d6', dress: '#2f3b5c', accent: '#f6efe0', ribbon: '#c9a86a', trim: '#c9a86a', accColor: '#c9a86a', accColor2: '#8a6a3f' },
     },
-    // pink wavy hair with white daisies, green eyes, white pinafore over green skirt
+    // short brown hair, emerald eyes, cream shirt, sage-green work apron
     elowen: {
-      hair: 'wavy', accessory: 'flower', extras: [],
-      colors: { hair: '#f0b8c4', skin: '#f8e6da', eye: '#7fae86', dress: '#94b487', accent: '#faf6ea', ribbon: '#e8a9b8', trim: '#7d9a72', accColor: '#fffdf8', accColor2: '#f0d98a' },
+      hair: 'short', accessory: 'leaf', extras: [],
+      colors: { hair: '#6f4c33', skin: '#efd3ba', eye: '#4f8a5a', dress: '#7d9a72', accent: '#f4f0dd', ribbon: '#b9c9a0', trim: '#5f7a54', accColor: '#efe7d2', accColor2: '#b9c9a0' },
     },
     // near-black short hair, amber eyes, charcoal-navy coat over a white shirt
     rowan: {
@@ -4299,11 +4370,890 @@ window.SAN = window.SAN || {};
   });
 
   // distinct silhouettes: the three men wear tailored tunics/coats
-  ['rowan', 'theo', 'finn'].forEach((id) => {
+  ['lucien', 'elowen', 'rowan', 'theo', 'finn'].forEach((id) => {
     if (!N[id]) return;
     N[id].gender = 'masculine';
     N[id].outfit = 'tunic';
   });
+})();
+</script>
+<script>
+/* Sanctuary — Character Visual Registry (CVR)
+   One authoritative map from a canonical character to the exact artwork
+   files that exist in this repository. Every screen — title lineup,
+   creation, dialogue, profile, relationship journal, cinematic scenes,
+   memory journal — asks this registry instead of guessing a path.
+
+   Rules:
+   • a character never uses another character's body or face;
+   • when a required file is missing the entry says so (bustOnly) and the
+     view falls back to that character's own portrait;
+   • VERSION is appended to every portrait URL so a replaced file shows up
+     immediately instead of an old cached copy.
+*/
+(function () {
+  const V = (SAN.visual = {});
+
+  // bump whenever official artwork files change
+  V.VERSION = 'cvr-2026-11-21-1';
+  V.PORTRAIT_ROOT = 'assets/portraits/';
+  V.MOODS = ['neutral', 'happy', 'sad', 'smile', 'serious', 'thinking', 'concerned', 'gentle', 'surprised'];
+
+  /* a versioned URL for a local asset (data: URIs are left alone) */
+  V.url = function (path) {
+    if (!path) return '';
+    let out = path;
+    if (SAN.render && SAN.render.withAssetExt) out = SAN.render.withAssetExt(path);
+    if (!/^assets\//.test(out)) return out;
+    return out + (out.indexOf('?') >= 0 ? '&' : '?') + 'v=' + V.VERSION;
+  };
+
+  V.build = function () {
+    const data = SAN.data || {};
+    const npcs = data.npcs || {};
+    const order = data.npcOrder || [];
+    const official = data.OFFICIAL_ROSTER || {};
+    const roster = {};
+
+    order.forEach((id) => {
+      const npc = npcs[id];
+      if (!npc) return;
+      const canon = official[id] || {};
+      const root = V.PORTRAIT_ROOT + id + '/';
+      const moods = V.MOODS.filter((m) => (npc.expressions || []).indexOf(m) >= 0);
+      const expressions = {};
+      moods.forEach((m) => { expressions[m] = root + m + '.png'; });
+      const portrait = root + 'neutral.png';
+      const fullBody = npc.fullBodyMissing ? null : root + 'fullbody.png';
+
+      roster[id] = {
+        id,
+        name: npc.name,
+        gender: canon.gender || npc.gender || 'unspecified',
+        pronoun: canon.pronoun || npc.pronoun || 'they',
+        profession: canon.profession || npc.title,
+        // the official artwork this character is drawn from
+        officialReference: fullBody || portrait,
+        fullBody,
+        portrait,
+        expressions,
+        dialogue: portrait,
+        sceneReference: fullBody || portrait,
+        bustOnly: !fullBody,
+        artVersion: V.VERSION,
+      };
+    });
+
+    V.roster = roster;
+    return roster;
+  };
+
+  V.get = function (id) {
+    if (!V.roster) V.build();
+    return V.roster[id] || null;
+  };
+
+  V.all = function () {
+    if (!V.roster) V.build();
+    return Object.keys(V.roster).map((id) => V.roster[id]);
+  };
+
+  /* the image a view should use, already versioned */
+  V.imageFor = function (id, kind, mood) {
+    const e = V.get(id);
+    if (!e) return '';
+    const m = mood && e.expressions[mood] ? e.expressions[mood] : e.portrait;
+    if (kind === 'fullbody') return V.url(e.fullBody || e.portrait);
+    if (kind === 'scene') return V.url(e.sceneReference);
+    if (kind === 'dialogue') return V.url(m);
+    return V.url(m);
+  };
+
+  /* problems this registry can see without touching the disk */
+  V.validate = function () {
+    let problems = [];
+    const list = V.all();
+    if (list.length !== 9) problems.push('visual registry has ' + list.length + ' characters, expected 9');
+    list.forEach((e) => {
+      if (!e.portrait) problems.push(e.id + ': no portrait asset');
+      if (!Object.keys(e.expressions).length) problems.push(e.id + ': no expression assets');
+      if (e.bustOnly) problems.push(e.id + ': official full-body artwork is missing (bust fallback active)');
+      if (e.gender !== 'male' && e.gender !== 'female') problems.push(e.id + ': canonical gender missing');
+    });
+    if (SAN.data.validateRoster) problems = problems.concat(SAN.data.validateRoster());
+    return problems;
+  };
+})();
+</script>
+<script>
+/* Sanctuary — character psychology.
+   Nine distinct interior lives: strengths, flaws with story context, wounds,
+   attachment tendencies, emotional triggers with responses and recovery paths,
+   defences, love languages, boundaries, insecurities and growth goals.
+
+   These are narrative tendencies, never diagnoses, and never an excuse for
+   manipulation or cruelty. Every flaw has a place it came from and a way it can
+   soften. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const P = (D.psychology = {});
+
+  P.LOVE_LANGUAGES = {
+    words: 'Words of Affirmation',
+    service: 'Acts of Service',
+    gifts: 'Receiving Gifts',
+    time: 'Quality Time',
+    touch: 'Physical Touch',
+  };
+
+  P.ATTACHMENTS = {
+    secure: {
+      name: 'Secure',
+      blurb: 'Can ask for closeness and tolerate space without reading either as rejection.',
+    },
+    anxious: {
+      name: 'Anxious',
+      blurb: 'Reaches for reassurance quickly, and fears being too much.',
+    },
+    avoidant: {
+      name: 'Avoidant',
+      blurb: 'Protects independence by withdrawing first, then misses the company.',
+    },
+    fearful: {
+      name: 'Fearful-avoidant',
+      blurb: 'Wants closeness and distrusts it at the same time; approaches, then retreats.',
+    },
+  };
+
+  P.profiles = {};
+
+  P.profiles.nyssa = {
+    positive: ['Patient beyond human years', 'Deeply attentive', 'Protective of the small'],
+    negative: ['Overprotective', 'Slow to trust', 'Tends to control situations'],
+    wound: 'She has watched generations arrive, love the village, and leave it. She learned to hold the whole place in her hands because letting go meant losing it.',
+    attachment: 'anxious',
+    triggers: [
+      {
+        id: 'nyssa_unneeded',
+        label: 'Being treated as a monument instead of a person',
+        response: 'She becomes formal and distant, answers in blessings, and stops asking questions.',
+        recovery: 'Ask her opinion about something small and personal, then actually use it.',
+      },
+      {
+        id: 'nyssa_reckless',
+        label: 'Someone risking themselves needlessly',
+        response: 'Her voice drops, the light dims, and she starts arranging your day for you.',
+        recovery: 'Name the fear out loud and thank her for it before setting your own limit.',
+      },
+    ],
+    defenses: ['Speaks in riddles when she is hurt', 'Takes responsibility for everything', 'Watchful silence'],
+    loveLanguage: { primary: 'time', secondary: 'words' },
+    boundaries: { touch: 'Only when the village is not watching', privacy: 'Her grove is hers; ask before entering', pace: 'She needs weeks, not days' },
+    insecurities: ['Being replaceable', 'Being feared instead of loved', 'That her care is a burden'],
+    growth: [
+      'Let others carry part of the village',
+      'Say "I need" instead of "you should"',
+      'Allow one person to see her uncertain',
+    ],
+    flaws: ['Overprotective', 'Difficulty trusting others', 'Tendency to control situations'],
+  };
+
+  P.profiles.lucien = {
+    positive: ['Quietly dependable', 'Mature under pressure', 'Observant of small changes'],
+    negative: ['Emotionally withdrawn', 'Struggles to show vulnerability', 'Isolates when overwhelmed'],
+    wound: 'His mother left in spring without a goodbye. He decided the lamp was a safer promise than a person, because ships cannot choose to leave him personally.',
+    attachment: 'avoidant',
+    triggers: [
+      {
+        id: 'lucien_ignored',
+        label: 'Opening up, then being ignored',
+        response: 'He goes quiet, keeps to the lamp room, and answers in practical sentences.',
+        recovery: 'Come back without demanding an explanation, and give him space to choose to talk.',
+      },
+      {
+        id: 'lucien_pity',
+        label: 'Being pitied rather than respected',
+        response: 'He straightens, changes the subject, and finds work that needs doing elsewhere.',
+        recovery: 'Treat what he shared as information, not a wound to fix.',
+      },
+    ],
+    defenses: ['Duty as a hiding place', 'Practical talk instead of feeling', 'Long shifts alone'],
+    loveLanguage: { primary: 'service', secondary: 'time' },
+    boundaries: { touch: 'Fine in private; hesitant in public', privacy: 'Do not read his letters without asking', pace: 'He needs the door left open, not pushed' },
+    insecurities: ['That he is only worth the light he keeps', 'That people leave when the weather turns', 'Being a burden'],
+    growth: [
+      'Ask for company instead of waiting to be found',
+      'Say the feeling before the practical sentence',
+      'Let someone else light the lamp once',
+    ],
+    flaws: ['Emotionally withdrawn', 'Difficulty expressing vulnerability', 'Tendency to isolate himself'],
+  };
+
+  P.profiles.elowen = {
+    positive: ['Gentle and patient', 'Notices what others miss', 'Steady in a crisis'],
+    negative: ['People-pleasing', 'Cannot say no', 'Swallows disappointment'],
+    wound: 'He learned that being needed was the price of being kept, so he made himself useful before he made himself known.',
+    attachment: 'anxious',
+    triggers: [
+      {
+        id: 'elowen_unappreciated',
+        label: 'Effort going unnoticed',
+        response: 'He says it is fine, works harder, and grows quieter with every kindness he gives away.',
+        recovery: 'Name the specific thing he did and share the work instead of praising from a distance.',
+      },
+      {
+        id: 'elowen_overruled',
+        label: 'Being spoken over in his own greenhouse',
+        response: 'He steps back, apologises for the mess, and lets someone else decide.',
+        recovery: 'Ask what he wants for the beds, and wait for the actual answer.',
+      },
+    ],
+    defenses: ['Apologising first', 'Offering help instead of asking', 'Keeping disappointment behind a smile'],
+    loveLanguage: { primary: 'words', secondary: 'service' },
+    boundaries: { touch: 'Not in public; ask first, always', privacy: 'The shed is his; knock', pace: 'He needs to be believed, not hurried' },
+    insecurities: ['That he is only welcome while useful', 'Being a burden', 'That his work is ordinary'],
+    growth: [
+      'Say no once and survive it',
+      'Let someone help before he is desperate',
+      'Ask for what he wants, not what is needed',
+    ],
+    flaws: ['People pleasing', 'Difficulty saying no', 'Suppresses disappointment'],
+  };
+
+  P.profiles.rowan = {
+    positive: ['Sincere', 'Generous with his time', 'Thinks things through'],
+    negative: ['Stubborn', 'Refuses help', 'Defensive when criticised'],
+    wound: 'He was the one who was always fine, so he never learned what to do when he was not. Asking for help still sounds like admitting he broke something.',
+    attachment: 'fearful',
+    triggers: [
+      {
+        id: 'rowan_criticised',
+        label: 'Being told he did it wrong in front of others',
+        response: 'He argues the details, then replays the conversation all night and apologises for the wrong thing.',
+        recovery: 'Criticise the problem, not him, in private, and offer to do the next part together.',
+      },
+      {
+        id: 'rowan_helped',
+        label: 'Help arriving unasked',
+        response: 'He insists he had it handled, even while clearly not having it handled.',
+        recovery: 'Ask "would you like a hand?" and accept the first no without leaving.',
+      },
+    ],
+    defenses: ['Explaining instead of feeling', 'Redoing things alone at night', 'Deflecting with self-deprecation'],
+    loveLanguage: { primary: 'words', secondary: 'time' },
+    boundaries: { touch: 'Fine with company nearby, startled by sudden contact', privacy: 'The notebook is private until he offers it', pace: 'He needs to arrive at things himself' },
+    insecurities: ['Being unreliable', 'Being seen as foolish', 'That people only stay while he is useful'],
+    growth: [
+      'Accept help on the first offer',
+      'Say "that hurt" instead of arguing the facts',
+      'Let a mistake be a mistake',
+    ],
+    flaws: ['Stubborn', 'Difficulty accepting help', 'Defensive when criticised'],
+  };
+
+  P.profiles.mira = {
+    positive: ['Warm', 'Funny', 'Fiercely loyal'],
+    negative: ['Impulsive', 'Hides sadness behind humour', 'Seeks reassurance when insecure'],
+    wound: 'She was the one who kept the room light when things were bad at home. Now she does not know how to be sad without apologising for it.',
+    attachment: 'anxious',
+    triggers: [
+      {
+        id: 'mira_abandoned',
+        label: 'Being left alone exactly when she needs company',
+        response: 'She jokes harder, bakes too much, and says she is fine in a voice that is not fine.',
+        recovery: 'Stay without making it a performance, and ask twice how she actually is.',
+      },
+      {
+        id: 'mira_toomuch',
+        label: 'Feeling like her feelings are too much',
+        response: 'She turns the whole thing into a joke and changes the subject to bread.',
+        recovery: 'Laugh with her, then say you were listening to the part underneath.',
+      },
+    ],
+    defenses: ['Humour as a door', 'Feeding people instead of talking', 'Busy hands'],
+    loveLanguage: { primary: 'words', secondary: 'gifts' },
+    boundaries: { touch: 'Warm and easy in private', privacy: 'The kitchen is hers; share it, do not take it over', pace: 'She moves fast, but asks before assuming' },
+    insecurities: ['Being too much', 'Being forgettable', 'That her sadness is inconvenient'],
+    growth: [
+      'Say "I am not okay" without a punchline',
+      'Let someone else take care of the room',
+      'Ask for reassurance before it becomes a test',
+    ],
+    flaws: ['Impulsive', 'Hides sadness behind humor', 'Seeks reassurance when insecure'],
+  };
+
+  P.profiles.celeste = {
+    positive: ['Precise', 'Generous with beauty', 'Quietly brave'],
+    negative: ['Perfectionistic', 'Self-critical', 'Cannot forgive her own mistakes'],
+    wound: 'She was praised only for things that were flawless, so she learned to hide the flawed parts of herself in the back of the shop.',
+    attachment: 'avoidant',
+    triggers: [
+      {
+        id: 'celeste_mistake',
+        label: 'A mistake being noticed',
+        response: 'She apologises too much, fixes it three times, and stops showing unfinished work.',
+        recovery: 'Point out something she did well in the same breath, and let the mistake stay small.',
+      },
+      {
+        id: 'celeste_unfinished',
+        label: 'Being seen before she is ready',
+        response: 'She blocks the doorway, literally or otherwise, and talks about the weather.',
+        recovery: 'Wait to be invited, and do not treat the waiting as rejection.',
+      },
+    ],
+    defenses: ['Tidying instead of feeling', 'Correcting herself out loud', 'Keeping people at the counter'],
+    loveLanguage: { primary: 'words', secondary: 'time' },
+    boundaries: { touch: 'Ask; she startles', privacy: 'The workroom is invitation only', pace: 'Slow, careful, then suddenly certain' },
+    insecurities: ['Being a disappointment', 'Being ordinary', 'That love is conditional on output'],
+    growth: [
+      'Show something unfinished',
+      'Accept a compliment without correcting it',
+      'Let one thing be good enough',
+    ],
+    flaws: ['Perfectionistic', 'Self-critical', 'Difficulty accepting mistakes'],
+  };
+
+  P.profiles.theo = {
+    positive: ['Perceptive', 'Resourceful', 'Kind under the patter'],
+    negative: ['Avoids vulnerability', 'Uses humour defensively', 'Becomes strategic in conflict'],
+    wound: 'He learned that being charming was safer than being known, because the charming version never had to be left.',
+    attachment: 'avoidant',
+    triggers: [
+      {
+        id: 'theo_pinned',
+        label: 'Being cornered into a sincere answer',
+        response: 'He turns it into a story, a joke, or a very good deal, and leaves before the question repeats.',
+        recovery: 'Offer a smaller question, and let him answer it in his own time.',
+      },
+      {
+        id: 'theo_outmaneuvered',
+        label: 'Losing control of a negotiation',
+        response: 'He gets clever and a little cold, and starts calculating instead of listening.',
+        recovery: 'Say plainly that you are not trying to win, and ask what he is afraid of losing.',
+      },
+    ],
+    defenses: ['Charm', 'Changing the subject with a story', 'Always having an exit'],
+    loveLanguage: { primary: 'gifts', secondary: 'words' },
+    boundaries: { touch: 'Surprisingly careful; asks first', privacy: 'His cart and his past are his to tell', pace: 'He needs to choose to stay' },
+    insecurities: ['Being known and then left', 'Being ordinary', 'That he is only liked for what he brings'],
+    growth: [
+      'Answer one honest question without a joke',
+      'Stay after the conversation gets difficult',
+      'Let someone give him something he cannot repay',
+    ],
+    flaws: ['Avoids emotional vulnerability', 'Uses humor defensively', 'Can become overly strategic in conflict'],
+  };
+
+  P.profiles.aria = {
+    positive: ['Thoughtful', 'Exact', 'Loyal in quiet ways'],
+    negative: ['Overthinks', 'Withdraws under stress', 'Struggles to state emotional needs'],
+    wound: 'She was the child who explained everything correctly and was still misunderstood, so she started rehearsing conversations before having them.',
+    attachment: 'fearful',
+    triggers: [
+      {
+        id: 'aria_misread',
+        label: 'Being misunderstood after careful explanation',
+        response: 'She goes silent, returns to the shelves, and rewrites the conversation in her head for days.',
+        recovery: 'Ask what she meant, and repeat it back until she nods.',
+      },
+      {
+        id: 'aria_crowd',
+        label: 'Too many people needing answers at once',
+        response: 'She excuses herself to the back room and does not come out until closing.',
+        recovery: 'Make the room smaller: one question, one person, no audience.',
+      },
+    ],
+    defenses: ['Facts instead of feelings', 'Rehearsing', 'Retreating to the stacks'],
+    loveLanguage: { primary: 'time', secondary: 'words' },
+    boundaries: { touch: 'Rarely, and only when she initiates', privacy: 'Her notebook is not a public record', pace: 'She needs to finish a thought' },
+    insecurities: ['Being tedious', 'Being misunderstood', 'That her feelings are an inconvenience'],
+    growth: [
+      'Say the need before the explanation',
+      'Ask for company instead of waiting to be noticed',
+      'Let a sentence be imperfect',
+    ],
+    flaws: ['Overthinking', 'Social withdrawal under stress', 'Difficulty communicating emotional needs'],
+  };
+
+  P.profiles.finn = {
+    positive: ['Easy-going', 'Practical', 'Unshakably calm in bad weather'],
+    negative: ['Avoids conflict', 'Inconsistent follow-through', 'Jokes to escape discomfort'],
+    wound: 'He grew up in a house where arguments were weather, so he learned to wait them out and never quite finish the difficult sentence.',
+    attachment: 'avoidant',
+    triggers: [
+      {
+        id: 'finn_confronted',
+        label: 'Being confronted directly about a broken promise',
+        response: 'He laughs it off, agrees to everything, and then misses the next thing too.',
+        recovery: 'Make the ask small and concrete, and notice out loud when he follows through.',
+      },
+      {
+        id: 'finn_pressure',
+        label: 'Feeling trapped in a conversation',
+        response: 'He suddenly remembers the tide, the nets, or the boat.',
+        recovery: 'Give him an exit and a time to come back; he usually does.',
+      },
+    ],
+    defenses: ['Jokes', 'Agreeing without committing', 'Going fishing'],
+    loveLanguage: { primary: 'service', secondary: 'touch' },
+    boundaries: { touch: 'Casual, but ask before anything serious', privacy: 'The boat is his quiet place', pace: 'He moves at tide speed' },
+    insecurities: ['Being a disappointment', 'Being tied down', 'That he has nothing interesting to say'],
+    growth: [
+      'Finish one difficult sentence',
+      'Show up when he said he would',
+      'Let someone see him try and fail',
+    ],
+    flaws: ['Conflict avoidance', 'Inconsistent follow-through', 'Uses humor to escape uncomfortable conversations'],
+  };
+})();
+</script>
+<script>
+/* Sanctuary — city life data: daily, seasonal and special village events,
+   plus the relationships the NPCs have with each other.
+   Events only fire when their context is true: hour, weather, season, place,
+   relationship stage, and how recently they were seen. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const C = (D.city = {});
+
+  C.SEASONS = ['spring', 'summer', 'autumn', 'winter'];
+
+  /* ---------------- daily life ---------------- */
+  C.DAILY = [
+    {
+      id: 'market_morning',
+      title: 'Morning Market',
+      hours: [6, 11],
+      areas: ['village'],
+      npcPool: ['mira', 'celeste', 'theo', 'finn'],
+      backdrop: 'village-square',
+      cooldownDays: 2,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Bread, flowers, and somebody arguing gently about the price of rope.' },
+        { speaker: c.npc, text: '"You are here early. Good. Hold this and look like you know what to do with it."' },
+      ],
+      memory: 'The morning market, with flour on everything.',
+    },
+    {
+      id: 'tea_afternoon',
+      title: 'Afternoon Tea',
+      hours: [13, 17],
+      areas: ['teashop'],
+      npcPool: ['aria', 'elowen', 'celeste', 'nyssa'],
+      backdrop: 'teashop',
+      cooldownDays: 2,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The tea shop is warm and half empty. Two cups arrive without being ordered.' },
+        { speaker: c.npc, text: '"I was going to sit alone. This is better. Do not make it a thing."' },
+      ],
+      memory: 'An unhurried cup of tea in the village tea shop.',
+    },
+    {
+      id: 'street_food_evening',
+      title: 'Evening Street Food',
+      hours: [17, 20],
+      areas: ['village'],
+      npcPool: ['finn', 'mira', 'rowan'],
+      backdrop: 'bakery',
+      cooldownDays: 2,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Someone is frying something in a pan too small for the crowd around it.' },
+        { speaker: c.npc, text: '"Careful, it is hot. I have already burned myself twice, for research."' },
+      ],
+      memory: 'Street food eaten standing up, out of a paper cone.',
+    },
+    {
+      id: 'night_market',
+      title: 'Night Market',
+      hours: [19, 23],
+      areas: ['village'],
+      npcPool: ['theo', 'celeste', 'mira'],
+      backdrop: 'village-square',
+      cooldownDays: 3,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Lanterns, ribbons, and a merchant who insists everything is a bargain.' },
+        { speaker: c.npc, text: '"Do not buy the blue one. I am telling you as a friend, and as someone selling the blue one."' },
+      ],
+      memory: 'The night market, all paper light and impossible prices.',
+    },
+    {
+      id: 'village_music',
+      title: 'Music in the Square',
+      hours: [18, 21],
+      areas: ['village', 'meadow'],
+      npcPool: ['rowan', 'aria', 'finn'],
+      backdrop: 'village-square',
+      cooldownDays: 3,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'A fiddle, badly tuned, and nobody minding. Someone starts clapping off the beat.' },
+        { speaker: c.npc, text: '"I am not dancing. I am standing rhythmically. There is a difference."' },
+      ],
+      memory: 'Music in the square, and a hand offered halfway.',
+    },
+    {
+      id: 'community_work',
+      title: 'Community Work',
+      hours: [9, 13],
+      areas: ['garden', 'village'],
+      npcPool: ['rowan', 'nyssa', 'elowen'],
+      backdrop: 'garden',
+      cooldownDays: 3,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'A fence needs mending before the weather turns. Everyone has an opinion about the fence.' },
+        { speaker: c.npc, text: '"We could finish this in an hour if we stopped discussing it. Just a thought."' },
+      ],
+      memory: 'Mending the village fence with more opinions than tools.',
+    },
+    {
+      id: 'garden_day',
+      title: 'Public Garden Day',
+      hours: [10, 16],
+      areas: ['garden', 'greenhouse'],
+      npcPool: ['elowen', 'celeste', 'nyssa'],
+      backdrop: 'greenhouse',
+      cooldownDays: 2,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Seedlings in trays, soil under every fingernail, and a label garden nobody can read.' },
+        { speaker: c.npc, text: '"That one is a maybe. I planted it out of spite and now I am attached."' },
+      ],
+      memory: 'Planting seedlings that were only slightly out of spite.',
+    },
+    {
+      id: 'weekend_gathering',
+      title: 'Weekend Gathering',
+      hours: [15, 19],
+      areas: ['meadow', 'village', 'garden'],
+      npcPool: ['nyssa', 'mira', 'finn', 'theo', 'celeste'],
+      backdrop: 'meadow',
+      cooldownDays: 4,
+      check: () => {
+        const S = SAN.state.S;
+        return S && (S.time.day % 7 === 0 || S.time.day % 7 === 6);
+      },
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Blankets on the grass, too much food, and the particular ease of a day with nothing required of it.' },
+        { speaker: c.npc, text: '"Sit. Eat. Nobody is allowed to be useful for the next hour."' },
+      ],
+      memory: 'A weekend afternoon with nowhere else to be.',
+    },
+  ];
+
+  /* ---------------- seasonal ---------------- */
+  C.SEASONAL = [
+    {
+      id: 'spring_flower_festival',
+      title: 'Spring Flower Festival',
+      seasons: [0], days: [8, 14],
+      hours: [9, 19],
+      areas: ['garden', 'village'],
+      npcPool: ['celeste', 'elowen', 'nyssa'],
+      backdrop: 'garden',
+      once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The whole village smells of cut stems. Children are wearing flowers they did not ask for.' },
+        { speaker: c.npc, text: '"I entered the arrangement contest. I am pretending I did not. Do not look at the third table."' },
+      ],
+      memory: 'The Spring Flower Festival, and a ribbon that was quietly deserved.',
+    },
+    {
+      id: 'summer_beach_festival',
+      title: 'Summer Beach Festival',
+      seasons: [1], days: [10, 18],
+      hours: [11, 20],
+      areas: ['beach'],
+      npcPool: ['finn', 'lucien', 'mira'],
+      backdrop: 'beach-sunset',
+      once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Bonfires, wet sand, and someone insisting the water is warmer than it is.' },
+        { speaker: c.npc, text: '"I am not swimming. I am supervising the swimming. From a safe, dry distance."' },
+      ],
+      memory: 'The Summer Beach Festival, sand in everything, nobody minding.',
+    },
+    {
+      id: 'autumn_harvest_festival',
+      title: 'Autumn Harvest Festival',
+      seasons: [2], days: [12, 20],
+      hours: [10, 19],
+      areas: ['village', 'garden'],
+      npcPool: ['mira', 'rowan', 'elowen'],
+      backdrop: 'village-square',
+      once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Squash arranged like treasure. A prize goose nobody has explained. Cider for everyone.' },
+        { speaker: c.npc, text: '"If you tell anyone I cried at the prize goose, I will deny it with my whole chest."' },
+      ],
+      memory: 'The Autumn Harvest Festival and the famous prize goose.',
+    },
+    {
+      id: 'winter_snow_festival',
+      title: 'Winter Snow Festival',
+      seasons: [3], days: [6, 16],
+      hours: [12, 20],
+      areas: ['village', 'meadow'],
+      npcPool: ['nyssa', 'aria', 'theo'],
+      backdrop: 'village-square',
+      once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Snow, mulled something, and lanterns sunk halfway into drifts. Everyone is rosy and pretending to be cold.' },
+        { speaker: c.npc, text: '"My hands are frozen. I refuse to go inside. This is the best day of the year."' },
+      ],
+      memory: 'The Winter Snow Festival, cold hands and warm cups.',
+    },
+    {
+      id: 'christmas_eve',
+      title: 'Christmas Eve',
+      seasons: [3], days: [24],
+      hours: [16, 23],
+      areas: ['village', 'home', 'cottage'],
+      npcPool: ['mira', 'celeste', 'nyssa', 'elowen'],
+      backdrop: 'village-square',
+      once: 'year',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'A small tree by the well, badly decorated, with one candle left for whoever arrives last.' },
+        { speaker: c.npc, text: '"I made you something. It is not much. I made it twice because the first one was worse."' },
+      ],
+      memory: 'Christmas Eve by the village well.',
+    },
+    {
+      id: 'new_year_celebration',
+      title: 'New Year Celebration',
+      seasons: [3], days: [28],
+      hours: [18, 24],
+      areas: ['village', 'meadow'],
+      npcPool: ['theo', 'rowan', 'mira', 'aria'],
+      backdrop: 'village-square',
+      once: 'year',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The year is ending without asking permission. Someone is counting down far too early.' },
+        { speaker: c.npc, text: '"Same time next year? I know. I said it out loud. You are allowed to hold me to it."' },
+      ],
+      memory: 'A new year, said out loud in a crowd.',
+    },
+  ];
+
+
+  /* ---------------- special city events ---------------- */
+  C.SPECIAL = [
+    {
+      id: 'lantern_festival', title: 'Lantern Festival', hours: [18, 23], areas: ['village', 'beach'], npcPool: ['nyssa', 'lucien', 'aria'], backdrop: 'lighthouse-night', once: 'year', cooldownDays: 10,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Paper lanterns drift out over the water, each one carrying something nobody says aloud.' },
+        { speaker: c.npc, text: '"I wrote something on mine. You are not allowed to read it. You are allowed to stand here with me."' },
+      ],
+      memory: 'Lanterns on the water, and what was not written on them.',
+    },
+    {
+      id: 'village_anniversary', title: 'Village Anniversary', seasons: [0], days: [12], hours: [10, 20], areas: ['village'], npcPool: ['nyssa', 'mira', 'rowan'], backdrop: 'village-square', once: 'year',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The village is older than anyone remembers and younger than it looks. There is cake about it.' },
+        { speaker: c.npc, text: '"Every year I think this will be the year it feels ordinary. It never is."' },
+      ],
+      memory: 'The village anniversary, and cake older than the argument about the cake.',
+    },
+    {
+      id: 'cooking_competition', title: 'Cooking Competition', seasons: [2], days: [6, 22], hours: [11, 18], areas: ['bakery', 'village'], npcPool: ['mira', 'finn', 'theo'], backdrop: 'bakery', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Three judges, one fire alarm, and a pie that is definitely a little burned.' },
+        { speaker: c.npc, text: '"Do not say anything. I know. I know. Help me hide the edges."' },
+      ],
+      memory: 'The cooking competition, and a pie with a hidden dark side.',
+    },
+    {
+      id: 'fishing_tournament', title: 'Fishing Tournament', seasons: [1], days: [4, 24], hours: [7, 15], areas: ['beach'], npcPool: ['finn', 'lucien', 'rowan'], backdrop: 'beach-sunset', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Rods, buckets, and a scoreboard that is mostly wishful thinking.' },
+        { speaker: c.npc, text: '"Whoever catches the smallest one wins my respect. The big ones are showing off."' },
+      ],
+      memory: 'The fishing tournament, and the small brave fish.',
+    },
+    {
+      id: 'gardening_competition', title: 'Gardening Competition', seasons: [0, 2], days: [5, 25], hours: [10, 17], areas: ['garden', 'greenhouse'], npcPool: ['elowen', 'celeste', 'nyssa'], backdrop: 'garden', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Enormous vegetables, suspiciously perfect roses, and one honest weed in a pot.' },
+        { speaker: c.npc, text: '"That one is mine. The weed. I think it is doing very well and nobody else agrees."' },
+      ],
+      memory: 'The gardening competition, and the honest weed.',
+    },
+    {
+      id: 'book_fair', title: 'Book Fair', seasons: [2], days: [2, 26], hours: [9, 18], areas: ['library', 'village'], npcPool: ['aria', 'rowan', 'theo'], backdrop: 'library', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Tables of books outside the library, and a queue for the one copy everyone wants.' },
+        { speaker: c.npc, text: '"I put a book aside for you. Do not tell the queue. The queue is very serious."' },
+      ],
+      memory: 'The book fair, and a book saved from the queue.',
+    },
+    {
+      id: 'art_exhibition', title: 'Art Exhibition', seasons: [1, 2], days: [9, 23], hours: [13, 20], areas: ['village', 'teashop'], npcPool: ['celeste', 'aria', 'mira'], backdrop: 'village-square', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Paintings propped on easels, one sculpture covered in a sheet, and a guest book nobody dares sign first.' },
+        { speaker: c.npc, text: '"The one with the badly painted sea is mine. I am going to stand next to it and pretend to be a stranger."' },
+      ],
+      memory: 'The art exhibition, and a badly painted, beloved sea.',
+    },
+    {
+      id: 'charity_event', title: 'Charity Evening', seasons: [3], days: [2, 20], hours: [16, 21], areas: ['village', 'teashop'], npcPool: ['theo', 'celeste', 'mira'], backdrop: 'teashop', once: 'season',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'A table of donated things, prices written in hopeful handwriting, and a jar that is doing most of the work.' },
+        { speaker: c.npc, text: '"I donated something I actually like. Do not ask which one. Buy it and keep it safe."' },
+      ],
+      memory: 'The charity evening, and something given that was actually liked.',
+    },
+    {
+      id: 'secret_admirer', title: 'A Letter With No Name', hours: [7, 10], areas: ['home', 'cottage', 'village'], npcPool: ['aria', 'lucien', 'finn', 'rowan'], backdrop: 'cottage-day', once: 'season', minStage: 3,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'A folded note under the bakery door. No signature. The handwriting is trying very hard to be ordinary.' },
+        { speaker: c.npc, text: '"That is not mine. Why are you looking at me. I am allowed to be defensive for no reason."' },
+      ],
+      memory: 'A note with no name, and a someone trying very hard to look innocent.',
+    },
+    {
+      id: 'couple_festival', title: 'Couple Festival', seasons: [1], days: [14, 16], hours: [15, 22], areas: ['meadow', 'village'], npcPool: ['mira', 'lucien', 'elowen', 'aria', 'theo'], backdrop: 'meadow', once: 'year', minStage: 5,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Pairs carrying paper flowers, a ribbon game nobody understands, and a bad song played on purpose.' },
+        { speaker: c.npc, text: '"We do not have to do the ribbon thing. I just wanted to be here with you while it happens."' },
+      ],
+      memory: 'The Couple Festival, skipping the ribbon game together.',
+    },
+    {
+      id: 'moonlight_dance', title: 'Moonlight Dance', hours: [20, 23], weathers: ['sunny', 'cloudy'], areas: ['village', 'meadow', 'beach'], npcPool: ['lucien', 'celeste', 'rowan', 'mira', 'aria', 'finn', 'theo', 'elowen'], backdrop: 'beach-sunset', once: 'season', minStage: 5,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'Lanterns low, music slower than usual, and everyone pretending they are not watching who dances with whom.' },
+        { speaker: c.npc, text: '"One dance. Then you can go back to being sensible about all this."' },
+      ],
+      memory: 'A moonlight dance, and being sensible about none of it.',
+    },
+    {
+      id: 'fireworks_night', title: 'Fireworks Night', seasons: [1], days: [20], hours: [19, 23], areas: ['village', 'meadow', 'beach'], npcPool: ['nyssa', 'finn', 'mira', 'theo'], backdrop: 'beach-sunset', once: 'year',
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The first rocket goes up crooked and everyone applauds anyway. The second one is beautiful.' },
+        { speaker: c.npc, text: '"Say something before it gets loud. I will not hear you after."' },
+      ],
+      memory: 'Fireworks, and something said before the noise.',
+    },
+  ];
+
+  /* ---------------- contextual random events ----------------
+     These are about the relationship, not the calendar, so they carry a
+     minimum stage and a long cooldown. Invitations ask first. */
+  C.RANDOM = [
+    {
+      id: 'chance_meeting', title: 'A Chance Meeting', hours: [8, 21], areas: null, npcPool: null, backdrop: null, cooldownDays: 4,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'You both reach the same corner from different directions and stop, caught being glad.' },
+        { speaker: c.npc, text: '"I was not looking for you. That is not the same as being sorry to find you."' },
+      ],
+      memory: 'Running into someone at the same corner.',
+    },
+    {
+      id: 'ask_help', title: 'Asked For Help', hours: [7, 20], areas: null, npcPool: null, backdrop: null, cooldownDays: 5, minStage: 3,
+      pages: (c) => [
+        { speaker: c.npc, text: '"I need a hand. I have been standing here for ten minutes trying to phrase that in a way that does not sound like a favour."' },
+        { speaker: 'narrator', text: 'It takes less time to do the thing than it took them to ask.' },
+      ],
+      memory: 'Being asked for help, and being allowed to give it.',
+      effects: { psychology: 'acts_of_service' },
+    },
+    {
+      id: 'personal_trouble', title: 'A Bad Day', hours: [15, 23], areas: null, npcPool: null, backdrop: null, cooldownDays: 6, minStage: 2,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'They are pretending to be busy with something that does not need doing.' },
+        { speaker: c.npc, text: '"It is nothing. It is a day. Days happen." They do not stop pretending.' },
+      ],
+      memory: 'A bad day, and staying anyway.',
+      effects: { psychology: 'listened' },
+    },
+    {
+      id: 'invite_walk', title: 'An Invitation to Walk', hours: [9, 19], areas: null, npcPool: null, backdrop: null, cooldownDays: 5, minStage: 2, invite: true,
+      pages: (c) => [
+        { speaker: c.npc, text: '"I am going for a walk. You are not required to come. I would like it if you did."' },
+      ],
+      memory: 'A walk that was not required.',
+    },
+    {
+      id: 'invite_home', title: 'Come In For A Minute', hours: [17, 22], areas: null, npcPool: null, backdrop: null, cooldownDays: 7, minStage: 4, invite: true,
+      pages: (c) => [
+        { speaker: c.npc, text: '"You have been standing outside long enough. Come in. I will make the tea that is slightly too strong."' },
+      ],
+      memory: 'The first time they let you in.',
+    },
+    {
+      id: 'small_gathering', title: 'A Small Gathering', hours: [17, 22], areas: null, npcPool: null, backdrop: null, cooldownDays: 8, minStage: 3, invite: true,
+      pages: (c) => [
+        { speaker: c.npc, text: '"A few of us are gathering. Nothing formal. You would make it better. That is the whole invitation."' },
+      ],
+      memory: 'A small gathering that felt bigger than it was.',
+    },
+    {
+      id: 'surprise_gift', title: 'Something Small', hours: [8, 20], areas: null, npcPool: null, backdrop: null, cooldownDays: 7, minStage: 2,
+      pages: (c) => [
+        { speaker: c.npc, text: '"I saw this and thought of you. That is all. Do not make it a speech."' },
+        { speaker: 'narrator', text: 'It is small, specific, and exactly right.' },
+      ],
+      memory: 'A small gift that proved someone was paying attention.',
+      effects: { psychology: 'gift' },
+    },
+    {
+      id: 'overheard_secret', title: 'Overheard', hours: [10, 22], areas: null, npcPool: null, backdrop: null, cooldownDays: 9, minStage: 3,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'You catch the end of a conversation that was not meant for you. They see you see them.' },
+        { speaker: c.npc, text: '"You heard that. I am not going to pretend you did not. Ask me later, when I have decided how to say it."' },
+      ],
+      memory: 'An overheard sentence and a promise to ask later.',
+      effects: { psychology: 'boundary_respected' },
+    },
+    {
+      id: 'bad_weather_shelter', title: 'Shelter From The Rain', hours: [8, 22], weathers: ['rain', 'storm'], areas: null, npcPool: null, backdrop: null, cooldownDays: 5,
+      pages: (c) => [
+        { speaker: 'narrator', text: 'The rain arrives all at once. You end up under the same narrow awning, not quite touching.' },
+        { speaker: c.npc, text: '"We can stand here being sensible, or we can admit this is the best part of the day."' },
+      ],
+      memory: 'Rain, and one narrow awning.',
+    },
+    {
+      id: 'reconciliation_moment', title: 'An Honest Minute', hours: [9, 23], areas: null, npcPool: null, backdrop: null, cooldownDays: 3, minStage: 2,
+      check: () => {
+        const S = SAN.state.S;
+        if (!S || !S.psychology) return false;
+        return Object.keys(S.psychology).some((id) => (S.psychology[id].resentment || 0) >= 20);
+      },
+      pages: (c) => [
+        { speaker: c.npc, text: '"I have been carrying something and I would rather say it badly than not at all."' },
+        { speaker: 'narrator', text: 'It is not a neat conversation. It is a real one, which is better.' },
+      ],
+      memory: 'Saying something badly instead of not at all.',
+      effects: { psychology: 'honest_talk' },
+    },
+  ];
+
+  /* ---------------- who knows whom ----------------
+     NPC relationships exist without the player: friendships, friction,
+     work tensions, quiet crushes. The player can witness some of it. */
+  C.BONDS = [
+    { a: 'mira', b: 'rowan', type: 'friends', label: 'Old friends', warmth: 62, note: 'She feeds him; he fixes her oven and pretends it was nothing.' },
+    { a: 'elowen', b: 'celeste', type: 'work', label: 'Work neighbours', warmth: 48, note: 'They trade cuttings and complaints about customers.' },
+    { a: 'lucien', b: 'finn', type: 'friends', label: 'Quiet company', warmth: 44, note: 'Two men who can sit in silence and call it a conversation.' },
+    { a: 'lucien', b: 'nyssa', type: 'old', label: 'Old obligation', warmth: 38, note: 'She remembers the night he first climbed the lighthouse stairs.' },
+    { a: 'aria', b: 'rowan', type: 'tension', label: 'Borrowed books', warmth: 22, note: 'He returns books late with very good excuses.' },
+    { a: 'theo', b: 'mira', type: 'spark', label: 'Unspoken', warmth: 57, note: 'He flirts; she laughs; neither says the real thing.' },
+    { a: 'finn', b: 'theo', type: 'rivalry', label: 'Friendly rivalry', warmth: 30, note: 'They compete about everything, including who is less competitive.' },
+    { a: 'celeste', b: 'aria', type: 'friends', label: 'Gentle alliance', warmth: 55, note: 'They understand each other without needing to explain.' },
+    { a: 'nyssa', b: 'elowen', type: 'mentor', label: 'Tending', warmth: 60, note: 'She comes to the greenhouse to be quiet, and he lets her.' },
+    { a: 'rowan', b: 'finn', type: 'work', label: 'Fence builders', warmth: 40, note: 'They have mended the same fence four times; it is never the fence.' },
+    { a: 'mira', b: 'celeste', type: 'friends', label: 'Shared counter', warmth: 58, note: 'Flowers on the bakery tables, bread in the flower shop.' },
+    { a: 'lucien', b: 'elowen', type: 'tension', label: 'Warmth and distance', warmth: 26, note: 'Elowen keeps offering help; Lucien keeps saying it is handled.' },
+  ];
+
+  /* what the village says when a bond shifts, so the player can witness it */
+  C.BOND_MOMENTS = [
+    '"You two are arguing about the fence again." / "We are not arguing. We are agreeing loudly."',
+    '"She left you the good seat." / "Do not make it into a thing."',
+    '"I saw him carry her basket all the way uphill." / "I always carry her basket."',
+    '"He returned the book. Only seven weeks late." / "It was a long book."',
+    '"You have both been in that greenhouse for six hours." / "Time is different in here."',
+    '"Do not think I did not notice you paying for her tea." / "Then it is working."',
+  ];
+
 })();
 </script>
 <script>
@@ -4347,7 +5297,7 @@ window.SAN = window.SAN || {};
   R.ACTIVITY = (id) => R.ACTIVITIES.find((a) => a.id === id);
 
   /* a memory is written when something real happens */
-  R.romanceable = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+  R.romanceable = ['nyssa', 'lucien', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
 
   const N = (R.npcs = {});
 
@@ -4409,58 +5359,58 @@ window.SAN = window.SAN || {};
   };
 
   /* =========================================================
-     LIORA — lighthouse keeper, steady and scared of being left
+     LUCIEN — lighthouse keeper, quiet, steady, afraid of being left
      ========================================================= */
-  N.liora = {
+  N.lucien = {
     adult: true, // every romanceable character is an adult; intimate scenes fade to black
-    style: 'warm, careful, and braver than she believes',
+    style: 'quiet, mature, and braver than he believes',
     pace: 1,
     boundaries: {
       pda: true,
       privateOnly: false,
-      note: 'She is fine being seen with you. She is not fine being a rumour.',
+      note: 'He is fine being seen with you. He is not fine being a rumour.',
     },
     refusals: {
-      private: '\"Not in the middle of the village. I have a reputation for being sensible.\"',
-      pace: '\"Slow down. I am not running. That is the whole point of me.\"',
-      low: '\"I like you. I am not ready for that, and I am allowed to say so.\"',
-      night: '\"The lamp needs me tonight. Ask me when the sky is clear.\"',
+      private: '"Not in the middle of the village. I have a reputation for being sensible."',
+      pace: '"Slow down. I am not running. That is the whole point of me."',
+      low: '"I like you. I am not ready for that, and I am allowed to say so."',
+      night: '"The lamp needs me tonight. Ask me when the sky is clear."',
     },
     lines: {
-      walk: 'She takes the sea path, then admits she chose it because the sunset is better there.',
-      hand: 'Her hands are rough from rope and lamp oil. She laces her fingers in yours anyway.',
-      hug: 'She holds on a beat longer than expected, then steps back and pretends she did not.',
-      stargaze: '\"Out there, a ship is using my lamp to find its way home. Feels strange to be the reason.\"',
-      dance: 'She counts the steps under her breath. Then stops counting.',
-      memory: 'You tell her about the night you left somewhere. She says, \"I know that night. I have been in it.\"',
-      gift: 'She puts it on the windowsill immediately, where she can see it from the stairs.',
-      dinner: 'She lights the good candle and pretends it was already there.',
-      kiss: 'She asks, \"Is this all right?\" before, and again after, and means it both times.',
-      cuddle: 'She falls asleep first, which she would be embarrassed about if she knew.',
-      cook: 'She is a terrible cook and a wonderful accomplice.',
-      fire: 'She tells you the story of every dent in the lamp room floor.',
-      craft: 'She makes a rope bracelet, badly, and ties it on your wrist herself.',
-      rain: 'She opens the window to hear it. \"Storms are just weather being honest.\"',
+      walk: 'He takes the sea path, then admits he chose it because the sunset is better there.',
+      hand: 'His hands are rough from rope and lamp oil. He laces his fingers in yours anyway.',
+      hug: 'He holds on a beat longer than expected, then steps back and pretends he did not.',
+      stargaze: '"Out there, a ship is using my lamp to find its way home. Feels strange to be the reason."',
+      dance: 'He counts the steps under his breath. Then stops counting.',
+      memory: 'You tell him about the night you left somewhere. He says, "I know that night. I have been in it."',
+      gift: 'He puts it on the windowsill immediately, where he can see it from the stairs.',
+      dinner: 'He lights the good candle and pretends it was already there.',
+      kiss: 'He asks, "Is this all right?" before, and again after, and means it both times.',
+      cuddle: 'He falls asleep first, which he would be embarrassed about if he knew.',
+      cook: 'He is a terrible cook and a wonderful accomplice.',
+      fire: 'He tells you the story of every dent in the lamp room floor.',
+      craft: 'He makes a rope bracelet, badly, and ties it on your wrist himself.',
+      rain: 'He opens the window to hear it. "Storms are just weather being honest."',
     },
-    morning: '\"Morning. The kettle is on. I am not good at this yet, but I am trying.\"',
-    goodnight: '\"Goodnight. If you cannot sleep, the lamp room is warm.\"',
-    comfort: 'She sits with you on the west step until you can breathe again.',
+    morning: '"Morning. The kettle is on. I am not good at this yet, but I am trying."',
+    goodnight: '"Goodnight. If you cannot sleep, the lamp room is warm."',
+    comfort: 'He sits with you on the west step until you can breathe again.',
     events: {
-      friend: ['\"I saved you a seat. I have started saving you a seat. That is a thing I do now.\"'],
-      story: ['\"Four years alone up here. I told myself it was duty.\"', '\"It was easier than asking someone to stay and hearing them say no.\"'],
-      date: ['She brings a blanket to the beach and apologises for the sand twice.', '\"I planned this. That is not something I usually admit.\"'],
-      commit: ['\"I have kept a light burning for strangers my whole life.\"', '\"I would like to keep one for you. Not as a duty. As a choice.\"'],
-      anniversary: ['\"Every year the lamp gets serviced. This is the only anniversary I look forward to.\"'],
+      friend: ['"I saved you a seat. I have started saving you a seat. That is a thing I do now."'],
+      story: ['"Four years alone up here. I told myself it was duty."', '"It was easier than asking someone to stay and hearing them say no."'],
+      date: ['He brings a blanket to the beach and apologises for the sand twice.', '"I planned this. That is not something I usually admit."'],
+      commit: ['"I have kept a light burning for strangers my whole life."', '"I would like to keep one for you. Not as a duty. As a choice."'],
+      anniversary: ['"Every year the lamp gets serviced. This is the only anniversary I look forward to."'],
     },
     confession: {
-      ask: 'You tell her you would like to be the person who keeps coming back.',
-      yes: ['\"Oh.\" Her eyes go bright and she laughs at herself. \"I practised a calm response. That is gone now.\"', '\"Yes. I want that. I have wanted it for a while.\"'],
-      notYet: '\"I need a little time. Not a no — a not yet. Please do not go far.\"',
+      ask: 'You tell him you would like to be the person who keeps coming back.',
+      yes: ['"Oh." His eyes go bright and he laughs at himself. "I practised a calm response. That is gone now."', '"Yes. I want that. I have wanted it for a while."'],
+      notYet: '"I need a little time. Not a no — a not yet. Please do not go far."',
     },
     home: {
-      cook: 'She burns the bread and you eat it anyway, both of you laughing.',
-      fire: 'She falls asleep against your shoulder and wakes up apologising.',
-      craft: 'She is hopeless with a needle and very proud of the crooked result.',
+      cook: 'He burns the bread and you eat it anyway, both of you laughing.',
+      fire: 'He falls asleep against your shoulder and wakes up apologising.',
+      craft: 'He is hopeless with a needle and very proud of the crooked result.',
     },
   };
 
@@ -4474,53 +5424,52 @@ window.SAN = window.SAN || {};
     boundaries: {
       pda: false,
       privateOnly: true,
-      note: 'Affection is not a performance for her. It happens in greenhouses and kitchens.',
+      note: 'Affection is not a performance for him. It happens in greenhouses and kitchens.',
       noTouching: ['kiss', 'cuddle'],
     },
     refusals: {
-      private: '\"Not outside. Please. I do not want to be looked at while I feel something.\"',
-      pace: '\"That is a lot. In a good way. I still need a minute to hold it.\"',
-      low: '\"I like you. I am not there yet. I am not going to say it to be polite.\"',
-      night: '\"I have seedlings that need me at dawn. Another night.\"',
+      private: '"Not outside. Please. I do not want to be looked at while I feel something."',
+      pace: '"That is a lot. In a good way. I still need a minute to hold it."',
+      low: '"I like you. I am not there yet. I am not going to say it to be polite."',
+      night: '"I have seedlings that need me at dawn. Another night."',
     },
     lines: {
-      walk: 'She names every plant you pass. Half of them she apologises to.',
-      hand: 'She goes still, then holds on with the concentration of someone carrying something fragile.',
-      hug: 'She forgets to let go, then remembers, then looks at the floor.',
-      stargaze: '\"The stars are just very far plants. I know that is not accurate. I like it anyway.\"',
-      dance: 'She dances like she is being watched. Then you close the curtain, and she does not.',
-      memory: 'You tell her about asking for help and being refused. She says, \"That is why I stopped asking.\"',
-      gift: 'She turns it over twice. \"You noticed. Nobody notices the specific things.\"',
-      dinner: 'She brings vegetables from the greenhouse and refuses to be thanked.',
-      kiss: 'She asks if it is okay with her eyes before she moves, and waits for the answer.',
-      cuddle: 'She is tense for a minute, then goes soft, like soil after rain.',
-      cook: 'She cuts everything into perfect pieces and cannot explain why it matters.',
-      fire: 'She sits close enough that your sleeves touch, and pretends not to notice.',
-      craft: 'She makes a tiny pot by hand. \"For a cutting. Not for you. Maybe for you.\"',
-      rain: '\"The beds needed this,\" she says, and then stays at the window anyway.',
+      walk: 'He names every plant you pass. Half of them he apologises to.',
+      hand: 'He goes still, then holds on with the concentration of someone carrying something fragile.',
+      hug: 'He forgets to let go, then remembers, then looks at the floor.',
+      stargaze: '"The stars are just very far plants. I know that is not accurate. I like it anyway."',
+      dance: 'He dances like he is being watched. Then you close the curtain, and he does not.',
+      memory: 'You tell him about asking for help and being refused. He says, "That is why I stopped asking."',
+      gift: 'He turns it over twice. "You noticed. Nobody notices the specific things."',
+      dinner: 'He brings vegetables from the greenhouse and refuses to be thanked.',
+      kiss: 'He asks if it is okay with his eyes before he moves, and waits for the answer.',
+      cuddle: 'He is tense for a minute, then goes soft, like soil after rain.',
+      cook: 'He cuts everything into perfect pieces and cannot explain why it matters.',
+      fire: 'He sits close enough that your sleeves touch, and pretends not to notice.',
+      craft: 'He makes a tiny pot by hand. "For a cutting. Not for you. Maybe for you."',
+      rain: '"The beds needed this," he says, and then stays at the window anyway.',
     },
-    morning: '\"You are up. Good. I was going to be normal about it and then I saw you.\"',
-    goodnight: '\"Sleep well. I will be here in the morning. That is — that is fine, right?\"',
-    comfort: 'She does not say anything useful. She stays, and that is the useful part.',
+    morning: '"You are up. Good. I was going to be normal about it and then I saw you."',
+    goodnight: '"Sleep well. I will be here in the morning. That is — that is fine, right?"',
+    comfort: 'He does not say anything useful. He stays, and that is the useful part.',
     events: {
-      friend: ['\"I saved you a cutting. It is nothing.\" It is clearly not nothing.'],
-      story: ['\"When the roof broke I fixed it alone because asking felt like a bill I could not pay.\"', '\"You asked me to let you help and I have been thinking about it for weeks.\"'],
-      date: ['She takes you to the greenhouse after closing. It is the most personal place she has.', '\"I want you to see it. That is a big thing for me. Please do not make it weird.\"'],
-      commit: ['\"I have been alone on purpose for a long time. It stopped being a preference and became a habit.\"', '\"I would like to break it with you. Carefully.\"'],
-      anniversary: ['\"The lavender we planted is four years old now. So are we. Both still alive. Good.\"'],
+      friend: ['"I saved you a cutting. It is nothing." It is clearly not nothing.'],
+      story: ['"When the roof broke I fixed it alone because asking felt like a bill I could not pay."', '"You asked me to let you help and I have been thinking about it for weeks."'],
+      date: ['He takes you to the greenhouse after closing. It is the most personal place he has.', '"I want you to see it. That is a big thing for me. Please do not make it weird."'],
+      commit: ['"I have been alone on purpose for a long time. It stopped being a preference and became a habit."', '"I would like to break it with you. Carefully."'],
+      anniversary: ['"The lavender we planted is four years old now. So are we. Both still alive. Good."'],
     },
     confession: {
-      ask: 'You tell her you would like to be someone she does not have to do everything without.',
-      yes: ['She covers her face with both hands for a second. \"Okay. Okay. Yes.\"', '\"I am going to be bad at this. I want to be bad at it with you.\"'],
-      notYet: '\"I need time. I am not saying no. I am saying I need to be sure I mean it.\"',
+      ask: 'You tell him you would like to be someone he does not have to do everything without.',
+      yes: ['He covers his face with both hands for a second. "Okay. Okay. Yes."', '"I am going to be bad at this. I want to be bad at it with you."'],
+      notYet: '"I need time. I am not saying no. I am saying I need to be sure I mean it."',
     },
     home: {
-      cook: 'She arranges the vegetables by colour and you let her, because it makes her happy.',
-      fire: 'She brings a plant to the fire because \"it was cold\". You let that happen too.',
-      craft: 'She learns the stitch in one try and then teaches it back to you, patiently.',
+      cook: 'He arranges the vegetables by colour and you let him, because it makes him happy.',
+      fire: 'He brings a plant to the fire because "it was cold". You let that happen too.',
+      craft: 'He learns the stitch in one try and then teaches it back to you, patiently.',
     },
   };
-
   /* =========================================================
      ROWAN — windmill keeper, overthinking, generous
      ========================================================= */
@@ -5110,45 +6059,45 @@ window.SAN_SCENE_ILLUSTRATED = {};
 
   /* ================= QUESTLINE A: LIGHTHOUSE ================= */
   q({
-    id: 'lh_1', title: 'The Light That Waits', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'Liora has been keeping the lamp alone for four years. The wind chime on her porch has been silent since the storm. She says it does not matter.',
+    id: 'lh_1', title: 'The Light That Waits', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'Lucien has been keeping the lamp alone for four years. The wind chime on his porch has been silent since the storm. He says it does not matter.',
     objectives: [
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Ask Liora about the quiet wind chime' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Ask Lucien about the quiet wind chime' },
       { kind: 'collect', target: 'shell', qty: 2, label: 'Gather 2 spiral shells from the shore' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Bring the shells back to Liora' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Bring the shells back to Lucien' },
     ],
-    rewards: { money: 220, items: [['lighthouse_key', 1]], friendship: { liora: 12 }, unlock: 'lighthouse_key' },
+    rewards: { money: 220, items: [['lighthouse_key', 1]], friendship: { lucien: 12 }, unlock: 'lighthouse_key' },
     next: 'lh_2',
   });
   q({
-    id: 'lh_2', title: 'Letters Never Sent', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'A faded photograph washed up on the beach. Two people by a lighthouse, a heart drawn on the back. Liora goes very quiet when she sees it.',
+    id: 'lh_2', title: 'Letters Never Sent', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'A faded photograph washed up on the beach. Two people by a lighthouse, a heart drawn on the back. Lucien goes very quiet when he sees it.',
     objectives: [
       { kind: 'collect', target: 'old_photo', qty: 1, label: 'Find the photo on the eastern shore' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Show Liora the photograph' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Show Lucien the photograph' },
       { kind: 'flag', target: 'lh_letter_choice', qty: 1, label: 'Decide what to do with the unsent letters' },
     ],
-    rewards: { money: 260, friendship: { liora: 14 }, items: [['sea_glass', 2]], recipe: 'craft_memlantern' },
+    rewards: { money: 260, friendship: { lucien: 14 }, items: [['sea_glass', 2]], recipe: 'craft_memlantern' },
     next: 'lh_3',
   });
   q({
-    id: 'lh_3', title: 'A Light You Keep', giver: 'liora', type: 'story', line: 'Lighthouse',
-    desc: 'The lamp needs lighting at dusk. Liora has always done it alone. She has not asked you to come. She has not not asked either.',
+    id: 'lh_3', title: 'A Light You Keep', giver: 'lucien', type: 'story', line: 'Lighthouse',
+    desc: 'The lamp needs lighting at dusk. Lucien has always done it alone. He has not asked you to come. He has not not asked either.',
     objectives: [
       { kind: 'visit', target: 'lighthouse', qty: 1, label: 'Climb to the lighthouse lamp room' },
-      { kind: 'talk', target: 'liora', qty: 1, label: 'Light the lamp with Liora' },
+      { kind: 'talk', target: 'lucien', qty: 1, label: 'Light the lamp with Lucien' },
       { kind: 'decorate', target: 'any', qty: 1, label: 'Place something warm in your home' },
     ],
-    rewards: { money: 450, items: [['pearl', 1], ['lamp_glow', 1]], friendship: { liora: 18 }, achievement: 'lighthouse_keeper' },
+    rewards: { money: 450, items: [['pearl', 1], ['lamp_glow', 1]], friendship: { lucien: 18 }, achievement: 'lighthouse_keeper' },
     next: null,
   });
 
   /* ================= QUESTLINE B: GREENHOUSE ================= */
   q({
     id: 'gh_1', title: 'The Door Left Open', giver: 'elowen', type: 'story', line: 'Greenhouse',
-    desc: 'Elowen has been clearing the greenhouse alone. She says she is nearly done. The pile of weeds says otherwise.',
+    desc: 'Elowen has been clearing the greenhouse alone. He says he is nearly done. The pile of weeds says otherwise.',
     objectives: [
-      { kind: 'talk', target: 'elowen', qty: 1, label: 'Offer Elowen help (she will refuse)' },
+      { kind: 'talk', target: 'elowen', qty: 1, label: 'Offer Elowen help (he will refuse)' },
       { kind: 'flag', target: 'gh_help_choice', qty: 1, label: 'Decide how to help without taking over' },
       { kind: 'collect', target: 'fiber', qty: 3, label: 'Bring 3 bundles of soft fiber for the beds' },
     ],
@@ -5168,7 +6117,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
   });
   q({
     id: 'gh_3', title: 'What We Grew', giver: 'elowen', type: 'story', line: 'Greenhouse',
-    desc: 'Something is flowering in the shared greenhouse. Elowen has not said whether she is proud. Her hands say it for her.',
+    desc: 'Something is flowering in the shared greenhouse. Elowen has not said whether he is proud. His hands say it for him.',
     objectives: [
       { kind: 'harv_greenhouse', target: 'any', qty: 1, label: 'Harvest a crop from the greenhouse' },
       { kind: 'talk', target: 'elowen', qty: 1, label: 'Sit with Elowen among the flowers' },
@@ -5276,7 +6225,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     { id: 'friend_sanctuary', name: 'A Friend in Sanctuary', desc: 'Reach Friend with any villager.', icon: 'heart' },
     { id: 'letters_never_sent', name: 'Letters Never Sent', desc: 'Complete chapter two of the lighthouse story.', icon: 'letter' },
     { id: 'little_things', name: 'Little Things Matter', desc: 'Care for a memory stone three times.', icon: 'stone' },
-    { id: 'lighthouse_keeper', name: 'The Lighthouse Keeper', desc: 'Light the lamp with Liora.', icon: 'lamp' },
+    { id: 'lighthouse_keeper', name: 'The Lighthouse Keeper', desc: 'Light the lamp with Lucien.', icon: 'lamp' },
     { id: 'trusted_hands', name: 'Trusted Hands', desc: 'Grow something together in the greenhouse.', icon: 'leaf' },
     { id: 'quiet_mind', name: 'A Quieter Mind', desc: 'Sit with Rowan through the quiet.', icon: 'wind' },
     { id: 'angler', name: 'Patient Waters', desc: 'Catch 15 fish.', icon: 'fish' },
@@ -5444,9 +6393,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
       },
     },
 
-    liora: {
+    lucien: {
       traits: ['steady', 'warm', 'braced for departure'],
-      history: 'She came inland-to-sea at nineteen and stayed. Her mother left in spring, four years ago, and Liora has kept a lamp for strangers ever since.',
+      history: 'He came inland-to-sea at nineteen and stayed. His mother left in spring, four years ago, and Lucien has kept a lamp for strangers ever since.',
       timeLines: {
         morning: '"The tide went out further than usual. I always take that personally, which is silly."',
         afternoon: '"Afternoon light makes the lens look like it is full of honey. I polish it slower than I need to."',
@@ -5462,30 +6411,30 @@ window.SAN_SCENE_ILLUSTRATED = {};
         21: {
           title: 'The West Step',
           pages: [
-            { speaker: 'liora', text: '"You can sit here. It is not reserved. I only say that because I used to pretend it was."' },
-            { speaker: 'liora', text: 'She does not move over to make room. She has already left space.' },
+            { speaker: 'lucien', text: '"You can sit here. It is not reserved. I only say that because I used to pretend it was."' },
+            { speaker: 'lucien', text: 'He does not move over to make room. He has already left space.' },
           ],
         },
         41: {
           title: 'A Door Left Unlocked',
           pages: [
-            { speaker: 'liora', text: '"I have been thinking about why I keep the lamp lit for strangers and not for — anyone else."' },
-            { speaker: 'liora', text: '"I think it is easier to be needed by people who cannot leave. Ships always leave."' },
-            { speaker: 'narrator', text: 'She looks at you, then away. "That was more than I meant to say. You can stay anyway."' },
+            { speaker: 'lucien', text: '"I have been thinking about why I keep the lamp lit for strangers and not for — anyone else."' },
+            { speaker: 'lucien', text: '"I think it is easier to be needed by people who cannot leave. Ships always leave."' },
+            { speaker: 'narrator', text: 'He looks at you, then away. "That was more than I meant to say. You can stay anyway."' },
           ],
         },
         61: {
           title: 'The Photograph',
           pages: [
-            { speaker: 'liora', text: '"I found the photograph again. I put it in a drawer with the letters, which is progress, or at least tidying."' },
-            { speaker: 'liora', text: '"I used to think if I stopped waiting, it meant I agreed with how she left. I do not think that anymore. Mostly."' },
+            { speaker: 'lucien', text: '"I found the photograph again. I put it in a drawer with the letters, which is progress, or at least tidying."' },
+            { speaker: 'lucien', text: '"I used to think if I stopped waiting, it meant I agreed with how she left. I do not think that anymore. Mostly."' },
           ],
         },
         81: {
           title: 'Someone To Look For',
           pages: [
-            { speaker: 'liora', text: '"When you are out walking, I find myself checking the path. Not because I am worried."' },
-            { speaker: 'liora', text: '"Because there is somebody I would be glad to see. That is different. I had to learn the difference."' },
+            { speaker: 'lucien', text: '"When you are out walking, I find myself checking the path. Not because I am worried."' },
+            { speaker: 'lucien', text: '"Because there is somebody I would be glad to see. That is different. I had to learn the difference."' },
           ],
         },
       },
@@ -5493,7 +6442,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
 
     elowen: {
       traits: ['observant', 'self-reliant', 'easily embarrassed by kindness'],
-      history: 'She rebuilt the greenhouse roof alone last winter and tells everyone it was fine. She keeps a cutting of every plant that survived her.',
+      history: 'He rebuilt the greenhouse roof alone last winter and tells everyone it was fine. He keeps a cutting of every plant that survived him.',
       timeLines: {
         morning: '"Morning is for checking who made it through the night. Plants are very honest about that."',
         afternoon: '"I have been repotting since noon. My hands smell like soil and I have forgotten to eat. Again."',
@@ -5524,19 +6473,18 @@ window.SAN_SCENE_ILLUSTRATED = {};
           title: 'The Sister',
           pages: [
             { speaker: 'elowen', text: '"My sister sends letters. I answer them with plant advice, because plant advice is safe."' },
-            { speaker: 'elowen', text: '"She wrote: \'I do not need you to be useful, I need you to be my sister.\' I have not answered that one yet. I will."' },
+            { speaker: 'elowen', text: '"She wrote: \'I do not need you to be useful, I need you to be my brother.\' I have not answered that one yet. I will."' },
           ],
         },
         81: {
           title: 'Two Pairs Of Hands',
           pages: [
             { speaker: 'elowen', text: '"The starflower came back this year. I did not do that alone."' },
-            { speaker: 'elowen', text: 'She says it plainly, without apologising, and goes back to the trays. It is the most she has ever said.' },
+            { speaker: 'elowen', text: 'He says it plainly, without apologising, and goes back to the trays. It is the most he has ever said.' },
           ],
         },
       },
     },
-
     rowan: {
       traits: ['curious', 'self-critical', 'kind in a sideways way'],
       history: 'He took over the windmill from a man who never explained anything. He has been reverse-engineering the gears, and his own thoughts, ever since.',
@@ -5819,7 +6767,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
      ========================================================= */
   D.chatter = [
     { a: 'mira', b: 'nyssa', lines: ['"You never eat anything I bake." / "I eat the idea of it, Mira. Constantly."', '"That is not the compliment you think it is."'] },
-    { a: 'liora', b: 'finn', lines: ['"Anything biting?" / "One carp. He looked at me with real disappointment."', '"Carp are like that."'] },
+    { a: 'lucien', b: 'finn', lines: ['"Anything biting?" / "One carp. He looked at me with real disappointment."', '"Carp are like that."'] },
     { a: 'elowen', b: 'celeste', lines: ['"The starflower took." / "Of course it did. You asked it nicely."', '"I did not — I just watered it."'] },
     { a: 'rowan', b: 'aria', lines: ['"Do you have anything about gears?" / "Only about people who talk about gears."', '"That is basically the same book."'] },
     { a: 'theo', b: 'mira', lines: ['"I have a jar of honey from the meadow." / "You have a jar of honey from somewhere. Fixed it for you."'] },
@@ -6262,7 +7210,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     }
     add(a, 'waterbarrel', 3, 8, { solid: true, interact: { type: 'sign', text: 'Cool rainwater, with a brass tap. Someone has tied a ribbon to it.' } });
     add(a, 'table', 3, 14, { w: 3, h: 2, solid: true, interact: { type: 'sign', text: 'Seed packets in careful rows, sorted by patience required.' } });
-    add(a, 'potstack', 24, 5, { solid: true, interact: { type: 'sign', text: 'Empty pots, stacked by size. Elowen stacks them when she is thinking.' } });
+    add(a, 'potstack', 24, 5, { solid: true, interact: { type: 'sign', text: 'Empty pots, stacked by size. Elowen stacks them when he is thinking.' } });
     add(a, 'potstack', 25, 7, { solid: true });
     add(a, 'vine', 20, 3, { w: 5, solid: true });
     add(a, 'vine', 21, 8, { w: 3, solid: true });
@@ -6271,7 +7219,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     add(a, 'plant', 24, 17, {});
     add(a, 'lamp', 9, 3, {});
     add(a, 'lamp', 19, 3, {});
-    add(a, 'memorialPlacard', 12, 15, { w: 2, solid: true, interact: { type: 'sign', text: '"For Elowen. Who grew this place. Who is allowed to be helped." — someone who loves her' } });
+    add(a, 'memorialPlacard', 12, 15, { w: 2, solid: true, interact: { type: 'sign', text: '"For Elowen. Who grew this place. Who is allowed to be helped." — someone who loves him' } });
     return a;
   }
 
@@ -9607,6 +10555,13 @@ window.SAN_SCENE_ILLUSTRATED = {};
      published build re-encodes that same artwork to WebP (the host allows
      far less than the 27 MB of PNGs), and index.html declares which one to
      request: "png" locally, "webp" in deploy/public. */
+  // appended to local artwork URLs so a replaced file is never masked by cache
+  R.cacheBust = function (url) {
+    if (!url || !/^assets\//.test(url)) return url;
+    const v = SAN.visual && SAN.visual.VERSION ? SAN.visual.VERSION : '1';
+    return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + v;
+  };
+
   R.assetExt = function () {
     const ext = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAIT_EXT : '';
     return ext === 'webp' ? 'webp' : 'png';
@@ -9621,8 +10576,12 @@ window.SAN_SCENE_ILLUSTRATED = {};
   // the illustrated full body registered for an NPC
   R.npcFullBodySrc = function (who) {
     const npc = SAN.data && SAN.data.npcs ? SAN.data.npcs[who] : null;
+    const visual = SAN.visual && SAN.visual.get ? SAN.visual.get(who) : null;
+    // never show another character's body: fall back to this character's face
+    if ((visual && visual.bustOnly) || (npc && npc.fullBodyMissing)) return R.portraitSrc(who, 'neutral');
     const bundled = typeof window !== 'undefined' ? window.SAN_ASSET_PORTRAITS : null;
     if (bundled && bundled[who + '/fullbody']) return bundled[who + '/fullbody'];
+    if (visual && visual.fullBody) return SAN.visual.url(visual.fullBody);
     if (npc && npc.fullBody) return R.withAssetExt(npc.fullBody);
     if (!npc) return '';
     return R.withAssetExt('assets/portraits/' + who + '/fullbody.png');
@@ -9659,7 +10618,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       ` data-who="player" data-kind="fullbody">`;
   };
 
-  R.portraitSrc = function (who, mood) {
+  R.portraitSrcRaw = function (who, mood) {
     const id = who === 'player' ? 'player' : who;
     if (id === 'player') {
       const face = R.mainAssetSrc('face', mood);
@@ -9677,6 +10636,10 @@ window.SAN_SCENE_ILLUSTRATED = {};
       return R.withAssetExt(npc.art.expressions[m]);
     }
     return R.withAssetExt('assets/portraits/' + id + '/' + m + '.png');
+  };
+
+  R.portraitSrc = function (who, mood) {
+    return R.cacheBust(R.portraitSrcRaw(who, mood));
   };
 
   R.portraitImg = function (who, opts) {
@@ -10354,6 +11317,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
       friendship: {},
       romance: {},
       scenes: { seen: {}, log: [] },
+      psychology: {},
+      city: { day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] },
+      memoryBook: [],
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -10397,9 +11363,36 @@ window.SAN_SCENE_ILLUSTRATED = {};
     return copy;
   };
 
+  /* Saves written before the official registry can hold the old lighthouse
+     keeper. Rename the key once, keep every point, memory and unlocked event,
+     and never create a second NPC. Safe to run on every load. */
+  St.migrateSnapshot = function (snap) {
+    if (!snap || typeof snap !== 'object') return snap;
+    const out = Array.isArray(snap) ? [] : {};
+    Object.keys(snap).forEach((key) => {
+      let value = snap[key];
+      let next = key;
+      if (key === 'liora') next = 'lucien';
+      else if (/^liora[_-]/.test(key)) next = 'lucien' + key.slice(5);
+      if (typeof value === 'string') {
+        value = value.replace(/\bLiora\b/g, 'Lucien').replace(/\bliora-/g, 'lucien-');
+      } else if (value && typeof value === 'object') {
+        value = St.migrateSnapshot(value);
+      }
+      if (Object.prototype.hasOwnProperty.call(out, next)) {
+        const a = out[next];
+        if (typeof a === 'number' && typeof value === 'number') out[next] = Math.max(a, value);
+        else if (a && value && typeof a === 'object' && typeof value === 'object') out[next] = Object.assign({}, a, value);
+      } else {
+        out[next] = value;
+      }
+    });
+    return out;
+  };
+
   St.apply = function (snap) {
     if (!snap) return null;
-    const base = St.newGame({ player: snap.player, cat: snap.cat, settings: snap.settings, slot: snap.slot });
+    snap = St.migrateSnapshot(snap);    const base = St.newGame({ player: snap.player, cat: snap.cat, settings: snap.settings, slot: snap.slot });
     const merged = Object.assign({}, base, snap);
     // deep-ish repairs
     merged.player = Object.assign({}, base.player, snap.player || {});
@@ -10414,6 +11407,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
     merged.unlocked = Object.assign({}, base.unlocked, snap.unlocked || {});
     merged.settings = Object.assign({}, base.settings, snap.settings || {});
     merged.farm = Object.assign({ plots: {} }, snap.farm || {});
+    merged.psychology = Object.assign({}, snap.psychology || {});
+    merged.city = Object.assign({ day: 0, seen: {}, cooldowns: {}, eventsToday: 0, lastMinute: -999, bonds: {}, witnessed: [] }, snap.city || {});
+    merged.memoryBook = Array.isArray(snap.memoryBook) ? snap.memoryBook : [];
     merged.quests = Object.assign({ active: {}, completed: {}, board: [], boardDay: 0, offered: {} }, snap.quests || {});
     merged.house = Object.assign({ furniture: [] }, snap.house || {});
     merged.cat = Object.assign({}, base.cat, snap.cat || {});
@@ -10566,6 +11562,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     Object.keys(S.friendship).forEach((id) => { S.friendship[id].giftsToday = 0; });
     SAN.farming.growAll();
     SAN.quests.refreshBoard();
+    if (SAN.cityLife) SAN.cityLife.tickDay();
     SAN.cat.newDay();
     S.house.fireplace = false;
     const fest = SAN.data.eventOn(S.time.season, S.time.day);
@@ -10776,7 +11773,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const key = F.key(plot.area, plot.x, plot.y);
     let st = S.farm.plots[key];
     if (plot.area === 'greenhouse' && !S.unlocked.greenhouse_beds) {
-      SAN.ui.toast('These beds are Elowen\'s for now. She might share them later.', 'info');
+      SAN.ui.toast('These beds are Elowen\'s for now. He might share them later.', 'info');
       return false;
     }
     if (!st || !st.tilled) {
@@ -11198,7 +12195,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       feel: 'Sometimes uncertainty makes the world feel very quiet, and being left with your own thoughts can be heavier than being alone.',
       support: 'Feeling alone does not mean something is wrong with you. It usually means you are someone who wants to be close to people — which is not a flaw.',
       prompts: ['Who is one person you feel safe being quiet with?', 'What would you want someone to say to you right now?'],
-      activity: { label: 'Spend quiet time at the lighthouse', type: 'visit', area: 'lighthouse', line: 'Liora keeps a light on for ships she will never meet. You could sit with her for a while.' },
+      activity: { label: 'Spend quiet time at the lighthouse', type: 'visit', area: 'lighthouse', line: 'Lucien keeps a light on for ships he will never meet. You could sit with him for a while.' },
     },
     {
       id: 'anxiety',
@@ -11238,7 +12235,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       feel: 'That voice is very convincing, and it is not a fair judge. You would not say those words to someone you love.',
       support: 'You are allowed to be a work in progress without it meaning anything terrible about your worth. Nothing you do in this village has to be earned.',
       prompts: ['What would you say to a friend who said this about themselves?', 'What is one thing you did today that took effort nobody saw?'],
-      activity: { label: 'Visit the Shared Greenhouse', type: 'visit', area: 'greenhouse', line: 'Elowen is learning that things can grow even when they are not perfect. She is not very good at asking for help yet either.' },
+      activity: { label: 'Visit the Shared Greenhouse', type: 'visit', area: 'greenhouse', line: 'Elowen is learning that things can grow even when they are not perfect. He is not very good at asking for help yet either.' },
     },
     {
       id: 'overwhelm',
@@ -11768,7 +12765,17 @@ window.SAN_SCENE_ILLUSTRATED = {};
         const item = RM.romanticGiftId();
         if (item) { SAN.state.removeItem(item, 1); extra = SAN.data.item(item).name; }
       }
-      const gain = RM.activityGain(id, actId);
+      let gain = RM.activityGain(id, actId);
+      /* love language: the same kind act lands differently with different people */
+      const langKind = {
+        gift: 'gift', hug: 'affection', cuddle: 'affection', kiss: 'affection', hand: 'affection',
+        stargaze: 'quality_time', dinner: 'quality_time', walk: 'quality_time', dance: 'quality_time',
+        comfort: 'listened', listen: 'listened', letter: 'words',
+      }[actId] || 'quality_time';
+      if (SAN.psychology) {
+        gain = Math.max(1, Math.round(gain * SAN.psychology.loveBoost(id, langKind)));
+        SAN.psychology.onEvent(id, langKind);
+      }
       RM.addAffection(id, gain, true);
       st.activityCount[actId] = (st.activityCount[actId] || 0) + 1;
       const line = RM.npcLine(id, actId);
@@ -12177,6 +13184,84 @@ window.SAN_SCENE_ILLUSTRATED = {};
     if (RM.stageIndex(id) >= 2) return 'Closer friendship first. Keep talking, keep showing up.';
     return 'Get to know them.';
   };
+  /* ---------------- endings and repairs ----------------
+     A breakup here is not a punishment screen. The friendship stays, the
+     person stays, and the door to talking again stays open. */
+  RM.canBreakUp = function (id) {
+    return RM.stageIndex(id) >= 5;
+  };
+
+  RM.breakUp = function (id) {
+    const npc = SAN.data.npcs[id];
+    const st = RM.state(id);
+    if (!npc || !st || !RM.canBreakUp(id)) return false;
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'This is the kind of conversation that has to be had in person, out loud, without a good time for it.' },
+        { speaker: 'player', text: 'I need to say something, and I would rather say it badly than not at all.' },
+      ],
+      choices: [
+        { label: 'End the romance, gently', icon: '🕊', cb: function () {
+          st.accepted = false;
+          st.committed = false;
+          st.partner = false;
+          st.reconcilable = true;
+          st.brokenDay = S().time.day;
+          st.brokenSeason = S().time.season;
+          if (SAN.psychology) SAN.psychology.onEvent(id, 'breakup');
+          RM.remember(id, 'You ended the romance with ' + npc.name + ', and tried to do it kindly.', 'breakup');
+          if (SAN.memoryBook) SAN.memoryBook.add({ kind: 'breakup', key: 'breakup:' + id + ':' + S().time.day, title: 'An ending, said out loud', text: 'You and ' + npc.name + ' stopped being lovers and stayed in each other\u2019s lives.', npc: id });
+          SAN.ui.dialogue({ pages: [
+            { speaker: id, text: '"I am not going to pretend this is nothing. But I would rather have known than guessed."', context: 'sad' },
+            { speaker: 'narrator', text: 'You part as people who were something to each other, which is not nothing.' },
+          ] });
+          SAN.save.autosave();
+        } },
+        { label: 'Decide not to say it today', icon: '✕', cb: function () {} },
+      ],
+    });
+    return true;
+  };
+
+  RM.canReconcile = function (id) {
+    const st = RM.state(id);
+    if (!st || !st.reconcilable || st.accepted) return false;
+    return RM.friendship(id) >= 55;
+  };
+
+  RM.reconcile = function (id) {
+    const npc = SAN.data.npcs[id];
+    const st = RM.state(id);
+    if (!npc || !st || !RM.canReconcile(id)) return false;
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'The two of you have been circling this for a while. Today the circle gets a door.' },
+        { speaker: id, text: '"I have been thinking about what we were. I am not asking for it back. I am asking whether we can talk honestly."' },
+      ],
+      choices: [
+        { label: 'Talk honestly', icon: '🤍', cb: function () {
+          st.reconcilable = false;
+          st.accepted = true;
+          st.datingDay = S().time.day;
+          st.datingSeason = S().time.season;
+          st.affection = Math.max(st.affection, 45);
+          if (SAN.psychology) {
+            SAN.psychology.onEvent(id, 'honest_talk');
+            SAN.psychology.onEvent(id, 'apology');
+          }
+          RM.remember(id, 'You and ' + npc.name + ' found your way back to each other, carefully.', 'reconcile');
+          SAN.ui.toast('You and ' + npc.name + ' are trying again.', 'friend');
+          SAN.save.autosave();
+        } },
+        { label: 'Ask for more time', icon: '◷', cb: function () {
+          SAN.psychology.onEvent(id, 'space_given');
+          SAN.ui.toast(npc.name + ' nods. "Time is allowed."', 'friend');
+        } },
+      ],
+    });
+    return true;
+  };
+
 })();
 </script>
 <script>
@@ -12208,7 +13293,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
     return e === 'webp' ? 'webp' : 'jpg';
   };
   SM.backdropSrc = function (key) {
-    return D().backdropPath(key, SM.ext());
+    const path = D().backdropPath(key, SM.ext());
+    // versioned so a regenerated plate is never masked by the browser cache
+    return SAN.visual && SAN.visual.url ? SAN.visual.url(path) : path;
   };
 
   function safeImg(src) {
@@ -12244,7 +13331,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const npc = npcId && SAN.data.npcs[npcId] ? SAN.data.npcs[npcId] : null;
     const cast = [];
     if (!o.noPlayer) cast.push({ who: 'player', side: 'left', src: playerArt(), label: (s && s.player.name) || 'You', mood: o.playerMood || 'neutral' });
-    if (npc) cast.push({ who: npcId, side: 'right', src: npcArt(npcId), label: npc.name, mood: o.npcMood || 'gentle' });
+    if (npc) cast.push({ who: npcId, side: 'right', src: npcArt(npcId), label: npc.name, mood: o.npcMood || 'gentle', bust: !!npc.fullBodyMissing });
     if (o.withCat) cast.push({ who: 'mochi', side: 'right', src: catArt(), label: s && s.cat ? s.cat.name : 'Mochi', mood: 'happy', small: true });
     return {
       id,
@@ -12363,7 +13450,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       spec.actors.forEach((a) => {
         if (!a.src) return;
         const img = document.createElement('img');
-        img.className = 'scene-actor ' + (a.side === 'left' ? 'left' : 'right') + (a.small ? ' small' : '');
+        img.className = 'scene-actor ' + (a.side === 'left' ? 'left' : 'right') + (a.small ? ' small' : '') + (a.bust ? ' bust' : '');
         img.src = a.src;
         img.alt = a.label || '';
         img.draggable = false;
@@ -12967,7 +14054,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     if (done.length && S_.world.favorDay[id] !== S_.time.day) {
       S_.world.favorDay[id] = S_.time.day;
       const ch = {
-        liora: '"You came back. You keep coming back. I am starting to believe it is a habit and not a favour."',
+        lucien: '"You came back. You keep coming back. I am starting to believe it is a habit and not a favour."',
         elowen: '"The beds you helped with are still growing. I keep expecting you to want something for it. You never do."',
         rowan: '"I used the thing you said. The reframe. It worked for about an hour, which is a record."',
         mira: '"You are the only person who has ever asked me how I am and waited for the answer."',
@@ -13118,7 +14205,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       if (!npc) return;
       SAN.ui.dialogue({
         pages: [
-          { speaker: 'narrator', text: 'Elowen is sitting on the bench by the pond with her hands in her lap. She is crying, very quietly, the way people do when they have practised not making noise.' },
+          { speaker: 'narrator', text: 'Elowen is sitting on the bench by the pond with his hands in his lap. He is crying, very quietly, the way people do when they have practised not making noise.' },
           { speaker: 'elowen', text: '"Oh. Hello." She wipes her face with her sleeve. "It is the soil. It is not — it is fine."' },
         ],
         choices: [
@@ -13318,7 +14405,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       SAN.ui.dialogue({
         pages: [
           { speaker: 'narrator', text: 'The square is full of lanterns. Nobody announced this. Somebody simply started, and everyone else brought a light.' },
-          { speaker: 'narrator', text: 'Mira is handing out something warm. Liora has come down from the lighthouse without being asked. Rowan is standing in the middle of it, not analysing anything.' },
+          { speaker: 'narrator', text: 'Mira is handing out something warm. Lucien has come down from the lighthouse without being asked. Rowan is standing in the middle of it, not analysing anything.' },
           { speaker: 'narrator', text: 'Nobody asks you to do anything. You are allowed to just be here.' },
         ],
       });
@@ -13449,6 +14536,654 @@ window.SAN_SCENE_ILLUSTRATED = {};
 
   /* Debug/testing hook */
   L.events = EVENTS;
+})();
+</script>
+<script>
+/* Sanctuary — emotional state and trigger engine.
+   Psychology profiles are data; this system keeps what has actually happened
+   to each person: trust, emotional safety, unspoken resentment, openness, how
+   their attachment currently leans, and which triggers have been touched.
+
+   Rules that keep it humane:
+   • one action never decides the relationship;
+   • resentment decays and can always be repaired;
+   • consent and boundaries are respected, never punished as rejection;
+   • recovery is offered in every profile. */
+(function () {
+  const PS = (SAN.psychology = {});
+  const S = () => SAN.state.S;
+  const D = () => SAN.data.psychology;
+
+  PS.profile = (id) => (D().profiles || {})[id] || null;
+
+  PS.ensure = function (id) {
+    const s = S();
+    if (!s) return null;
+    if (!s.psychology) s.psychology = {};
+    if (!s.psychology[id]) {
+      const p = PS.profile(id);
+      s.psychology[id] = {
+        trust: 0,
+        safety: 0,
+        resentment: 0,
+        openness: 0,
+        attachment: (p && p.attachment) || 'secure',
+        triggers: {},
+        apologies: 0,
+        growth: {},
+        lastEventDay: 0,
+        history: [],
+      };
+    }
+    return s.psychology[id];
+  };
+
+  PS.state = function (id) { return PS.ensure(id); };
+
+  /* attachment is a tendency that moves with what has happened, not a label */
+  PS.attachmentOf = function (id) {
+    const st = PS.ensure(id);
+    const p = PS.profile(id);
+    if (!st || !p) return null;
+    if (st.trust >= 60 && st.safety >= 55 && st.resentment < 15) return 'secure';
+    if (st.resentment >= 40) return p.attachment === 'secure' ? 'anxious' : p.attachment;
+    if (st.safety < 15 && st.trust < 20) return p.attachment;
+    return p.attachment;
+  };
+
+  PS.attachmentLabel = function (id) {
+    const key = PS.attachmentOf(id);
+    const info = (D().ATTACHMENTS || {})[key];
+    return info ? info.name : 'Unread';
+  };
+
+  PS.trigger = function (id, triggerId) {
+    const st = PS.ensure(id);
+    const p = PS.profile(id);
+    if (!st || !p) return null;
+    const t = (p.triggers || []).find((x) => x.id === triggerId);
+    if (!t) return null;
+    st.triggers[triggerId] = (st.triggers[triggerId] || 0) + 1;
+    st.resentment = Math.min(100, st.resentment + 9);
+    st.openness = Math.max(0, st.openness - 5);
+    st.lastEventDay = S() ? S().time.day : 0;
+    return t;
+  };
+
+  PS.loveBoost = function (id, kind) {
+    const p = PS.profile(id);
+    if (!p || !p.loveLanguage) return 1;
+    if (p.loveLanguage.primary === kind) return 1.35;
+    if (p.loveLanguage.secondary === kind) return 1.15;
+    return 0.9;
+  };
+
+  /* the single consequence router. kind describes what the player did. */
+  PS.onEvent = function (id, kind, opts) {
+    const st = PS.ensure(id);
+    const p = PS.profile(id);
+    if (!st || !p) return null;
+    const o = opts || {};
+    let d = { trust: 0, safety: 0, resentment: 0, openness: 0 };
+    let trigger = null;
+    switch (kind) {
+      case 'listened':
+        d = { trust: 4, safety: 3, openness: 4 };
+        break;
+      case 'remembered_date':
+        d = { trust: 5, safety: 4, resentment: -4 };
+        break;
+      case 'kept_promise':
+        d = { trust: 5, safety: 3, resentment: -5 };
+        break;
+      case 'broken_promise':
+        d = { trust: -5, safety: -5, resentment: 11 };
+        trigger = (p.triggers || [])[0];
+        break;
+      case 'boundary_respected':
+        d = { safety: 5, trust: 2 };
+        break;
+      case 'boundary_crossed':
+        d = { safety: -10, trust: -3, resentment: 13 };
+        trigger = (p.triggers || [])[1] || (p.triggers || [])[0];
+        break;
+      case 'honest_talk':
+        d = { trust: 3, safety: 3, resentment: -16, openness: 6 };
+        break;
+      case 'space_given':
+        d = { safety: 4, resentment: -7 };
+        break;
+      case 'acts_of_service':
+      case 'service':
+        d = { trust: 3, safety: 2, resentment: -3 };
+        break;
+      case 'gift':
+        d = { trust: 2, resentment: -2 };
+        break;
+      case 'quality_time':
+      case 'affection':
+        d = { trust: 2, safety: 2, openness: 2, resentment: -2 };
+        break;
+      case 'apology':
+        d = { trust: 3, safety: 4, resentment: -22 };
+        st.apologies += 1;
+        break;
+      case 'declined_invite':
+        d = { resentment: 1, trust: -1 };
+        break;
+      case 'breakup':
+        d = { trust: -8, safety: -10, resentment: 12 };
+        break;
+      default:
+        return null;
+    }
+    st.trust = Math.max(0, Math.min(100, st.trust + (d.trust || 0)));
+    st.safety = Math.max(0, Math.min(100, st.safety + (d.safety || 0)));
+    st.resentment = Math.max(0, Math.min(100, st.resentment + (d.resentment || 0)));
+    st.openness = Math.max(0, Math.min(100, st.openness + (d.openness || 0)));
+    if (trigger) PS.trigger(id, trigger.id);
+    if (st.history) {
+      st.history.push({ kind, day: S() ? S().time.day : 0, d });
+      if (st.history.length > 30) st.history.shift();
+    }
+    return { delta: d, trigger };
+  };
+
+  /* a trigger for a specific, contextual moment (used by romance & city life) */
+  PS.moment = function (id, triggerId) {
+    const t = PS.trigger(id, triggerId);
+    if (!t) return null;
+    return { label: t.label, response: t.response, recovery: t.recovery };
+  };
+
+  PS.apologize = function (id) {
+    const st = PS.ensure(id);
+    const p = PS.profile(id);
+    if (!st || !p || st.resentment < 8) return { ok: false, line: null };
+    PS.onEvent(id, 'apology');
+    st.resentment = Math.max(0, st.resentment - 6);
+    const who = (SAN.data.npcs[id] && SAN.data.npcs[id].name) || 'They';
+    const line = who + ' is quiet for a moment. \"Thank you. I needed to hear that. I am still a little sore, but I am here.\"';
+    return { ok: true, line };
+  };
+
+  PS.summary = function (id) {
+    const p = PS.profile(id);
+    const st = PS.ensure(id);
+    if (!p || !st) return null;
+    const att = (D().ATTACHMENTS || {})[PS.attachmentOf(id)] || {};
+    const lang = (D().LOVE_LANGUAGES || {})[p.loveLanguage.primary] || '';
+    const second = (D().LOVE_LANGUAGES || {})[p.loveLanguage.secondary] || '';
+    return {
+      positive: p.positive,
+      negative: p.negative,
+      attachment: att.name || 'Unread',
+      attachmentBlurb: att.blurb || '',
+      loveLanguage: lang + (second ? ' · ' + second : ''),
+      insecurity: (p.insecurities || [])[0] || '',
+      growth: (p.growth || [])[0] || '',
+      trust: st.trust,
+      safety: st.safety,
+      resentment: st.resentment,
+      needsRepair: st.resentment >= 15,
+      trigger: (p.triggers || [])[0] || null,
+    };
+  };
+
+  /* resentment cools with ordinary time; nothing is permanent */
+  PS.tickDay = function () {
+    const s = S();
+    if (!s || !s.psychology) return;
+    Object.keys(s.psychology).forEach((id) => {
+      const st = s.psychology[id];
+      st.resentment = Math.max(0, st.resentment - 2);
+    });
+  };
+})();
+</script>
+<script>
+/* Sanctuary — the living village.
+   Finds the right event for the actual context (hour, weather, season, place,
+   who is around, how close they are), runs it as a cinematic scene, applies
+   small human consequences, and lets NPCs have their own lives off-screen.
+
+   This is a scheduler on top of the existing systems: it never re-implements
+   dialogue, scenes, relationships or save data. */
+(function () {
+  const CL = (SAN.cityLife = {});
+  const S = () => SAN.state.S;
+  const C = () => SAN.data.city;
+  let acc = 0;
+  let witnessAcc = 0;
+
+  CL.ensure = function () {
+    const s = S();
+    if (!s) return null;
+    if (!s.city || typeof s.city !== 'object') s.city = {};
+    const c = s.city;
+    if (!c.seen) c.seen = {};
+    if (!c.cooldowns) c.cooldowns = {};
+    if (!c.bonds) c.bonds = {};
+    if (c.eventsToday == null) c.eventsToday = 0;
+    if (c.day == null) c.day = -1;
+    if (c.lastMinute == null) c.lastMinute = -999;
+    if (!c.witnessed) c.witnessed = [];
+    (C().BONDS || []).forEach((b) => {
+      const k = CL.key(b.a, b.b);
+      if (!c.bonds[k]) c.bonds[k] = { warmth: b.warmth, day: s.time.day, shifts: [] };
+    });
+    return c;
+  };
+
+  CL.key = (a, b) => (a < b ? a + '|' + b : b + '|' + a);
+
+  CL.bond = function (a, b) {
+    const c = CL.ensure();
+    if (!c) return null;
+    const k = CL.key(a, b);
+    if (!c.bonds[k]) c.bonds[k] = { warmth: 40, day: S().time.day, shifts: [] };
+    return c.bonds[k];
+  };
+
+  CL.bondInfo = function (a, b) {
+    const k = CL.key(a, b);
+    return (C().BONDS || []).find((x) => CL.key(x.a, x.b) === k) || null;
+  };
+
+  CL.shiftBond = function (a, b, delta, why) {
+    const st = CL.bond(a, b);
+    if (!st) return null;
+    st.warmth = Math.max(0, Math.min(100, st.warmth + delta));
+    st.day = S().time.day;
+    st.shifts.push({ delta, why: why || '', day: S().time.day });
+    if (st.shifts.length > 20) st.shifts.shift();
+    return st;
+  };
+
+  CL.stage = (id) => {
+    const R = SAN.romance;
+    return R && R.stageIndex ? R.stageIndex(id) : 0;
+  };
+
+  CL.present = function () {
+    const W = SAN.world;
+    if (!W || !W.npcs) return [];
+    return W.npcs.map((n) => n.def.id);
+  };
+
+  CL.hourOK = function (ev) {
+    const s = S();
+    if (!ev.hours) return true;
+    const h = s.time.minutes / 60;
+    return h >= ev.hours[0] && h < ev.hours[1];
+  };
+
+  CL.calendarOK = function (ev) {
+    const t = S().time;
+    if (ev.seasons && ev.seasons.indexOf(t.season) < 0) return false;
+    if (ev.days && (t.day < ev.days[0] || (ev.days[1] ? t.day > ev.days[1] : t.day !== ev.days[0]))) return false;
+    if (ev.weathers && ev.weathers.indexOf(t.weather) < 0) return false;
+    if (ev.check && !ev.check()) return false;
+    return true;
+  };
+
+  CL.areaOK = function (ev, area) {
+    if (!ev.areas) return true;
+    return ev.areas.indexOf(area) >= 0;
+  };
+
+  CL.cooledDown = function (ev) {
+    const c = CL.ensure();
+    const once = ev.once;
+    if (once) {
+      const t = S().time;
+      const key = once === 'year' ? 'y' + t.year : once === 'season' ? 'y' + t.year + 's' + t.season : 'd' + t.day;
+      if (c.seen[ev.id] === key) return false;
+    }
+    const last = c.cooldowns[ev.id];
+    if (last == null) return true;
+    return S().time.day - last >= (ev.cooldownDays || 1);
+  };
+
+  /* who could plausibly be part of this, given who is actually standing here */
+  CL.participant = function (ev) {
+    const here = CL.present();
+    const pool = ev.npcPool || null;
+    let ids = pool ? pool.slice() : here.slice();
+    if (pool) {
+      const near = ids.filter((id) => here.indexOf(id) >= 0);
+      if (near.length) ids = near;
+    }
+    ids = ids.filter((id) => SAN.data.npcs && SAN.data.npcs[id]);
+    ids = ids.filter((id) => CL.stage(id) >= (ev.minStage || 0));
+    if (!ids.length) return null;
+    return ids[Math.floor(Math.random() * ids.length)];
+  };
+
+  CL.candidates = function () {
+    const s = S();
+    if (!s) return [];
+    const area = s.player.area;
+    const here = CL.present();
+    const all = []
+      .concat((C().SEASONAL || []).map((e) => ({ ev: e, w: 6 })))
+      .concat((C().SPECIAL || []).map((e) => ({ ev: e, w: 4 })))
+      .concat((C().DAILY || []).map((e) => ({ ev: e, w: 2 })))
+      .concat((C().RANDOM || []).map((e) => ({ ev: e, w: 3 })));
+    const out = [];
+    all.forEach((row) => {
+      const ev = row.ev;
+      if (!CL.areaOK(ev, area)) return;
+      if (!CL.hourOK(ev)) return;
+      if (!CL.calendarOK(ev)) return;
+      if (!CL.cooledDown(ev)) return;
+      /* an event that needs somebody needs somebody who is actually here,
+         unless its pool names people who live wherever they are */
+      const pool = ev.npcPool;
+      const poolHere = pool && pool.some((id) => here.indexOf(id) >= 0);
+      if (!pool && !here.length && !ev.npcPool) {
+        /* narrator-only moments still need some company to land */
+        return;
+      }
+      if (pool && !poolHere && ev.areas) return;
+      const npc = CL.participant(ev);
+      if (!npc) return;
+      let w = row.w;
+      if (ev.seasons) w += 5;
+      if (ev.once) w += 3;
+      if (CL.stage(npc) >= 5 && ev.minStage) w += 2;
+      out.push({ ev, npc, w });
+    });
+    return out;
+  };
+
+  CL.pick = function () {
+    const list = CL.candidates();
+    if (!list.length) return null;
+    let total = 0;
+    list.forEach((x) => { total += x.w; });
+    let r = Math.random() * total;
+    for (let i = 0; i < list.length; i++) {
+      r -= list[i].w;
+      if (r <= 0) return list[i];
+    }
+    return list[0];
+  };
+
+  CL.context = function (ev, npcId) {
+    const d = SAN.data.npcs[npcId] || {};
+    return {
+      npc: npcId,
+      name: d.name || '',
+      title: ev.title,
+      player: S().player,
+      area: S().player.area,
+    };
+  };
+
+  CL.sceneFor = function (ev, npcId, spec) {
+    const s = spec || {};
+    const FM = SAN.scenes && SAN.scenes.build;
+    if (!FM) return null;
+    return FM({
+      cat: 'event',
+      key: ev.id,
+      npc: npcId,
+      title: ev.title,
+      backdrop: ev.backdrop || undefined,
+      area: s.area || S().player.area,
+      caption: s.caption || '',
+    });
+  };
+
+  CL.finish = function (ev, npcId) {
+    const c = CL.ensure();
+    const t = S().time;
+    c.cooldowns[ev.id] = t.day;
+    c.eventsToday = (c.eventsToday || 0) + 1;
+    c.lastMinute = t.minutes;
+    if (ev.once) {
+      c.seen[ev.id] = ev.once === 'year' ? 'y' + t.year : ev.once === 'season' ? 'y' + t.year + 's' + t.season : 'd' + t.day;
+    }
+    const fx = ev.effects || {};
+    if (SAN.rel && SAN.rel.add) SAN.rel.add(npcId, ev.minStage ? 3 : 2, true);
+    if (SAN.psychology) SAN.psychology.onEvent(npcId, fx.psychology || 'quality_time');
+    if (SAN.romance && ev.minStage) SAN.romance.addAffection(npcId, 1, true);
+    if (SAN.memoryBook) {
+      SAN.memoryBook.add({
+        kind: ev.cat === 'random' ? 'moment' : 'city',
+        key: 'city:' + ev.id + ':' + (ev.once ? 'once' : t.day),
+        title: ev.title,
+        text: ev.memory || '',
+        npc: npcId,
+        scene: CL.sceneFor(ev, npcId) ? CL.sceneFor(ev, npcId).id : null,
+        once: !!ev.once,
+      });
+    }
+    if (SAN.state && SAN.state.save) SAN.state.save();
+  };
+
+  /* run the event: cinematic plate first, then the conversation on top of it */
+  CL.run = function (ev, npcId) {
+    if (!ev || !npcId) return false;
+    const ctx = CL.context(ev, npcId);
+    const pages = typeof ev.pages === 'function' ? ev.pages(ctx) : (ev.pages || []);
+    const spec = CL.sceneFor(ev, npcId);
+    const talk = function () {
+      SAN.ui.dialogue({
+        pages: pages,
+        onClose: function () {
+          CL.finish(ev, npcId);
+          if (ev.memory) SAN.ui.toast(ev.memory, 'memory');
+        },
+      });
+    };
+    if (spec && SAN.scenes && SAN.scenes.show) SAN.scenes.show(spec, talk);
+    else talk();
+    return true;
+  };
+
+  /* invitations are opt-in, and "not now" is a real answer, not a failure */
+  CL.invite = function (ev, npcId) {
+    const ctx = CL.context(ev, npcId);
+    const pages = (typeof ev.pages === 'function' ? ev.pages(ctx) : ev.pages || []).slice();
+    const name = ctx.name;
+    pages.push({ speaker: 'narrator', text: 'You can accept, ask for another time, or say no. None of these is the wrong answer.' });
+    SAN.ui.dialogue({
+      pages: pages,
+      choices: [
+        { label: 'Accept', icon: '✓', cb: function () { CL.run(ev, npcId); } },
+        { label: 'Not now', icon: '◷', cb: function () {
+          const c = CL.ensure();
+          c.cooldowns[ev.id] = S().time.day;
+          SAN.ui.toast(name + ' nods. "Another time, then. I will ask again."', 'friend');
+          SAN.psychology.onEvent(npcId, 'space_given');
+        } },
+        { label: 'Decline', icon: '✕', cb: function () {
+          const c = CL.ensure();
+          c.cooldowns[ev.id] = S().time.day;
+          SAN.psychology.onEvent(npcId, 'declined_invite');
+          SAN.ui.toast(name + ' smiles, a little carefully. "That is alright. Truly."', 'friend');
+        } },
+      ],
+    });
+    return true;
+  };
+
+  CL.fire = function (ev, npcId) {
+    if (ev.invite) return CL.invite(ev, npcId);
+    return CL.run(ev, npcId);
+  };
+
+  CL.force = function (id) {
+    const all = [].concat(C().DAILY || [], C().SEASONAL || [], C().SPECIAL || [], C().RANDOM || []);
+    const ev = all.find((e) => e.id === id);
+    if (!ev) { SAN.ui.toast('No such city event: ' + id, 'system'); return false; }
+    const npc = CL.participant(ev) || (ev.npcPool && ev.npcPool[0]) || CL.present()[0];
+    if (!npc) { SAN.ui.toast('Nobody is around for that event right now.', 'system'); return false; }
+    CL.fire(ev, npc);
+    return true;
+  };
+
+  /* two NPCs, on their own, in front of whoever happens to be nearby */
+  CL.autonomous = function (force) {
+    const s = S();
+    const c = CL.ensure();
+    const here = CL.present();
+    if (here.length < 2) return false;
+    if (!force && Math.random() > 0.34) return false;
+    const pairs = (C().BONDS || []).filter((b) => here.indexOf(b.a) >= 0 && here.indexOf(b.b) >= 0);
+    if (!pairs.length) return false;
+    const b = pairs[Math.floor(Math.random() * pairs.length)];
+    const info = CL.bondInfo(b.a, b.b);
+    const st = CL.bond(b.a, b.b);
+    const warm = st.warmth >= 45;
+    const lines = C().BOND_MOMENTS || [];
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    const a = SAN.data.npcs[b.a].name;
+    const bb = SAN.data.npcs[b.b].name;
+    c.witnessed.unshift({ a: b.a, b: b.b, day: s.time.day, line: line });
+    if (c.witnessed.length > 12) c.witnessed.pop();
+    SAN.ui.toast(a + ' and ' + bb + ': ' + line, 'friend');
+    if (SAN.memoryBook) {
+      SAN.memoryBook.add({
+        kind: 'village',
+        key: 'village:' + CL.key(b.a, b.b) + ':' + s.time.day,
+        title: a + ' & ' + bb,
+        text: (info ? info.note : '') + ' ' + line,
+        npcs: [b.a, b.b],
+        once: true,
+      });
+    }
+    CL.shiftBond(b.a, b.b, warm ? 1 : -1, warm ? 'a good afternoon' : 'a small friction');
+    return true;
+  };
+
+  CL.witnessLine = function () {
+    const c = CL.ensure();
+    return c && c.witnessed && c.witnessed.length ? c.witnessed[0] : null;
+  };
+
+  CL.tickDay = function () {
+    const s = S();
+    const c = CL.ensure();
+    if (!s || !c) return;
+    c.day = s.time.day;
+    c.eventsToday = 0;
+    c.lastMinute = -999;
+    if (SAN.psychology) SAN.psychology.tickDay();
+    /* the village keeps living: two quiet bond shifts per day */
+    const bonds = C().BONDS || [];
+    for (let i = 0; i < 2 && bonds.length; i++) {
+      const b = bonds[Math.floor(Math.random() * bonds.length)];
+      const drift = Math.random() < 0.55 ? 1 : -1;
+      CL.shiftBond(b.a, b.b, drift, drift > 0 ? 'an ordinary kindness' : 'an ordinary misunderstanding');
+    }
+    CL.autonomous();
+  };
+
+  CL.update = function (dt) {
+    const s = S();
+    if (!s) return;
+    const c = CL.ensure();
+    if (c.day !== s.time.day) {
+      c.day = s.time.day;
+      c.eventsToday = 0;
+    }
+    if (SAN.ui.isPaused && SAN.ui.isPaused()) return;
+    if (SAN.ui.dialogueState) return;
+    if (SAN.scenes && SAN.scenes.current) return;
+    if (S().settings && S().settings.cityEvents === false) return;
+    acc += dt;
+    witnessAcc += dt;
+    if (witnessAcc > 75) {
+      witnessAcc = 0;
+      CL.autonomous();
+    }
+    if (acc < 9) return;
+    acc = 0;
+    if ((c.eventsToday || 0) >= 3) return;
+    if (s.time.minutes - c.lastMinute < 40) return;
+    if (Math.random() > 0.3) return;
+    const pick = CL.pick();
+    if (!pick) return;
+    CL.fire(pick.ev, pick.npc);
+  };
+})();
+</script>
+<script>
+/* Sanctuary — the Memory Journal.
+   A quiet record of things that actually happened: first meetings, first
+   confessions, festivals, reconciliations, ordinary afternoons worth keeping.
+   Entries store the scene illustration id so the journal can show it again
+   without generating anything new. */
+(function () {
+  const MB = (SAN.memoryBook = {});
+  const S = () => SAN.state.S;
+
+  MB.ensure = function () {
+    const s = S();
+    if (!s) return null;
+    if (!Array.isArray(s.memoryBook)) s.memoryBook = [];
+    return s.memoryBook;
+  };
+
+  MB.add = function (entry) {
+    const list = MB.ensure();
+    if (!list || !entry) return null;
+    const st = S().time;
+    const row = {
+      key: entry.key || (entry.kind + ':' + (entry.npc || '') + ':' + (entry.title || '')),
+      kind: entry.kind || 'moment',
+      title: entry.title || 'A moment',
+      text: entry.text || '',
+      npc: entry.npc || null,
+      npcs: entry.npcs || null,
+      scene: entry.scene || null,
+      area: entry.area || (S().player ? S().player.area : null),
+      day: entry.day || st.day,
+      season: entry.season == null ? st.season : entry.season,
+      year: st.year,
+      stage: entry.stage || null,
+      once: !!entry.once,
+    };
+    if (row.once) {
+      const seen = list.some((m) => m.key === row.key);
+      if (seen) return null;
+    }
+    list.unshift(row);
+    if (list.length > 200) list.length = 200;
+    return row;
+  };
+
+  MB.has = function (key) {
+    const list = MB.ensure();
+    return !!list && list.some((m) => m.key === key);
+  };
+
+  MB.list = function (filter) {
+    const list = (MB.ensure() || []).slice();
+    const f = filter || {};
+    return list.filter((m) => {
+      if (f.kind && m.kind !== f.kind) return false;
+      if (f.npc && m.npc !== f.npc && !(m.npcs || []).includes(f.npc)) return false;
+      return true;
+    });
+  };
+
+  MB.forNpc = function (id) {
+    return MB.list({ npc: id });
+  };
+
+  MB.count = function () {
+    return (MB.ensure() || []).length;
+  };
+
+  MB.label = function (m) {
+    const seasons = (SAN.util && SAN.util.SEASONS) || ['Spring', 'Summer', 'Autumn', 'Winter'];
+    const s = m.season == null ? 0 : m.season;
+    return seasons[s] + ' ' + m.day + ', Year ' + (m.year || 1);
+  };
 })();
 </script>
 <script>
@@ -13844,7 +15579,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       S_.flags.lamp_lit = true;
       S_.world.lampLit = true;
       A.lampScene();
-      SAN.quests.notify('talk', 'liora', 1);
+      SAN.quests.notify('talk', 'lucien', 1);
       return;
     }
     if (q && SAN.quests.isComplete('lh_3')) {
@@ -13854,14 +15589,14 @@ window.SAN_SCENE_ILLUSTRATED = {};
       SAN.ui.dialogue({
         pages: [
           { speaker: 'narrator', text: 'The great lamp is huge and quiet. The brass is warm from the sun.' },
-          { speaker: 'narrator', text: 'Liora usually lights it alone. Maybe you should ask her first.' },
+          { speaker: 'narrator', text: 'Lucien usually lights it alone. Maybe you should ask him first.' },
         ],
       });
       return;
     }
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'narrator', text: 'The lamp burns steady and low. Liora has already been up here today — you can tell by the fresh oil on the glass.' },
+        { speaker: 'narrator', text: 'The lamp burns steady and low. Lucien has already been up here today — you can tell by the fresh oil on the glass.' },
       ],
     });
   };
@@ -14051,7 +15786,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     }
     const ready = SAN.quests.readyTurnInsFor(def.id);
     if (ready.length) { A.turnInDialogue(ready[0].id); return; }
-    if (def.id === 'liora' && S_.quests.active.lh_2 && !S_.flags.lh_letter_choice && SAN.state.count('old_photo') > 0) { A.letterScene(npc); return; }
+    if (def.id === 'lucien' && S_.quests.active.lh_2 && !S_.flags.lh_letter_choice && SAN.state.count('old_photo') > 0) { A.letterScene(npc); return; }
     if (def.id === 'elowen' && S_.quests.active.gh_1 && !S_.flags.gh_help_choice) { A.helpScene(npc); return; }
     if (def.id === 'rowan' && S_.quests.active.wm_1 && !S_.flags.reframe_choice) { A.reframeScene(npc); return; }
     if (!firstTime) {
@@ -14105,7 +15840,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
         context: i === 0 ? (closeFriend ? 'greeting' : 'responsibility') : undefined,
       }));
       const reaction = {
-        liora: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
+        lucien: S_.flags.lh_letter_choice ? '"You did not push me about the letters. I keep thinking about that."' : null,
         elowen: S_.flags.sat_with_elowen ? '"You sat with me by the pond. I have not forgotten, you know."' : null,
         rowan: S_.flags.reframe_choice ? '"I used the thing you said. It worked for about an hour. That is a record."' : null,
       }[def.id];
@@ -14163,6 +15898,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const S_ = S();
     S_.dialogueSeen[def.id + '_' + topic.id] = true;
     SAN.rel.add(def.id, 2, true);
+    if (SAN.psychology) SAN.psychology.onEvent(def.id, 'listened');
+    if (SAN.memoryBook) SAN.memoryBook.add({ kind: 'conversation', key: 'talk:' + def.id + ':' + topic.id, title: 'A conversation with ' + def.name, text: topic.lines[0] || '', npc: def.id, once: true });
     const pages = topic.lines.map((l) => ({ speaker: def.id, text: l, context: 'memory' }));
     SAN.ui.dialogue({ pages, choices: [{ label: 'Not right now', icon: '✕', cb: function () { } }] });
   };
@@ -14175,6 +15912,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
       return;
     }
     SAN.state.removeItem(itemId, 1);
+    if (SAN.psychology) SAN.psychology.onEvent(npcId, 'gift');
     if (!S_.world.gifts) S_.world.gifts = {};
     S_.world.gifts[npcId] = itemId;
     SAN.quests.notify('gift', npcId, 1, itemId);
@@ -14218,24 +15956,24 @@ window.SAN_SCENE_ILLUSTRATED = {};
     },
     lh_1: {
       pages: [
-        { speaker: 'liora', text: '"The wind chime on the porch has been silent since the last storm. One of the shells cracked."' },
-        { speaker: 'liora', text: '"It is a small thing. I keep meaning to fix it. I keep not doing it."' },
-        { speaker: 'liora', text: '"If you happen to find shells on the shore — two would do. No rush. I am not going anywhere."' },
+        { speaker: 'lucien', text: '"The wind chime on the porch has been silent since the last storm. One of the shells cracked."' },
+        { speaker: 'lucien', text: '"It is a small thing. I keep meaning to fix it. I keep not doing it."' },
+        { speaker: 'lucien', text: '"If you happen to find shells on the shore — two would do. No rush. I am not going anywhere."' },
       ],
       accept: 'I will look for shells.',
     },
     lh_2: {
       pages: [
-        { speaker: 'liora', text: '"You found a photograph." She does not take it. Her hands stay very still.' },
-        { speaker: 'liora', text: '"That is my mother. And me, before. She left in the spring, and I have been keeping a lamp for ships ever since, which is a strange way to wait for someone."' },
-        { speaker: 'liora', text: '"There are letters, too. In a drawer. I never sent them. I do not know if I want to read them. I do not know if I want you to."' },
+        { speaker: 'lucien', text: '"You found a photograph." He does not take it. His hands stay very still.' },
+        { speaker: 'lucien', text: '"That is my mother. And me, before. She left in the spring, and I have been keeping a lamp for ships ever since, which is a strange way to wait for someone."' },
+        { speaker: 'lucien', text: '"There are letters, too. In a drawer. I never sent them. I do not know if I want to read them. I do not know if I want you to."' },
       ],
       accept: 'We can decide together.',
     },
     lh_3: {
       pages: [
-        { speaker: 'liora', text: '"The lamp needs lighting at dusk. I have done it alone for four years."' },
-        { speaker: 'liora', text: '"I am not asking you to come. I am also not not asking. I am very bad at this part."' },
+        { speaker: 'lucien', text: '"The lamp needs lighting at dusk. I have done it alone for four years."' },
+        { speaker: 'lucien', text: '"I am not asking you to come. I am also not not asking. I am very bad at this part."' },
       ],
       accept: 'I will be there.',
     },
@@ -14339,9 +16077,9 @@ window.SAN_SCENE_ILLUSTRATED = {};
     main_first_plant: ['"You planted something. It will not thank you, which is honest of it."', '"Gardens teach patience in a way that is very hard to argue with."'],
     main_journal: ['"You wrote it. Good. That page belongs to you, no one else."', '"The forest stones will open to you now. Only if you want them to."'],
     main_meet: ['"Four names. You are becoming a person of this village."', '"They will remember you now. It is a small place. That is a gift, mostly."'],
-    lh_1: ['"You brought them. Two whole shells." Liora turns them over, and something in her face loosens.', '"I will fix the chime tomorrow. Or today. Thank you."'],
+    lh_1: ['"You brought them. Two whole shells." Lucien turns them over, and something in his face loosens.', '"I will fix the chime tomorrow. Or today. Thank you."'],
     lh_2: ['"I read them. Some of them." Her voice is careful, not broken.', '"She was not leaving me. She was leaving a situation. I have spent four years confusing those two things."', '"I am still learning. But the lamp is not the only thing that can stay lit, apparently."'],
-    lh_3: ['The lamp catches. Light spills out over the water in a long gold path.', '"I usually do this alone," Liora says, and then, quietly, "I think I have been doing too many things alone."'],
+    lh_3: ['The lamp catches. Light spills out over the water in a long gold path.', '"I usually do this alone," Lucien says, and then, quietly, "I think I have been doing too many things alone."'],
     gh_1: ['"You did not take over. You just — stayed." Elowen sounds puzzled by this, as if it were a rare species of plant.', '"Thank you. I hated that. I might do it again."'],
     gh_2: ['The two of you plant in silence, and it is the good kind.', '"I keep waiting for you to be annoyed with me," she says. "You keep not being."'],
     gh_3: ['The starflower opens in the afternoon light. It is small and entirely real.', '"I grew this. We grew this. I do not know which one to be proud of."', '"Both, I think. I am told you are allowed to have both."'],
@@ -14395,8 +16133,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
   A.letterScene = function (npc) {
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'liora', text: 'She is holding the drawer handle. "I have not opened this since she left."' },
-        { speaker: 'liora', text: '"Do I read them? I genuinely do not know. I have been not-knowing for four years."' },
+        { speaker: 'lucien', text: 'He is holding the drawer handle. "I have not opened this since she left."' },
+        { speaker: 'lucien', text: '"Do I read them? I genuinely do not know. I have been not-knowing for four years."' },
       ],
       choices: [
         {
@@ -14406,8 +16144,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
             SAN.ui.dialogue({
               pages: [
                 { speaker: 'narrator', text: 'The letters are short and ordinary. Weather. A recipe. An apology that arrives three sentences late.' },
-                { speaker: 'liora', text: '"She says she is sorry she was not braver." Liora laughs once, wetly. "She sounds exactly like me."' },
-                { speaker: 'liora', text: '"I think I have been waiting for a sentence that was never going to be written. This is not that sentence. But it is something."' },
+                { speaker: 'lucien', text: '"She says she is sorry she was not braver." Lucien laughs once, wetly. "She sounds exactly like me."' },
+                { speaker: 'lucien', text: '"I think I have been waiting for a sentence that was never going to be written. This is not that sentence. But it is something."' },
               ],
             });
           },
@@ -14419,8 +16157,8 @@ window.SAN_SCENE_ILLUSTRATED = {};
             SAN.ui.dialogue({
               pages: [
                 { speaker: 'narrator', text: 'She closes the drawer, gently, the way you close a door on a room someone is sleeping in.' },
-                { speaker: 'liora', text: '"Not today. Maybe not ever. I do not have to open a thing to be allowed to move on from it."' },
-                { speaker: 'liora', text: '"Thank you for not pushing. People always push. They think it is helping."' },
+                { speaker: 'lucien', text: '"Not today. Maybe not ever. I do not have to open a thing to be allowed to move on from it."' },
+                { speaker: 'lucien', text: '"Thank you for not pushing. People always push. They think it is helping."' },
               ],
             });
           },
@@ -14517,24 +16255,24 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const S_ = S();
     SAN.ui.dialogue({
       pages: [
-        { speaker: 'liora', text: 'Liora hands you the long brass lighter. "Your turn. If you want. You can hand it back."' },
+        { speaker: 'lucien', text: 'Lucien hands you the long brass lighter. "Your turn. If you want. You can hand it back."' },
         { speaker: 'narrator', text: 'The wick catches. The lamp room goes gold, then white, then gold again.' },
-        { speaker: 'liora', text: '"I have been the one who keeps the light for everyone. I did not think anyone would ever keep one for me."' },
-        { speaker: 'liora', text: '"You do not have to promise anything. I am trying to learn that people can be here without promising."' },
+        { speaker: 'lucien', text: '"I have been the one who keeps the light for everyone. I did not think anyone would ever keep one for me."' },
+        { speaker: 'lucien', text: '"You do not have to promise anything. I am trying to learn that people can be here without promising."' },
       ],
       choices: [
         {
           label: '"I am here."',
           cb: function () {
             SAN.quests.setFlag('lh_lamp_choice', 'here');
-            SAN.ui.dialogue({ pages: [{ speaker: 'liora', text: 'She nods, once, and looks out at the water. "That is enough. That is actually enough."' }] });
+            SAN.ui.dialogue({ pages: [{ speaker: 'lucien', text: 'He nods, once, and looks out at the water. "That is enough. That is actually enough."' }] });
           },
         },
         {
           label: '"I do not know how long I can stay."',
           cb: function () {
             SAN.quests.setFlag('lh_lamp_choice', 'honest');
-            SAN.ui.dialogue({ pages: [{ speaker: 'liora', text: '"That is the most honest thing anyone has said to me in years." She smiles. "I can work with honest."' }] });
+            SAN.ui.dialogue({ pages: [{ speaker: 'lucien', text: '"That is the most honest thing anyone has said to me in years." He smiles. "I can work with honest."' }] });
           },
         },
       ],
@@ -15724,6 +17462,11 @@ window.SAN_SCENE_ILLUSTRATED = {};
     sceneBtn.textContent = 'Cinematic scenes';
     sceneBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('scenes'); });
     el.querySelector('.panel-head').appendChild(sceneBtn);
+    const bookBtn = document.createElement('button');
+    bookBtn.className = 'btn small vault-scene-btn';
+    bookBtn.textContent = 'Memory journal';
+    bookBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('storybook'); });
+    el.querySelector('.panel-head').appendChild(bookBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -15899,7 +17642,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     const next = Object.keys(milestones).map(Number).filter((n) => f.pts < n).sort((a, b) => a - b)[0];
     const d = UI.panel('reldetail', npc.name, `
       <div class="rel-detail-head">
-        <div class="rel-detail-portrait">${SAN.render.npcFullBodyImg(id)}</div>
+        <div class="rel-detail-portrait">${SAN.render.npcFullBodyImg(id)}${SAN.visual && SAN.visual.get(id) && SAN.visual.get(id).bustOnly ? '<span class="rel-art-note">Official full-body artwork pending — showing portrait</span>' : ''}</div>
         <div class="rel-detail-text">
           <div class="rel-name big">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}${npc.age ? ' · ' + npc.age : ''}</div>
@@ -15923,9 +17666,28 @@ window.SAN_SCENE_ILLUSTRATED = {};
         <div class="likes-list">${knowsTastes ? (npc.loves || []).map((i) => `<span class="tag-pill">${U.esc(SAN.data.item(i).name)}</span>`).join('') : '<span class="fineprint">Talk with them more. People reveal themselves slowly.</span>'}</div>
       </div>
       ${romanceDetailHTML(id)}
+      ${psychologyDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
     attachRomanceButtons(d, id);
+  }
+
+  function psychologyDetailHTML(id) {
+    if (!SAN.psychology || !SAN.psychology.summary) return '';
+    const ps = SAN.psychology.summary(id);
+    if (!ps) return '';
+    const meter = (label, val) => `<div class="psy-meter"><span>${label}</span><i style="width:${val}%"></i><b>${val}</b></div>`;
+    return `
+      <div class="psy-box">
+        <div class="prompt-label">How they are, lately</div>
+        <div class="psy-traits">${(ps.positive || []).slice(0, 2).map((t) => `<span class="tag-pill on">${U.esc(t)}</span>`).join('')}${(ps.negative || []).slice(0, 1).map((t) => `<span class="tag-pill">${U.esc(t)}</span>`).join('')}</div>
+        ${meter('Trust', ps.trust)}${meter('Safety', ps.safety)}${meter('Unspoken hurt', ps.resentment)}
+        <div class="fineprint">Attachment, as it stands: <b>${U.esc(ps.attachment)}</b>. ${U.esc(ps.attachmentBlurb)}</div>
+        <div class="fineprint">Love language: ${U.esc(ps.loveLanguage)}</div>
+        <div class="fineprint">Working on: ${U.esc(ps.growth)}</div>
+        ${ps.trigger ? `<div class="psy-trigger"><b>Careful around</b> · ${U.esc(ps.trigger.label)} · ${U.esc(ps.trigger.response)}</div>` : ''}
+        ${ps.needsRepair ? '<div class="psy-repair">Something is still sore between you. An honest apology can open a way back.</div>' : ''}
+      </div>`;
   }
 
   function romanceDetailHTML(id) {
@@ -15978,6 +17740,14 @@ window.SAN_SCENE_ILLUSTRATED = {};
     if (SAN.romance.canConfess(id)) mk('Tell them how you feel', () => { UI.closeAll(); SAN.romance.confess(id); });
     if (SAN.romance.canCommit(id)) mk('Ask them to commit', () => { UI.closeAll(); SAN.romance.commit(id); });
     if (SAN.romance.canPartner(id)) mk('Ask them to share your life', () => { UI.closeAll(); SAN.romance.propose(id); });
+    const psy = SAN.psychology && SAN.psychology.summary ? SAN.psychology.summary(id) : null;
+    if (psy && psy.needsRepair) mk('Apologise, honestly', () => {
+      const res = SAN.psychology.apologize(id);
+      UI.closePanel('reldetail');
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: res.ok ? res.line : 'There is nothing owed between you right now. That is worth noticing.' }], onClose: () => relDetail(id) });
+    });
+    if (SAN.romance.canReconcile && SAN.romance.canReconcile(id)) mk('Talk about trying again', () => { UI.closeAll(); SAN.romance.reconcile(id); });
+    if (SAN.romance.canBreakUp && SAN.romance.canBreakUp(id)) mk('End the romance', () => { UI.closeAll(); SAN.romance.breakUp(id); });
     if (!host.children.length) {
       const note = document.createElement('div');
       note.className = 'fineprint';
@@ -16914,6 +18684,53 @@ window.SAN_SCENE_ILLUSTRATED = {};
       <p class="fineprint">Built with vanilla JavaScript, Canvas 2D and WebAudio.</p>`,
       { className: 'small-panel' });
   };
+  /* Memory Journal — everything that happened, kept without asking anything
+     of the player. Entries remember their scene id, so the same illustration
+     comes back instead of a new one being made. */
+  P.storybook = function () {
+    const rows = SAN.memoryBook ? SAN.memoryBook.list() : [];
+    const el = UI.panel('storybook', 'Memory Journal', `
+      <p class="vault-intro">A record of what actually happened: festivals, first times, small repairs, ordinary afternoons. Nothing here is a score.</p>
+      <div class="vault-tabs">
+        <button class="chip active" data-k="all">Everything</button>
+        <button class="chip" data-k="people">People</button>
+        <button class="chip" data-k="city">Village</button>
+        <button class="chip" data-k="love">Us</button>
+      </div>
+      <div id="book-body"></div>`, { wide: true });
+    const body = el.querySelector('#book-body');
+    const groups = {
+      people: ['conversation', 'moment', 'breakup', 'village'],
+      city: ['city'],
+      love: ['confession', 'date', 'commitment', 'partner', 'anniversary', 'night', 'reconcile', 'breakup'],
+    };
+    function view(kind) {
+      const list = rows.filter((m) => !kind || kind === 'all' || (groups[kind] || []).indexOf(m.kind) >= 0);
+      if (!list.length) {
+        body.innerHTML = `<div class="vault-empty"><div class="vault-stone-art">📖</div>
+          <p>The first pages are still blank. They fill themselves as you live.</p></div>`;
+        return;
+      }
+      body.innerHTML = '<div class="book-list">' + list.map((m) => {
+        const names = (m.npcs || []).concat(m.npc ? [m.npc] : []).map((id) => (SAN.data.npcs[id] || {}).name).filter(Boolean);
+        return `<div class="book-entry">
+          <div class="book-entry-head"><b>${U.esc(m.title)}</b><span>${U.esc(SAN.memoryBook.label(m))}</span></div>
+          ${names.length ? `<div class="book-entry-who">${U.esc(names.join(' · '))}</div>` : ''}
+          ${m.text ? `<div class="book-entry-text">${U.esc(m.text)}</div>` : ''}
+          <div class="book-entry-meta">${U.esc(m.area || '')}${m.scene ? ' · scene saved' : ''}${m.stage ? ' · ' + U.esc(m.stage) : ''}</div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+    el.querySelectorAll('.vault-tabs .chip').forEach((b) => {
+      b.addEventListener('click', () => {
+        el.querySelectorAll('.vault-tabs .chip').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        view(b.getAttribute('data-k'));
+      });
+    });
+    view('all');
+  };
+
 })();
 </script>
 <script>
@@ -16928,7 +18745,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
      list only decides where each portrait stands and never duplicates data. */
   SC.TITLE_CAST = [
     { id: 'nyssa', wing: 'l' },
-    { id: 'liora', wing: 'l' },
+    { id: 'lucien', wing: 'l' },
     { id: 'elowen', wing: 'l' },
     { id: 'rowan', wing: 'l' },
     { id: 'mira', wing: 'r' },
@@ -16957,7 +18774,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
     finn: { hover: 'happy', idle: ['smile'], look: true },
     theo: { hover: 'thinking', idle: ['serious'], look: true },
     elowen: { hover: 'gentle', idle: ['smile'], look: true },
-    liora: { hover: 'gentle', idle: ['serious', 'smile'], look: true },
+    lucien: { hover: 'gentle', idle: ['serious', 'smile'], look: true },
     mira: { hover: 'happy', idle: ['smile'], look: true },
     aria: { hover: 'thinking', idle: ['serious', 'gentle'], look: true },
     player: { hover: 'thanking', idle: ['happy', 'thanking'], look: false },
@@ -18122,6 +19939,7 @@ window.SAN_SCENE_ILLUSTRATED = {};
         const mv = SAN.input.moveVector();
         SAN.world.update(dt, mv);
         SAN.living.update(dt);
+        if (SAN.cityLife) SAN.cityLife.update(dt);
         const ch = SAN.world.area && SAN.world.area.grid[Math.floor(SAN.world.player.y)] && SAN.world.area.grid[Math.floor(SAN.world.player.y)][Math.floor(SAN.world.player.x)];
         petalCooldown -= dt;
         if (ch === ',' && petalCooldown <= 0 && SAN.world.player.moving) {

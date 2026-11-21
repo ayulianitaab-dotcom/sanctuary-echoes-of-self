@@ -404,6 +404,11 @@
     sceneBtn.textContent = 'Cinematic scenes';
     sceneBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('scenes'); });
     el.querySelector('.panel-head').appendChild(sceneBtn);
+    const bookBtn = document.createElement('button');
+    bookBtn.className = 'btn small vault-scene-btn';
+    bookBtn.textContent = 'Memory journal';
+    bookBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('storybook'); });
+    el.querySelector('.panel-head').appendChild(bookBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -579,7 +584,7 @@
     const next = Object.keys(milestones).map(Number).filter((n) => f.pts < n).sort((a, b) => a - b)[0];
     const d = UI.panel('reldetail', npc.name, `
       <div class="rel-detail-head">
-        <div class="rel-detail-portrait">${SAN.render.npcFullBodyImg(id)}</div>
+        <div class="rel-detail-portrait">${SAN.render.npcFullBodyImg(id)}${SAN.visual && SAN.visual.get(id) && SAN.visual.get(id).bustOnly ? '<span class="rel-art-note">Official full-body artwork pending — showing portrait</span>' : ''}</div>
         <div class="rel-detail-text">
           <div class="rel-name big">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}${npc.age ? ' · ' + npc.age : ''}</div>
@@ -603,9 +608,28 @@
         <div class="likes-list">${knowsTastes ? (npc.loves || []).map((i) => `<span class="tag-pill">${U.esc(SAN.data.item(i).name)}</span>`).join('') : '<span class="fineprint">Talk with them more. People reveal themselves slowly.</span>'}</div>
       </div>
       ${romanceDetailHTML(id)}
+      ${psychologyDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
     attachRomanceButtons(d, id);
+  }
+
+  function psychologyDetailHTML(id) {
+    if (!SAN.psychology || !SAN.psychology.summary) return '';
+    const ps = SAN.psychology.summary(id);
+    if (!ps) return '';
+    const meter = (label, val) => `<div class="psy-meter"><span>${label}</span><i style="width:${val}%"></i><b>${val}</b></div>`;
+    return `
+      <div class="psy-box">
+        <div class="prompt-label">How they are, lately</div>
+        <div class="psy-traits">${(ps.positive || []).slice(0, 2).map((t) => `<span class="tag-pill on">${U.esc(t)}</span>`).join('')}${(ps.negative || []).slice(0, 1).map((t) => `<span class="tag-pill">${U.esc(t)}</span>`).join('')}</div>
+        ${meter('Trust', ps.trust)}${meter('Safety', ps.safety)}${meter('Unspoken hurt', ps.resentment)}
+        <div class="fineprint">Attachment, as it stands: <b>${U.esc(ps.attachment)}</b>. ${U.esc(ps.attachmentBlurb)}</div>
+        <div class="fineprint">Love language: ${U.esc(ps.loveLanguage)}</div>
+        <div class="fineprint">Working on: ${U.esc(ps.growth)}</div>
+        ${ps.trigger ? `<div class="psy-trigger"><b>Careful around</b> · ${U.esc(ps.trigger.label)} · ${U.esc(ps.trigger.response)}</div>` : ''}
+        ${ps.needsRepair ? '<div class="psy-repair">Something is still sore between you. An honest apology can open a way back.</div>' : ''}
+      </div>`;
   }
 
   function romanceDetailHTML(id) {
@@ -658,6 +682,14 @@
     if (SAN.romance.canConfess(id)) mk('Tell them how you feel', () => { UI.closeAll(); SAN.romance.confess(id); });
     if (SAN.romance.canCommit(id)) mk('Ask them to commit', () => { UI.closeAll(); SAN.romance.commit(id); });
     if (SAN.romance.canPartner(id)) mk('Ask them to share your life', () => { UI.closeAll(); SAN.romance.propose(id); });
+    const psy = SAN.psychology && SAN.psychology.summary ? SAN.psychology.summary(id) : null;
+    if (psy && psy.needsRepair) mk('Apologise, honestly', () => {
+      const res = SAN.psychology.apologize(id);
+      UI.closePanel('reldetail');
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: res.ok ? res.line : 'There is nothing owed between you right now. That is worth noticing.' }], onClose: () => relDetail(id) });
+    });
+    if (SAN.romance.canReconcile && SAN.romance.canReconcile(id)) mk('Talk about trying again', () => { UI.closeAll(); SAN.romance.reconcile(id); });
+    if (SAN.romance.canBreakUp && SAN.romance.canBreakUp(id)) mk('End the romance', () => { UI.closeAll(); SAN.romance.breakUp(id); });
     if (!host.children.length) {
       const note = document.createElement('div');
       note.className = 'fineprint';
@@ -1594,4 +1626,51 @@
       <p class="fineprint">Built with vanilla JavaScript, Canvas 2D and WebAudio.</p>`,
       { className: 'small-panel' });
   };
+  /* Memory Journal — everything that happened, kept without asking anything
+     of the player. Entries remember their scene id, so the same illustration
+     comes back instead of a new one being made. */
+  P.storybook = function () {
+    const rows = SAN.memoryBook ? SAN.memoryBook.list() : [];
+    const el = UI.panel('storybook', 'Memory Journal', `
+      <p class="vault-intro">A record of what actually happened: festivals, first times, small repairs, ordinary afternoons. Nothing here is a score.</p>
+      <div class="vault-tabs">
+        <button class="chip active" data-k="all">Everything</button>
+        <button class="chip" data-k="people">People</button>
+        <button class="chip" data-k="city">Village</button>
+        <button class="chip" data-k="love">Us</button>
+      </div>
+      <div id="book-body"></div>`, { wide: true });
+    const body = el.querySelector('#book-body');
+    const groups = {
+      people: ['conversation', 'moment', 'breakup', 'village'],
+      city: ['city'],
+      love: ['confession', 'date', 'commitment', 'partner', 'anniversary', 'night', 'reconcile', 'breakup'],
+    };
+    function view(kind) {
+      const list = rows.filter((m) => !kind || kind === 'all' || (groups[kind] || []).indexOf(m.kind) >= 0);
+      if (!list.length) {
+        body.innerHTML = `<div class="vault-empty"><div class="vault-stone-art">📖</div>
+          <p>The first pages are still blank. They fill themselves as you live.</p></div>`;
+        return;
+      }
+      body.innerHTML = '<div class="book-list">' + list.map((m) => {
+        const names = (m.npcs || []).concat(m.npc ? [m.npc] : []).map((id) => (SAN.data.npcs[id] || {}).name).filter(Boolean);
+        return `<div class="book-entry">
+          <div class="book-entry-head"><b>${U.esc(m.title)}</b><span>${U.esc(SAN.memoryBook.label(m))}</span></div>
+          ${names.length ? `<div class="book-entry-who">${U.esc(names.join(' · '))}</div>` : ''}
+          ${m.text ? `<div class="book-entry-text">${U.esc(m.text)}</div>` : ''}
+          <div class="book-entry-meta">${U.esc(m.area || '')}${m.scene ? ' · scene saved' : ''}${m.stage ? ' · ' + U.esc(m.stage) : ''}</div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+    el.querySelectorAll('.vault-tabs .chip').forEach((b) => {
+      b.addEventListener('click', () => {
+        el.querySelectorAll('.vault-tabs .chip').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        view(b.getAttribute('data-k'));
+      });
+    });
+    view('all');
+  };
+
 })();
