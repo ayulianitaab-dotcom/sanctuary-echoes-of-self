@@ -89,8 +89,736 @@
   /* =========================================================
      TILES
      ========================================================= */
+  /* =========================================================
+     COTTAGE INTERIOR — Cozy Victorian pixel art (home only)
+     Every piece below is drawn pixel by pixel on a transparent
+     background at the game's native 16 px tile scale, so the
+     cottage keeps the existing top-down grid, collision and
+     interaction positions while looking like the reference
+     artwork. Other areas keep their original furniture.
+     ========================================================= */
+  const HM = {
+    oak: '#a8764f', oak2: '#8a5f3c', oakDeep: '#5f4029', oakLight: '#c9a97e', oakPale: '#e0c39a',
+    cream: '#f7f0e2', cream2: '#eadfc8', cream3: '#d9c9ad',
+    lav: '#bda8dc', lavDeep: '#8f79b0', lavSoft: '#d9cbea', lavPale: '#ece4f6',
+    sage: '#a8bfa0', sageDeep: '#7d9a7a', sagePale: '#c8dabf',
+    gold: '#c9ad75', goldLight: '#eddcae', goldDeep: '#a2823c',
+    flame: '#f09a45', flame2: '#f7c96a', hot: '#ffeec0',
+    soot: '#2b211b', shadow: 'rgba(44,30,22,0.16)',
+  };
+
+  /* --- walls: cream wallpaper above an oak wainscot --- */
+  function homeWall(sx, sy, tx, ty, h) {
+    const lower = ty === 1;
+    // cream plaster, faint vertical stripes, a picture rail and oak dado
+    px(sx, sy, T, T, lower ? '#f0e4d2' : '#ebdcc8');
+    if (tx % 2 === 0) px(sx + 7, sy, 3, T, 'rgba(233,221,203,0.45)');
+    if (tx % 2 === 1) px(sx + 1, sy, 1, T, 'rgba(214,196,172,0.16)');
+    if (!lower) {
+      // a quiet damask motif, only every other tile, so the wall is not bare
+      if (tx % 2 === 1) {
+        px(sx + 7, sy + 3, 2, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 6, sy + 4, 4, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 6, sy + 5, 4, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 7, sy + 6, 2, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 7, sy + 9, 2, 1, 'rgba(168,191,160,0.16)');
+      }
+      px(sx, sy + 12, T, 1, 'rgba(201,173,117,0.22)');
+      px(sx, sy + 13, T, 1, 'rgba(168,118,79,0.20)');
+    }
+    if (lower) {
+      // panelled oak dado along the foot of the wall
+      px(sx, sy + 7, T, 9, HM.oak2);
+      px(sx, sy + 7, T, 1, HM.oakPale);
+      px(sx, sy + 8, T, 1, HM.oak);
+      px(sx + 2, sy + 9, 5, 5, HM.oak);
+      px(sx + 9, sy + 9, 5, 5, HM.oak);
+      px(sx + 2, sy + 9, 5, 1, HM.oakLight);
+      px(sx + 9, sy + 9, 5, 1, HM.oakLight);
+      px(sx, sy + 15, T, 1, HM.oakDeep);
+      px(sx, sy + 6, T, 1, 'rgba(201,173,117,0.45)');
+    } else {
+      px(sx, sy + 15, T, 1, 'rgba(150,120,96,0.2)');
+    }
+    if (tx === 0) {
+      px(sx + 11, sy, 5, T, HM.oak2);
+      px(sx + 11, sy, 1, T, HM.oakPale);
+      px(sx + 12, sy + 1, 3, T - 2, 'rgba(201,169,126,0.22)');
+    }
+    if (tx === curArea.w - 1) {
+      px(sx, sy, 5, T, HM.oak2);
+      px(sx + 4, sy, 1, T, HM.oakPale);
+      px(sx + 1, sy + 1, 3, T - 2, 'rgba(201,169,126,0.22)');
+    }
+  }
+  /* --- floor: long warm oak boards, not a brick pattern --- */
+  function homeFloor(sx, sy, tx, ty, h) {
+    px(sx, sy, T, T, '#bd9166');
+    // tone drifts in wide patches, never per tile, so no vertical banding
+    const v = SAN.util.hash(Math.floor(tx / 3), Math.floor(ty / 2));
+    if (v > 0.62) px(sx, sy, T, T, 'rgba(206,164,120,0.16)');
+    else if (v < 0.26) px(sx, sy, T, T, 'rgba(116,80,50,0.09)');
+    // continuous board seams (same height in every tile)
+    px(sx, sy, T, 1, 'rgba(240,216,180,0.20)');
+    px(sx, sy + 7, T, 1, 'rgba(122,86,56,0.26)');
+    px(sx, sy + 8, T, 1, 'rgba(240,216,180,0.12)');
+    px(sx, sy + 15, T, 1, 'rgba(110,76,48,0.42)');
+    const g1 = 1 + Math.floor((h * 43) % 8), g2 = 2 + Math.floor((h * 67) % 7);
+    px(sx + g1, sy + 3, 6, 1, 'rgba(150,106,68,0.24)');
+    px(sx + g2, sy + 12, 7, 1, 'rgba(150,106,68,0.18)');
+    if (h > 0.62) px(sx + 4, sy + 10, 4, 1, 'rgba(230,200,160,0.20)');
+    if (h > 0.88) px(sx + 13, sy + 1, 1, 6, 'rgba(122,86,56,0.18)');
+  }
+  /* --- the big lavender rug with a woven border --- */
+  function homeRug(sx, sy, tx, ty, h) {
+    const at = (dx, dy) => ((curArea.grid[ty + dy] || [])[tx + dx] || '');
+    px(sx, sy, T, T, '#c6b2e0');
+    for (let i = 0; i < T; i += 4) px(sx, sy + i, T, 1, 'rgba(150,120,182,0.12)');
+    if ((tx + ty) % 2 === 0) px(sx + 3, sy + 3, 1, 1, 'rgba(246,239,224,0.32)');
+    px(sx + 10, sy + 10, 1, 1, 'rgba(246,239,224,0.26)');
+    if (h > 0.6) px(sx + 6, sy + 6, 3, 3, 'rgba(201,173,117,0.2)');
+    if (at(0, -1) !== 'r') {
+      px(sx, sy, T, 4, HM.lavDeep);
+      px(sx, sy, T, 1, HM.gold);
+      px(sx, sy + 1, T, 1, 'rgba(237,220,174,0.5)');
+      px(sx, sy + 4, T, 1, HM.goldDeep);
+      px(sx, sy + 5, T, 1, 'rgba(247,240,226,0.5)');
+    }
+    if (at(0, 1) !== 'r') {
+      px(sx, sy + 12, T, 4, HM.lavDeep);
+      px(sx, sy + 15, T, 1, HM.gold);
+      px(sx, sy + 14, T, 1, 'rgba(237,220,174,0.5)');
+      px(sx, sy + 11, T, 1, 'rgba(247,240,226,0.5)');
+    }
+    if (at(-1, 0) !== 'r') {
+      px(sx, sy, 4, T, HM.lavDeep);
+      px(sx, sy, 1, T, HM.gold);
+      px(sx + 4, sy, 1, T, HM.goldDeep);
+      px(sx + 5, sy, 1, T, 'rgba(247,240,226,0.45)');
+    }
+    if (at(1, 0) !== 'r') {
+      px(sx + 12, sy, 4, T, HM.lavDeep);
+      px(sx + 15, sy, 1, T, HM.gold);
+      px(sx + 11, sy, 1, T, 'rgba(247,240,226,0.45)');
+    }
+    if (at(0, -1) !== 'r' && at(-1, 0) !== 'r') {
+      px(sx + 5, sy + 5, 3, 3, HM.cream3);
+      px(sx + 6, sy + 6, 1, 1, HM.gold);
+    }
+    if (at(0, -1) !== 'r' && at(1, 0) !== 'r') {
+      px(sx + 8, sy + 5, 3, 3, HM.cream3);
+      px(sx + 9, sy + 6, 1, 1, HM.gold);
+    }
+    if (at(0, 1) !== 'r' && at(-1, 0) !== 'r') {
+      px(sx + 5, sy + 8, 3, 3, HM.cream3);
+      px(sx + 6, sy + 9, 1, 1, HM.gold);
+    }
+    if (at(0, 1) !== 'r' && at(1, 0) !== 'r') {
+      px(sx + 8, sy + 8, 3, 3, HM.cream3);
+      px(sx + 9, sy + 9, 1, 1, HM.gold);
+    }
+  }
+
+  function homeTile(ch, sx, sy, tx, ty, h, t) {
+    if (ch === 'x') { homeWall(sx, sy, tx, ty, h); return true; }
+    if (ch === 'w') {
+      if (ty <= 1 || ty >= curArea.h - 1 || tx === 0 || tx === curArea.w - 1) {
+        homeWall(sx, sy, tx, ty, h);
+      } else {
+        homeFloor(sx, sy, tx, ty, h);
+      }
+      return true;
+    }
+    if (ch === 'r') { homeRug(sx, sy, tx, ty, h); return true; }
+    return false;
+  }
+
+  function homeProp(p, x, y, t) {
+    const w = (p.w || 1) * T;
+    const h = (p.h || 1) * T;
+    switch (p.t) {
+      case 'bed': {
+        // shadow and feet first: the bed should sit on the floor
+        px(x + 4, y + 41, 40, 8, HM.shadow);
+        px(x + 4, y + 43, 5, 5, HM.oakDeep);
+        px(x + 39, y + 43, 5, 5, HM.oakDeep);
+        // carved headboard, only at the head of the bed
+        px(x + 6, y - 4, 36, 16, HM.oakDeep);
+        px(x + 7, y - 3, 34, 14, HM.oak2);
+        px(x + 9, y - 2, 30, 12, HM.oak);
+        px(x + 10, y - 1, 28, 1, HM.oakPale);
+        px(x + 11, y + 1, 10, 7, HM.oakLight);
+        px(x + 27, y + 1, 10, 7, HM.oakLight);
+        for (let i = 0; i < 3; i++) {
+          px(x + 14 + i * 3, y + 2, 1, 5, HM.oak2);
+          px(x + 30 + i * 3, y + 2, 1, 5, HM.oak2);
+        }
+        circle(x + 24, y + 2, 2.4, HM.gold);
+        px(x + 23, y + 1, 2, 1, HM.goldLight);
+        // mattress: rounded cream block, quilt hangs over the sides
+        px(x + 5, y + 11, 3, 32, HM.cream3);
+        px(x + 39, y + 11, 4, 32, HM.cream3);
+        px(x + 6, y + 12, 36, 31, HM.cream);
+        px(x + 6, y + 12, 36, 1, 'rgba(255,255,255,0.5)');
+        px(x + 6, y + 42, 36, 1, 'rgba(217,201,173,0.9)');
+        // two plump pillows
+        px(x + 8, y + 14, 14, 2, HM.lavPale);
+        px(x + 7, y + 16, 16, 7, HM.lavPale);
+        px(x + 8, y + 22, 14, 3, HM.lavPale);
+        px(x + 8, y + 16, 14, 6, '#fdf8ee');
+        px(x + 8, y + 21, 14, 1, HM.lav);
+        px(x + 25, y + 14, 14, 2, HM.lavPale);
+        px(x + 24, y + 16, 16, 7, HM.lavPale);
+        px(x + 25, y + 22, 14, 3, HM.lavPale);
+        px(x + 25, y + 16, 14, 6, '#fdf8ee');
+        px(x + 25, y + 21, 14, 1, HM.lav);
+        // quilt: soft rounded top edge, draping 2px over both sides
+        px(x + 3, y + 25, 42, 2, 'rgba(143,121,176,0.45)');
+        px(x + 3, y + 26, 42, 16, HM.lav);
+        px(x + 4, y + 26, 40, 1, HM.lavSoft);
+        px(x + 3, y + 26, 42, 1, HM.lavSoft);
+        for (let i = 0; i < 4; i++) px(x + 4, y + 30 + i * 3, 40, 1, 'rgba(143,121,176,0.14)');
+        circle(x + 15, y + 32, 1.4, HM.cream);
+        px(x + 15, y + 33, 1, 2, HM.cream2);
+        circle(x + 30, y + 36, 1.4, HM.goldLight);
+        px(x + 30, y + 37, 1, 2, HM.goldLight);
+        // folded-back corner shows the cream mattress underneath
+        px(x + 30, y + 25, 13, 8, HM.cream);
+        px(x + 30, y + 25, 13, 1, HM.cream2);
+        px(x + 33, y + 24, 10, 1, 'rgba(143,121,176,0.35)');
+        // lace band at the foot, then a low footboard
+        px(x + 5, y + 37, 38, 3, HM.cream);
+        for (let i = 0; i < 9; i++) px(x + 6 + i * 4, y + 39, 2, 1, HM.cream2);
+        px(x + 5, y + 40, 38, 1, 'rgba(217,201,173,0.9)');
+        px(x + 4, y + 42, 40, 4, HM.oak);
+        px(x + 5, y + 42, 38, 1, HM.oakPale);
+        px(x + 4, y + 45, 40, 1, HM.oakDeep);
+        px(x + 10, y + 44, 28, 1, 'rgba(201,173,117,0.4)');
+        return true;
+      }      case 'wardrobe': {
+        px(x + 2, y + 3, 28, 29, HM.shadow);
+        px(x, y, 32, 4, HM.oak);
+        px(x + 1, y + 1, 30, 1, HM.oakPale);
+        px(x, y + 3, 32, 1, HM.oakDeep);
+        px(x + 2, y + 4, 28, 26, HM.oak2);
+        px(x + 4, y + 6, 11, 20, HM.oak);
+        px(x + 17, y + 6, 11, 20, HM.oak);
+        px(x + 5, y + 7, 9, 18, HM.oakLight);
+        px(x + 18, y + 7, 9, 18, HM.oakLight);
+        px(x + 8, y + 11, 2, 8, HM.oak2);
+        px(x + 7, y + 13, 4, 1, HM.oak2);
+        circle(x + 9, y + 10, 1.6, HM.gold);
+        px(x + 22, y + 11, 2, 8, HM.oak2);
+        px(x + 21, y + 13, 4, 1, HM.oak2);
+        circle(x + 23, y + 10, 1.6, HM.gold);
+        px(x + 14, y + 15, 1, 4, HM.goldLight);
+        px(x + 17, y + 15, 1, 4, HM.goldLight);
+        px(x + 15, y + 20, 2, 2, HM.goldDeep);
+        px(x + 4, y + 30, 4, 2, HM.oakDeep);
+        px(x + 24, y + 30, 4, 2, HM.oakDeep);
+        return true;
+      }
+      case 'bookshelf': {
+        px(x + 2, y + 2, 44, 30, HM.shadow);
+        px(x + 1, y, 46, 31, HM.oak2);
+        px(x + 2, y + 1, 44, 29, HM.oakDeep);
+        px(x + 2, y + 1, 44, 2, HM.oak);
+        px(x + 3, y + 2, 42, 1, HM.oakPale);
+        px(x + 1, y + 29, 46, 2, HM.oakDeep);
+        const cols = ['#c98a8a', '#8aa9c9', '#c9c08a', '#a98ac9', '#8ac9a9', '#e0b48a', '#b98d8d'];
+        for (let shelf = 0; shelf < 2; shelf++) {
+          const sy2 = y + 4 + shelf * 12;
+          px(x + 2, sy2 + 9, 44, 2, HM.oak);
+          px(x + 2, sy2 + 9, 44, 1, HM.oakPale);
+          let bx = x + 4;
+          let k = 0;
+          while (bx < x + 39) {
+            const bw = 2 + ((k * 7 + shelf * 3) % 2);
+            const bh = 6 + ((k * 5 + shelf) % 3);
+            px(bx, sy2 + 9 - bh, bw, bh, cols[(k + shelf * 2) % cols.length]);
+            px(bx, sy2 + 9 - bh, bw, 1, 'rgba(255,255,255,0.16)');
+            px(bx, sy2 + 9 - 2, bw, 1, 'rgba(90,70,60,0.35)');
+            bx += bw + 1; k++;
+            if (k % 6 === 5) bx += 2;
+          }
+          if (shelf === 0) {
+            px(x + 40, sy2 + 4, 3, 5, '#a9b8a0');
+            px(x + 40, sy2 + 3, 3, 1, HM.gold);
+          }
+        }
+        return true;
+      }
+      case 'fireplace': {
+        px(x + 3, y + 3, 26, 27, HM.shadow);
+        // chimney breast, light stone with visible courses
+        px(x + 2, y + 2, 28, 27, '#9a9386');
+        px(x + 3, y + 3, 26, 25, '#c9c2b3');
+        for (let ry = 0; ry < 4; ry++) {
+          for (let rx2 = 0; rx2 < 4; rx2++) {
+            px(x + 4 + rx2 * 7, y + 5 + ry * 6, 6, 4, (rx2 + ry) % 2 ? '#c1baab' : '#d2cbbe');
+            px(x + 4 + rx2 * 7, y + 5 + ry * 6, 6, 1, '#ded7c8');
+          }
+        }
+        // arched stone opening
+        px(x + 5, y + 12, 22, 17, '#8f887c');
+        px(x + 6, y + 10, 20, 3, '#8f887c');
+        px(x + 7, y + 13, 18, 16, HM.soot);
+        circle(x + 16, y + 15, 7, HM.soot);
+        px(x + 7, y + 28, 18, 1, '#6b655c');
+        // hearth slab in front
+        px(x + 3, y + 28, 26, 3, '#a29a8e');
+        px(x + 3, y + 28, 26, 1, '#b6aea1');
+        // fire: taller tongues and a warm halo
+        const fl = 0.85 + Math.sin(t * 3.1) * 0.15;
+        circle(x + 16, y + 23, 13, `rgba(255,170,80,${0.17 * fl})`);
+        for (let i = 0; i < 7; i++) {
+          const sway = Math.sin(t * 5.2 + i * 1.7) * 2.2;
+          const fy = y + 24 + Math.sin(t * 4 + i) * 2;
+          circle(x + 9 + i * 2.1 + sway, fy, 3 + (i % 2), i % 2 ? HM.flame : HM.flame2);
+        }
+        px(x + 10, y + 20, 12, 8, HM.flame);
+        px(x + 11, y + 21, 10, 6, HM.flame2);
+        circle(x + 16, y + 18, 3.4, HM.hot);
+        circle(x + 16, y + 23, 2.6, HM.hot);
+        // logs under the fire
+        px(x + 9, y + 26, 14, 2, '#8d5b32');
+        px(x + 10, y + 28, 12, 1, '#734324');
+        px(x + 11, y + 27, 3, 1, '#c9761f');
+        px(x + 18, y + 27, 3, 1, '#c9761f');        // thick mantel with brackets
+        px(x - 1, y - 1, 34, 4, HM.oakLight);
+        px(x - 1, y + 2, 34, 2, HM.oak);
+        px(x - 1, y + 4, 34, 1, HM.oakDeep);
+        px(x, y, 32, 1, HM.oakPale);
+        px(x + 1, y + 5, 3, 2, HM.oak2);
+        px(x + 28, y + 5, 3, 2, HM.oak2);
+        // candles, lavender vase, brass clock on the mantel
+        px(x + 3, y - 7, 2, 6, HM.cream);
+        circle(x + 4, y - 8, 1.5, 'rgba(255,214,130,0.95)');
+        px(x + 7, y - 6, 2, 5, HM.cream2);
+        circle(x + 8, y - 7, 1.3, 'rgba(255,214,130,0.85)');
+        px(x + 20, y - 6, 4, 5, HM.oakLight);
+        px(x + 21, y - 7, 2, 2, HM.lav);
+        px(x + 21, y - 9, 1, 3, HM.sageDeep);
+        circle(x + 22, y - 9, 1.5, HM.lavSoft);
+        px(x + 25, y - 7, 3, 6, HM.gold);
+        px(x + 26, y - 6, 1, 1, HM.cream);
+        // framed botanical above the mantel
+        px(x + 8, y - 14, 16, 10, HM.gold);
+        px(x + 9, y - 13, 14, 8, HM.oakDeep);
+        px(x + 10, y - 12, 12, 6, '#f4eddd');
+        px(x + 15, y - 11, 1, 4, HM.sageDeep);
+        circle(x + 15, y - 11, 1.6, HM.lav);
+        px(x + 13, y - 9, 2, 1, HM.sage);
+        px(x + 17, y - 9, 2, 1, HM.sage);
+        return true;
+      }      case 'sofa': {
+        px(x + 4, y + 12, 40, 4, HM.shadow);
+        px(x + 5, y + 14, 3, 2, HM.oakDeep);
+        px(x + 40, y + 14, 3, 2, HM.oakDeep);
+        // rolled back with an outline that separates it from the floor
+        px(x + 2, y, 44, 10, HM.lavDeep);
+        px(x + 3, y + 1, 42, 8, HM.lav);
+        px(x + 5, y + 1, 38, 1, HM.lavSoft);
+        for (let i = 0; i < 5; i++) px(x + 10 + i * 7, y + 4, 1, 2, 'rgba(246,239,224,0.45)');
+        // arms
+        px(x, y + 3, 5, 11, HM.lavDeep);
+        px(x + 1, y + 4, 3, 8, HM.lav);
+        px(x + 1, y + 4, 3, 1, HM.lavSoft);
+        px(x + 43, y + 3, 5, 11, HM.lavDeep);
+        px(x + 44, y + 4, 3, 8, HM.lav);
+        px(x + 44, y + 4, 3, 1, HM.lavSoft);
+        // seat cushions with piping and a front skirt
+        px(x + 4, y + 8, 19, 6, HM.lavSoft);
+        px(x + 25, y + 8, 19, 6, HM.lavSoft);
+        px(x + 4, y + 8, 40, 1, HM.lavPale);
+        px(x + 4, y + 13, 40, 1, HM.lavDeep);
+        px(x + 23, y + 9, 1, 5, 'rgba(143,121,176,0.32)');
+        // throw pillows + folded sage throw
+        px(x + 6, y + 2, 9, 7, HM.cream2);
+        px(x + 7, y + 3, 7, 5, HM.cream);
+        px(x + 6, y + 2, 9, 1, '#fffaf0');
+        px(x + 32, y + 2, 9, 7, HM.lavPale);
+        px(x + 33, y + 3, 7, 5, HM.lavSoft);
+        px(x + 21, y + 3, 7, 6, HM.sage);
+        px(x + 21, y + 3, 7, 1, HM.sagePale);
+        px(x + 21, y + 6, 7, 1, HM.sageDeep);
+        return true;
+      }      case 'table': {
+        px(x + 2, y + 9, 28, 16, HM.shadow);
+        // rounded table top with a darker front edge for depth
+        px(x + 4, y + 5, 24, 11, HM.oakDeep);
+        px(x + 3, y + 6, 26, 9, HM.oak2);
+        px(x + 4, y + 6, 24, 8, HM.oakLight);
+        px(x + 4, y + 6, 24, 1, HM.oakPale);
+        for (let i = 0; i < 3; i++) px(x + 5, y + 8 + i * 2, 22, 1, 'rgba(168,118,79,0.22)');
+        px(x + 3, y + 14, 26, 3, HM.oak);
+        px(x + 3, y + 14, 26, 1, HM.oakLight);
+        px(x + 3, y + 16, 26, 1, HM.oakDeep);
+        // lace runner down the middle, not over the whole top
+        px(x + 12, y + 7, 8, 9, 'rgba(250,244,232,0.92)');
+        px(x + 12, y + 7, 8, 1, 'rgba(255,255,255,0.7)');
+        for (let i = 0; i < 3; i++) px(x + 12, y + 10 + i * 2, 8, 1, 'rgba(233,220,200,0.55)');
+        // teapot on the runner, cup beside it
+        px(x + 13, y + 9, 5, 4, HM.cream);
+        px(x + 13, y + 8, 5, 1, HM.lavSoft);
+        px(x + 18, y + 9, 2, 1, HM.cream2);
+        circle(x + 15, y + 8, 1, HM.lavPale);
+        px(x + 21, y + 10, 3, 3, HM.cream);
+        px(x + 21, y + 10, 3, 1, HM.lavSoft);
+        // open book + candle
+        px(x + 6, y + 8, 5, 4, '#f6efe0');
+        px(x + 8, y + 8, 1, 4, 'rgba(168,118,79,0.55)');
+        px(x + 6, y + 9, 5, 1, 'rgba(168,118,79,0.3)');
+        px(x + 22, y + 6, 2, 4, HM.goldLight);
+        circle(x + 23, y + 5, 1.2, 'rgba(255,214,130,0.9)');
+        // turned legs
+        px(x + 5, y + 17, 3, 8, HM.oak2);
+        px(x + 24, y + 17, 3, 8, HM.oak2);
+        px(x + 5, y + 17, 1, 8, HM.oakLight);
+        px(x + 26, y + 17, 1, 8, HM.oakLight);
+        px(x + 5, y + 24, 3, 1, HM.oakDeep);
+        px(x + 24, y + 24, 3, 1, HM.oakDeep);
+        return true;
+      }      case 'chair': {
+        px(x + 3, y + 11, 10, 4, HM.shadow);
+        px(x + 2, y + 3, 12, 8, HM.lavDeep);
+        px(x + 3, y + 3, 10, 6, HM.lav);
+        px(x + 3, y + 3, 10, 1, HM.lavSoft);
+        px(x + 5, y + 5, 1, 1, HM.cream);
+        px(x + 10, y + 5, 1, 1, HM.cream);
+        px(x + 7, y + 8, 2, 1, 'rgba(143,121,176,0.45)');
+        px(x + 2, y + 10, 12, 2, HM.oak);
+        px(x + 2, y + 10, 12, 1, HM.oakPale);
+        px(x + 3, y + 12, 2, 5, HM.oakDeep);
+        px(x + 11, y + 12, 2, 5, HM.oakDeep);
+        return true;
+      }
+      case 'desk': {
+        px(x + 2, y + 9, 28, 19, HM.shadow);
+        px(x + 1, y + 5, 30, 15, HM.oak2);
+        px(x + 2, y + 6, 28, 8, HM.oakLight);
+        px(x + 2, y + 6, 28, 1, HM.oakPale);
+        px(x + 4, y + 8, 15, 7, '#f7f0e2');
+        px(x + 5, y + 9, 13, 1, 'rgba(168,140,100,0.5)');
+        px(x + 5, y + 11, 11, 1, 'rgba(168,140,100,0.35)');
+        px(x + 5, y + 13, 12, 1, 'rgba(168,140,100,0.35)');
+        px(x + 4, y + 8, 15, 1, '#fffaf0');
+        px(x + 21, y + 9, 3, 4, '#3a4a52');
+        px(x + 21, y + 8, 3, 1, '#6a7a82');
+        px(x + 22, y + 5, 1, 4, HM.cream3);
+        px(x + 26, y + 7, 2, 5, HM.cream);
+        circle(x + 27, y + 6, 1.2, 'rgba(255,214,130,0.9)');
+        px(x + 2, y + 14, 28, 5, HM.oak);
+        px(x + 2, y + 14, 28, 1, HM.oakPale);
+        px(x + 10, y + 16, 12, 2, HM.oakLight);
+        px(x + 15, y + 16, 2, 1, HM.gold);
+        px(x + 3, y + 19, 3, 8, HM.oakDeep);
+        px(x + 26, y + 19, 3, 8, HM.oakDeep);
+        return true;
+      }
+      case 'nightstand': {
+        px(x + 1, y + 7, 14, 8, HM.shadow);
+        px(x + 1, y + 4, 14, 10, HM.oak2);
+        px(x + 2, y + 5, 12, 8, HM.oak);
+        px(x + 2, y + 5, 12, 1, HM.oakPale);
+        px(x + 4, y + 9, 8, 3, HM.oakLight);
+        px(x + 7, y + 10, 2, 1, HM.gold);
+        px(x + 3, y + 14, 2, 2, HM.oakDeep);
+        px(x + 11, y + 14, 2, 2, HM.oakDeep);
+        px(x + 4, y + 1, 3, 4, HM.cream);
+        circle(x + 5.5, y, 1.4, 'rgba(255,214,130,0.95)');
+        px(x + 4, y + 3, 3, 1, HM.gold);
+        px(x + 8, y + 2, 6, 2, HM.lavSoft);
+        px(x + 8, y + 2, 6, 1, HM.lavPale);
+        px(x + 10, y + 2, 2, 2, 'rgba(143,121,176,0.4)');
+        return true;
+      }
+      case 'plant': {
+        const kind = (p.x * 3 + p.y) % 3;
+        px(x + 4, y + 14, 9, 2, HM.shadow);
+        if (kind === 0) {
+          px(x + 4, y + 10, 9, 5, HM.cream2);
+          px(x + 4, y + 10, 9, 1, HM.cream);
+          px(x + 5, y + 11, 1, 3, 'rgba(255,255,255,0.4)');
+          for (let i = 0; i < 5; i++) {
+            const sx2 = x + 4 + i * 2;
+            px(sx2, y + 4 + (i % 2), 1, 6, HM.sageDeep);
+            circle(sx2 + 0.5, y + 3 + (i % 2), 1.6, i % 2 ? HM.lav : HM.lavDeep);
+            circle(sx2 + 0.5, y + 2.5 + (i % 2), 0.7, HM.lavPale);
+          }
+        } else if (kind === 1) {
+          px(x + 4, y + 10, 9, 5, HM.oak2);
+          px(x + 5, y + 10, 7, 1, HM.oakLight);
+          for (let i = 0; i < 7; i++) {
+            const a = -1.2 + i * 0.4;
+            circle(x + 8 + Math.cos(a) * 5, y + 8 + Math.sin(a) * 4.4, 1.7, i % 2 ? '#8fbf7a' : HM.sage);
+          }
+          circle(x + 8, y + 7, 3.2, HM.sage);
+        } else {
+          px(x + 4, y + 10, 9, 5, HM.cream2);
+          px(x + 4, y + 10, 9, 1, HM.cream);
+          circle(x + 8, y + 5, 4.6, '#cfc0e8');
+          circle(x + 5, y + 5, 2.6, HM.lavSoft);
+          circle(x + 11, y + 5, 2.6, HM.lavSoft);
+          circle(x + 8, y + 2.6, 2.2, HM.lavPale);
+          px(x + 7, y + 8, 1, 4, HM.sageDeep);
+          circle(x + 6, y + 9, 1.6, HM.sage);
+        }
+        return true;
+      }
+      case 'window': {
+        const lit = windowsLit();
+        px(x + 1, y + 1, w - 2, h - 2, HM.oak2);
+        px(x + 2, y + 2, w - 4, h - 4, lit ? '#ffeec2' : '#dcecf2');
+        if (lit) {
+          const gg = ctx.createRadialGradient(x + w / 2, y + 8, 2, x + w / 2, y + 8, w * 0.95);
+          gg.addColorStop(0, 'rgba(255,232,168,0.45)');
+          gg.addColorStop(1, 'rgba(255,232,168,0)');
+          ctx.fillStyle = gg;
+          ctx.fillRect(x - 12, y - 8, w + 24, h + 18);
+        }
+        px(x + Math.round(w / 2) - 1, y + 2, 1, h - 4, HM.oak);
+        px(x + 2, y + Math.round(h / 2) - 1, w - 4, 1, HM.oak);
+        px(x + 2, y + 2, w - 4, 1, 'rgba(255,255,255,0.55)');
+        px(x + 3, y + 4, 4, 1, 'rgba(255,255,255,0.45)');
+        px(x + 3, y + 5, 2, 1, 'rgba(255,255,255,0.3)');
+        px(x, y + 2, 4, h - 2, HM.lavDeep);
+        px(x + 1, y + 2, 2, h - 3, HM.lav);
+        px(x + 1, y + 3, 2, 1, HM.lavSoft);
+        px(x + w - 4, y + 2, 4, h - 2, HM.lavDeep);
+        px(x + w - 3, y + 2, 2, h - 3, HM.lav);
+        px(x + w - 3, y + 3, 2, 1, HM.lavSoft);
+        px(x, y, w, 3, HM.oakLight);
+        px(x + 1, y + 3, w - 2, 1, 'rgba(250,244,232,0.8)');
+        for (let i = 0; i < 5; i++) px(x + 3 + i * 6, y + 4, 4, 1, 'rgba(250,244,232,0.55)');
+        return true;
+      }
+      case 'cattower': {
+        px(x + 3, y + h - 5, 10, 5, HM.shadow);
+        px(x + 5, y + 8, 6, h - 11, HM.oakLight);
+        for (let i = 0; i < 5; i++) px(x + 5, y + 11 + i * 4, 6, 1, HM.oak);
+        px(x + 2, y + 2, 12, 6, HM.lavSoft);
+        px(x + 3, y + 3, 10, 4, HM.lav);
+        px(x + 3, y + 3, 10, 1, HM.lavPale);
+        px(x + 2, y + h - 13, 12, 4, HM.lavDeep);
+        px(x + 3, y + h - 13, 10, 2, HM.lav);
+        px(x + 12, y + 6, 1, 5, HM.gold);
+        circle(x + 12.5, y + 11 + Math.sin(t * 2) * 1.2, 1.8, HM.lavDeep);
+        return true;
+      }
+      case 'catbed': {
+        px(x + 3, y + 12, 26, 3, HM.shadow);
+        ellipse(x + 16, y + 10, 13, 5.4, HM.lavDeep);
+        ellipse(x + 16, y + 9, 11, 4.2, HM.lav);
+        ellipse(x + 16, y + 9, 8, 3, HM.lavPale);
+        px(x + 8, y + 7, 16, 2, HM.cream);
+        px(x + 8, y + 7, 16, 1, '#fdf8ee');
+        circle(x + 12, y + 9, 1, HM.lavDeep);
+        circle(x + 14, y + 9, 1, HM.lavDeep);
+        px(x + 12, y + 10, 2, 1, HM.lavDeep);
+        px(x + 20, y + 9, 1, 1, HM.lavDeep);
+        px(x + 22, y + 9, 1, 1, HM.lavDeep);
+        px(x + 21, y + 8, 1, 1, HM.lavDeep);
+        px(x + 21, y + 10, 1, 1, HM.lavDeep);
+        return true;
+      }
+      case 'catbowl': {
+        ellipse(x + 8, y + 13, 6, 2.4, HM.shadow);
+        ellipse(x + 8, y + 11, 6, 2.8, HM.cream2);
+        ellipse(x + 8, y + 10.5, 4.6, 1.8, '#b9c9d6');
+        px(x + 6, y + 10, 4, 1, '#dfeaf0');
+        px(x + 4, y + 10, 2, 1, HM.gold);
+        px(x + 11, y + 11, 1, 1, HM.oakDeep);
+        px(x + 3, y + 11, 1, 1, HM.lavDeep);
+        return true;
+      }
+      case 'craftbench': {
+        px(x + 2, y + 9, 28, 19, HM.shadow);
+        px(x + 1, y + 6, 30, 11, HM.oak2);
+        px(x + 2, y + 6, 28, 8, HM.oakLight);
+        px(x + 2, y + 6, 28, 1, HM.oakPale);
+        px(x + 3, y + 8, 9, 5, HM.lav);
+        px(x + 3, y + 8, 9, 1, HM.lavSoft);
+        px(x + 3, y + 10, 9, 1, HM.lavDeep);
+        px(x + 3, y + 12, 9, 1, HM.lavDeep);
+        px(x + 14, y + 8, 3, 3, HM.cream);
+        px(x + 14, y + 8, 3, 1, HM.sage);
+        px(x + 18, y + 9, 2, 2, HM.gold);
+        px(x + 22, y + 8, 3, 1, '#8a8a90');
+        px(x + 23, y + 9, 1, 3, '#8a8a90');
+        px(x + 5, y + 2, 12, 3, '#5a5a62');
+        px(x + 6, y + 3, 3, 2, '#7a7a82');
+        px(x + 14, y + 4, 2, 2, '#5a5a62');
+        px(x + 5, y + 5, 1, 1, HM.cream);
+        px(x + 3, y + 17, 3, 10, HM.oakDeep);
+        px(x + 26, y + 17, 3, 10, HM.oakDeep);
+        px(x + 6, y + 24, 20, 2, HM.oak);
+        return true;
+      }
+      case 'counter': {
+        px(x + 2, y + 9, 28, 6, HM.shadow);
+        px(x + 1, y + 4, 30, 9, HM.oak2);
+        px(x + 1, y + 3, 30, 2, HM.cream2);
+        px(x + 1, y + 3, 30, 1, HM.cream);
+        px(x + 2, y + 8, 28, 4, HM.oak);
+        px(x + 3, y + 9, 8, 1, HM.oakDeep);
+        px(x + 12, y + 9, 8, 1, HM.oakDeep);
+        px(x + 4, y + 10, 1, 2, HM.gold);
+        px(x + 26, y + 10, 1, 2, HM.gold);
+        px(x + 3, y - 3, 4, 6, '#c9b58a');
+        px(x + 3, y - 4, 4, 1, HM.gold);
+        px(x + 3, y - 1, 4, 2, '#d8a86a');
+        px(x + 8, y - 2, 3, 5, '#e0b48a');
+        px(x + 8, y - 3, 3, 1, HM.gold);
+        px(x + 12, y - 1, 3, 4, HM.cream2);
+        px(x + 18, y - 2, 9, 5, HM.oakLight);
+        px(x + 19, y - 3, 4, 3, '#d8a86a');
+        px(x + 24, y - 3, 1, 3, HM.sageDeep);
+        circle(x + 24, y - 4, 1.4, HM.sage);
+        return true;
+      }
+      case 'sink': {
+        px(x + 2, y + 7, 28, 7, HM.shadow);
+        px(x + 1, y + 3, 30, 8, HM.cream2);
+        px(x + 1, y + 3, 30, 1, HM.cream);
+        px(x + 5, y + 5, 22, 4, '#8fb3bc');
+        px(x + 6, y + 5, 20, 1, '#b6d3da');
+        px(x + 7, y + 7, 18, 1, '#7ea7b2');
+        px(x + 15, y - 1, 2, 6, HM.gold);
+        px(x + 15, y - 1, 7, 1, HM.gold);
+        px(x + 21, y, 1, 2, HM.goldLight);
+        px(x + 3, y + 4, 2, 2, HM.lavSoft);
+        px(x + 25, y + 4, 3, 2, HM.cream);
+        px(x + 4, y + 10, 24, 2, HM.oak);
+        px(x + 4, y + 10, 24, 1, HM.oakLight);
+        return true;
+      }
+      case 'stove': {
+        px(x + 2, y + 7, 28, 22, HM.shadow);
+        // enamelled range with a cast-iron top
+        px(x + 1, y + 4, 30, 24, '#6f6f78');
+        px(x + 2, y + 5, 28, 22, '#b6b6bd');
+        px(x + 3, y + 5, 26, 1, '#d6d6dc');
+        px(x + 2, y + 5, 28, 5, '#8b8b93');
+        px(x + 3, y + 6, 26, 3, '#c6c6cc');
+        // two hob plates and a kettle
+        ellipse(x + 9, y + 7.5, 4.4, 1.8, '#5e5e66');
+        ellipse(x + 23, y + 7.5, 3.6, 1.6, '#5e5e66');
+        circle(x + 9, y + 6, 3.4, '#8a5f3c');
+        circle(x + 9, y + 5.4, 2.6, '#b07c4e');
+        px(x + 12, y + 5, 3, 1, '#b07c4e');
+        circle(x + 9, y + 4, 1, '#d09c6a');
+        if (Math.sin(t * 2) > 0) {
+          circle(x + 14, y + 2, 1.3, 'rgba(255,255,255,0.4)');
+          circle(x + 16, y - 1, 1, 'rgba(255,255,255,0.25)');
+        }
+        // oven door: dark enamel with a small glowing grate, not a screen
+        px(x + 4, y + 12, 24, 12, '#4a4a52');
+        px(x + 5, y + 13, 22, 10, '#33333a');
+        px(x + 7, y + 15, 18, 6, '#26262c');
+        px(x + 8, y + 16, 16, 4, 'rgba(201,106,74,0.55)');
+        for (let i = 0; i < 3; i++) circle(x + 12 + i * 4, y + 18 + Math.sin(t * 4 + i) * 0.8, 1.4, HM.flame);
+        px(x + 15, y + 12, 6, 1, '#9a9aa2');
+        px(x + 17, y + 14, 4, 1, 'rgba(201,173,117,0.85)');
+        // warm light spilling onto the floor
+        circle(x + 16, y + 24, 16, 'rgba(255,180,110,0.10)');
+        px(x + 5, y + 9, 2, 2, HM.gold);
+        px(x + 25, y + 9, 2, 2, HM.gold);
+        // plate rail along the top and a cloth on the handle
+        px(x + 2, y + 3, 28, 2, HM.cream2);
+        px(x + 2, y + 3, 28, 1, HM.cream);
+        px(x + 3, y + 1, 3, 2, '#cfd8da');
+        px(x + 8, y + 1, 3, 2, HM.cream);
+        px(x + 14, y + 1, 4, 2, '#d8b0a0');
+        px(x + 21, y + 1, 3, 2, HM.lavSoft);
+        px(x + 26, y + 1, 2, 2, HM.sage);
+        px(x + 2, y + 26, 28, 3, '#5e5e66');
+        px(x + 2, y + 26, 28, 1, '#86868e');
+        px(x + 21, y + 26, 6, 4, HM.lavSoft);
+        px(x + 21, y + 26, 6, 1, HM.lav);
+        return true;
+      }      case 'painting': {
+        px(x + 1, y + 1, 14, 14, HM.gold);
+        px(x + 2, y + 2, 12, 12, HM.oakDeep);
+        px(x + 3, y + 3, 10, 10, '#f4eddd');
+        px(x + 4, y + 11, 8, 1, '#cdbb9c');
+        px(x + 7, y + 4, 1, 7, HM.sageDeep);
+        circle(x + 7, y + 4, 1.6, HM.lav);
+        circle(x + 5, y + 6, 1.4, HM.lavSoft);
+        circle(x + 9, y + 6, 1.4, HM.lavSoft);
+        px(x + 5, y + 9, 3, 1, HM.sage);
+        px(x + 1, y + 1, 14, 1, HM.goldLight);
+        px(x + 1, y + 14, 14, 1, HM.goldDeep);
+        return true;
+      }
+      case 'mirror': {
+        ellipse(x + 8, y + 8, 7, 7, HM.gold);
+        ellipse(x + 8, y + 8, 5.6, 5.6, '#e6eef0');
+        ellipse(x + 6.5, y + 6.5, 2.4, 3, 'rgba(255,255,255,0.75)');
+        px(x + 4, y + 11, 6, 1, 'rgba(185,164,216,0.5)');
+        px(x + 3, y + 4, 1, 3, 'rgba(255,255,255,0.5)');
+        return true;
+      }
+      case 'clock': {
+        px(x + 3, y + 1, 10, 14, HM.oak2);
+        px(x + 4, y + 2, 8, 12, HM.oak);
+        px(x + 4, y + 2, 8, 1, HM.oakPale);
+        circle(x + 8, y + 5, 3, HM.cream);
+        px(x + 8, y + 4, 1, 2, HM.oakDeep);
+        px(x + 8, y + 5, 2, 1, HM.oakDeep);
+        px(x + 7, y + 10, 2, 4, HM.gold);
+        circle(x + 8, y + 12, 1.4, HM.goldLight);
+        return true;
+      }
+      case 'vase': {
+        px(x + 5, y + 9, 7, 5, 'rgba(214,226,228,0.9)');
+        px(x + 6, y + 9, 5, 1, 'rgba(255,255,255,0.7)');
+        px(x + 7, y + 8, 3, 1, HM.cream3);
+        for (let i = 0; i < 3; i++) {
+          px(x + 6 + i * 2, y + 2, 1, 6, HM.sageDeep);
+          circle(x + 6.5 + i * 2, y + 1, 1.4, HM.lav);
+        }
+        return true;
+      }
+      case 'bookstack': {
+        px(x + 3, y + 10, 10, 3, HM.lavDeep);
+        px(x + 3, y + 10, 10, 1, HM.lavSoft);
+        px(x + 4, y + 7, 9, 3, HM.sageDeep);
+        px(x + 4, y + 7, 9, 1, HM.sagePale);
+        px(x + 5, y + 4, 8, 3, HM.oakLight);
+        px(x + 5, y + 4, 8, 1, HM.goldLight);
+        px(x + 6, y + 13, 9, 1, HM.shadow);
+        return true;
+      }
+      case 'plaque': {
+        px(x + 1, y + 2, 14, 12, HM.oakDeep);
+        px(x + 2, y + 3, 12, 10, HM.oak);
+        px(x + 2, y + 3, 12, 1, HM.oakPale);
+        px(x + 3, y + 4, 10, 6, '#f4ecd8');
+        px(x + 3, y + 4, 10, 1, 'rgba(201,173,117,0.85)');
+        for (let i = 0; i < 3; i++) px(x + 5 + i * 3, y + 6, 2, 1, 'rgba(95,64,41,0.5)');
+        px(x + 4, y + 9, 8, 1, 'rgba(95,64,41,0.3)');
+        px(x + 1, y + 13, 14, 1, HM.oakDeep);
+        return true;
+      }
+      case 'cushion': {
+        ellipse(x + 8, y + 12, 6.6, 3, HM.shadow);
+        ellipse(x + 8, y + 9, 6.4, 4.4, HM.sage);
+        ellipse(x + 8, y + 8, 5, 3.2, HM.sagePale);
+        px(x + 4, y + 6, 1, 1, HM.lavDeep);
+        px(x + 11, y + 10, 1, 1, HM.lavDeep);
+        px(x + 2, y + 9, 1, 1, HM.gold);
+        px(x + 13, y + 7, 1, 1, HM.gold);
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
   R.drawTile = function (ch, sx, sy, tx, ty, t) {
     const h = SAN.util.hash(tx, ty);
+    if (curArea && curArea.id === 'home' && homeTile(ch, sx, sy, tx, ty, h, t)) return;
     switch (ch) {
       case '.': {
         px(sx, sy, T, T, '#8abb72');
@@ -626,6 +1354,7 @@
 
   function drawProp(p, x, y, t) {
     const w = (p.w || 1) * T, h = (p.h || 1) * T;
+    if (curArea && curArea.id === 'home' && homeProp(p, x, y, t)) return;
     switch (p.t) {
       case 'tree': drawTree(x, y, p.variant || 0); break;
       case 'pine': drawPine(x, y); break;

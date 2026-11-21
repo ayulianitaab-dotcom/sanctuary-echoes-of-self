@@ -443,6 +443,11 @@
       const ms = SAN.living.pendingMilestone(def.id);
       if (ms) { SAN.living.playMilestone(def.id, ms); return; }
     }
+    if (SAN.romance) {
+      const rscene = SAN.romance.pendingScene(def.id);
+      if (rscene) { SAN.romance.playEvent(def.id, rscene); return; }
+      if (SAN.romance.anniversaryDue(def.id)) { SAN.romance.celebrateAnniversary(def.id); return; }
+    }
     const avail = SAN.quests.availableFor(def.id);
     if (avail) { A.offerQuest(avail); return; }
     A.chat(npc, { firstTime });
@@ -494,6 +499,11 @@
       }
     }
 
+    if (SAN.romance) {
+      const flavour = SAN.romance.chatFlavour(def.id);
+      if (flavour) lines.push({ speaker: def.id, text: flavour.text, context: flavour.context });
+    }
+
     const choices = [];
     (def.topics || []).forEach((t) => {
       if (SAN.rel.pts(def.id) >= t.min && !(S_.dialogueSeen[def.id + '_' + t.id])) {
@@ -504,6 +514,15 @@
         });
       }
     });
+    if (SAN.romance && SAN.romance.romanceable(def.id)) {
+      const rstage = SAN.romance.stageIndex(def.id);
+      if (rstage >= 2) choices.push({ label: 'Spend time together', icon: '❦', cb: function () { SAN.ui.openPanel('romance', { npcId: def.id }); } });
+      if (SAN.romance.canConfess(def.id)) choices.push({ label: 'Tell them how you feel', icon: '💗', cb: function () { SAN.romance.confess(def.id); } });
+      if (SAN.romance.canCommit(def.id)) choices.push({ label: 'Ask them to commit', icon: '💞', cb: function () { SAN.romance.commit(def.id); } });
+      if (SAN.romance.canPartner(def.id)) choices.push({ label: 'Ask them to share your life', icon: '💍', cb: function () { SAN.romance.propose(def.id); } });
+      if (rstage >= 4) choices.push({ label: 'Ask how they are', icon: '🤍', cb: function () { SAN.romance.comfort(def.id); } });
+      if (rstage >= 5 && SAN.state.S.player.area === 'home') choices.push({ label: 'Ask them to stay the night', icon: '🌙', cb: function () { SAN.romance.stayNight(def.id); } });
+    }
     choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
     choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
     choices.push({ label: 'Not right now', icon: '✕', cb: function () { } });

@@ -191,6 +191,7 @@
         exploration: { lvl: 1, xp: 0 },
       },
       friendship: {},
+      romance: {},
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -259,6 +260,7 @@
     if (!merged.inventory.camera) merged.inventory.camera = 1;
     merged.discovered = Object.assign({ home: true }, snap.discovered || {});
     merged.friendship = Object.assign({}, base.friendship, snap.friendship || {});
+    merged.romance = Object.assign({}, base.romance, snap.romance || {});
     merged.journal = snap.journal || [];
     merged.memories = snap.memories || [];
     merged.achievements = snap.achievements || {};

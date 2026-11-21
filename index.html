@@ -2473,6 +2473,39 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
   .dlg-side { flex: 1 0 100%; order: 4; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .dlg-side:empty { display: none; }
 }
+
+/* ---------------- romance ---------------- */
+.rom-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 4px 0 6px; }
+.rom-stage { font-family: var(--font-display, serif); font-size: 15px; color: #8f79b0; letter-spacing: .02em; }
+.rom-aff-num { font-size: 12px; color: #8a7a6a; }
+.bar.rom i { background: linear-gradient(90deg, #c9ad75, #bda8dc); }
+.rom-aff { color: #8f79b0; }
+.rom-boundary { margin: 10px 0; padding: 8px 10px; font-size: 12px; line-height: 1.5; color: #6d5f52; background: rgba(189, 168, 220, 0.12); border-left: 3px solid #bda8dc; border-radius: 6px; }
+.rom-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.rom-memories { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 10px; }
+.rom-memory { font-size: 12.5px; line-height: 1.5; color: #5f5245; padding-left: 10px; border-left: 2px solid rgba(201, 173, 117, 0.5); }
+.rom-memory-day { font-size: 11px; color: #a08a6a; margin-right: 4px; }
+.rom-events { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tag-pill.on { background: rgba(189, 168, 220, 0.35); border-color: #bda8dc; color: #5f4f70; }
+.rom-panel-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 8px; }
+.rom-panel-portrait { width: 84px; flex: 0 0 84px; }
+.rom-panel-portrait img { width: 100%; display: block; border-radius: 10px; }
+.rom-panel-meta { flex: 1 1 auto; min-width: 0; }
+.rom-act-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.rom-act { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(201, 173, 117, 0.45); background: #fbf6ec; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.rom-act:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(95, 64, 41, 0.12); }
+.rom-act.off { opacity: .5; cursor: not-allowed; }
+.rom-act-ico { font-size: 20px; flex: 0 0 auto; }
+.rom-act-text { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
+.rom-act-text b { font-size: 13.5px; color: #4a3a2a; font-weight: 600; }
+.rom-act-text small { font-size: 11.5px; color: #7a6a58; line-height: 1.4; }
+.rom-act-gain { font-size: 12px; color: #8f79b0; flex: 0 0 auto; }.rom-fx { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+.rom-fx span { position: absolute; bottom: 44%; color: #b98fc4; opacity: 0; text-shadow: 0 2px 6px rgba(143, 121, 176, .35); animation: romFloat 1.7s ease-out forwards; }
+@keyframes romFloat {
+  0% { opacity: 0; transform: translateY(0) scale(.7); }
+  18% { opacity: .95; }
+  100% { opacity: 0; transform: translateY(-130px) scale(1.15); }
+}
 </style>
 </head>
 <body>
@@ -4234,6 +4267,569 @@ window.SAN = window.SAN || {};
 })();
 </script>
 <script>
+/* Sanctuary — romance data: stages, activities, boundaries, per-character scenes.
+   Every NPC here is an adult; nothing sexual is ever described, only faded out. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const R = (D.romance = {});
+
+  /* ---------------- relationship stages ---------------- */
+  R.STAGES = [
+    { id: 'stranger', name: 'Stranger' },
+    { id: 'acquaintance', name: 'Acquaintance' },
+    { id: 'friend', name: 'Friend' },
+    { id: 'closefriend', name: 'Close Friend' },
+    { id: 'interest', name: 'Romantic Interest' },
+    { id: 'dating', name: 'Dating' },
+    { id: 'committed', name: 'Committed' },
+    { id: 'partner', name: 'Life Partner' },
+  ];
+
+  /* ---------------- shared activities ----------------
+     minStage indexes R.STAGES. gain is affection, never friendship alone.
+     once: at most once per day. home: only inside your cottage. */
+  R.ACTIVITIES = [
+    { id: 'walk', label: 'Walk together', icon: '🥾', minStage: 1, gain: 4, once: true, blurb: 'A slow loop of the village, no destination.' },
+    { id: 'hand', label: 'Hold hands', icon: '🤝', minStage: 4, gain: 3, once: false, limit: 2, blurb: 'Fingers laced, unhurried.' },
+    { id: 'hug', label: 'Hug', icon: '🫂', minStage: 4, gain: 3, once: false, limit: 2, blurb: 'A long one. The kind that resets a day.' },
+    { id: 'stargaze', label: 'Stargaze', icon: '✦', minStage: 4, gain: 6, once: true, night: true, blurb: 'Lie back and name what you can see.' },
+    { id: 'dance', label: 'Dance', icon: '♫', minStage: 4, gain: 7, once: true, blurb: 'No music but the room.' },
+    { id: 'memory', label: 'Share a memory', icon: '📖', minStage: 3, gain: 6, once: true, blurb: 'Tell them something you have not told anyone.' },
+    { id: 'gift', label: 'Give a romantic gift', icon: '🌷', minStage: 4, gain: 5, once: true, blurb: 'Something with meaning, not price.' },
+    { id: 'dinner', label: 'Romantic dinner', icon: '🍷', minStage: 5, gain: 8, once: true, evening: true, blurb: 'Two plates, one candle, no rush.' },
+    { id: 'kiss', label: 'Kiss', icon: '💗', minStage: 5, gain: 5, once: false, limit: 2, privateOnly: true, blurb: 'Ask first. Always.' },
+    { id: 'cuddle', label: 'Cuddle', icon: '🛏️', minStage: 5, gain: 4, once: true, privateOnly: true, blurb: 'Close, warm, and entirely yours to stop.' },
+    { id: 'cook', label: 'Cook together', icon: '🍲', minStage: 5, gain: 6, once: true, home: true, blurb: 'Flour everywhere. Laughing anyway.' },
+    { id: 'fire', label: 'Sit by the fire', icon: '🔥', minStage: 5, gain: 5, once: true, home: true, evening: true, blurb: 'Two chairs, one blanket, quiet.' },
+    { id: 'craft', label: 'Craft together', icon: '🧵', minStage: 5, gain: 5, once: true, home: true, blurb: 'Making something small and useless and perfect.' },
+  ];
+
+  R.ACTIVITY = (id) => R.ACTIVITIES.find((a) => a.id === id);
+
+  /* a memory is written when something real happens */
+  R.romanceable = ['nyssa', 'liora', 'elowen', 'rowan', 'mira', 'celeste', 'theo', 'aria', 'finn'];
+
+  const N = (R.npcs = {});
+
+  /* =========================================================
+     NYSSA — village guardian, older than counting
+     ========================================================= */
+  N.nyssa = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'luminous, patient, and afraid of wanting',
+    pace: 0.7,
+    boundaries: {
+      pda: false,
+      privateOnly: true,
+      note: 'She will not be touched in front of the village. Not yet. Not as a spectacle.',
+      noTouching: ['kiss', 'cuddle'],
+    },
+    refusals: {
+      private: '\"Not here, with the whole village watching. Some things are only for quiet rooms.\"',
+      pace: '\"You are moving faster than I know how to. Let me catch up to you.\"',
+      low: '\"I care for you. I am not there yet, and I will not pretend to be.\"',
+      night: '\"The morning is kinder for this. Ask me then.\"',
+    },
+    lines: {
+      walk: 'She walks half a step behind you, so she can watch the way you notice things.',
+      hand: 'Her hand is cool and very steady. She holds on like it is a decision, not a habit.',
+      hug: 'She does not breathe for a moment, then does, slowly, against your shoulder.',
+      stargaze: '\"I have watched those stars move. They are the only things older than me that still bother to show up.\"',
+      dance: 'She moves like water finding a shape. \"I have not done this in a century. Do not laugh.\"',
+      memory: 'You tell her about the year you could not get out of bed. She says, \"Thank you for surviving it in front of me.\"',
+      gift: 'She turns the gift over. \"You keep giving me reasons to stay in one place.\"',
+      dinner: 'She hardly eats. She watches you eat, and that seems to be the meal.',
+      kiss: 'She closes her eyes a second before you do, like she has already decided to trust you.',
+      cuddle: 'She is warm in a way that has nothing to do with temperature. \"Do not tell the village I do this.\"',
+      cook: 'She burns the onions and apologises to them. You have never loved anyone so specifically.',
+      fire: 'She sits on the floor rather than the chair, back against your knees, and says nothing for an hour.',
+      craft: 'She makes a small clay bird. It is terrible. She keeps it in her sleeve.',
+      rain: 'Rain on the cottage roof. She listens to it like a message she has been waiting for.',
+    },
+    morning: '\"You are still here.\" She says it as a fact she is checking, gently.',
+    goodnight: '\"Sleep. I will keep the lamp low and the night honest.\"',
+    comfort: 'She sits beside you without asking what is wrong, and that is exactly right.',
+    events: {
+      friend: ['\"You have stopped flinching when I appear. I noticed. It took four months.\"'],
+      story: ['\"I was made to watch over this place. Nobody asked if I wanted a smaller life.\"', '\"You are the first person who asked what I wanted instead.\"'],
+      date: ['\"A whole evening with no duties. I do not know what to do with my hands.\"', 'She decides: hold yours.'],
+      commit: ['\"I have watched generations love each other badly and call it fate.\"', '\"I would like to do this well, with you, on purpose.\"'],
+      anniversary: ['\"One more year of you. I have counted carefully. I intend to keep counting.\"'],
+    },
+    confession: {
+      ask: 'You take her hand and tell her the truth you have been carrying.',
+      yes: ['She is quiet for a long moment. \"I was afraid you would ask, and more afraid you would not.\"', '\"Yes. Slowly. Honestly. Yes.\"'],
+      notYet: '\"Not yet. Not because I do not want it — because I want it to be true when I say it.\"',
+    },
+    home: {
+      cook: 'She stands very close and does not help, and you let her.',
+      fire: 'She watches the fire like an old friend, then watches you like a new one.',
+      craft: 'She holds the thread while you sew. It is the most ordinary happiness you have had.',
+    },
+  };
+
+  /* =========================================================
+     LIORA — lighthouse keeper, steady and scared of being left
+     ========================================================= */
+  N.liora = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'warm, careful, and braver than she believes',
+    pace: 1,
+    boundaries: {
+      pda: true,
+      privateOnly: false,
+      note: 'She is fine being seen with you. She is not fine being a rumour.',
+    },
+    refusals: {
+      private: '\"Not in the middle of the village. I have a reputation for being sensible.\"',
+      pace: '\"Slow down. I am not running. That is the whole point of me.\"',
+      low: '\"I like you. I am not ready for that, and I am allowed to say so.\"',
+      night: '\"The lamp needs me tonight. Ask me when the sky is clear.\"',
+    },
+    lines: {
+      walk: 'She takes the sea path, then admits she chose it because the sunset is better there.',
+      hand: 'Her hands are rough from rope and lamp oil. She laces her fingers in yours anyway.',
+      hug: 'She holds on a beat longer than expected, then steps back and pretends she did not.',
+      stargaze: '\"Out there, a ship is using my lamp to find its way home. Feels strange to be the reason.\"',
+      dance: 'She counts the steps under her breath. Then stops counting.',
+      memory: 'You tell her about the night you left somewhere. She says, \"I know that night. I have been in it.\"',
+      gift: 'She puts it on the windowsill immediately, where she can see it from the stairs.',
+      dinner: 'She lights the good candle and pretends it was already there.',
+      kiss: 'She asks, \"Is this all right?\" before, and again after, and means it both times.',
+      cuddle: 'She falls asleep first, which she would be embarrassed about if she knew.',
+      cook: 'She is a terrible cook and a wonderful accomplice.',
+      fire: 'She tells you the story of every dent in the lamp room floor.',
+      craft: 'She makes a rope bracelet, badly, and ties it on your wrist herself.',
+      rain: 'She opens the window to hear it. \"Storms are just weather being honest.\"',
+    },
+    morning: '\"Morning. The kettle is on. I am not good at this yet, but I am trying.\"',
+    goodnight: '\"Goodnight. If you cannot sleep, the lamp room is warm.\"',
+    comfort: 'She sits with you on the west step until you can breathe again.',
+    events: {
+      friend: ['\"I saved you a seat. I have started saving you a seat. That is a thing I do now.\"'],
+      story: ['\"Four years alone up here. I told myself it was duty.\"', '\"It was easier than asking someone to stay and hearing them say no.\"'],
+      date: ['She brings a blanket to the beach and apologises for the sand twice.', '\"I planned this. That is not something I usually admit.\"'],
+      commit: ['\"I have kept a light burning for strangers my whole life.\"', '\"I would like to keep one for you. Not as a duty. As a choice.\"'],
+      anniversary: ['\"Every year the lamp gets serviced. This is the only anniversary I look forward to.\"'],
+    },
+    confession: {
+      ask: 'You tell her you would like to be the person who keeps coming back.',
+      yes: ['\"Oh.\" Her eyes go bright and she laughs at herself. \"I practised a calm response. That is gone now.\"', '\"Yes. I want that. I have wanted it for a while.\"'],
+      notYet: '\"I need a little time. Not a no — a not yet. Please do not go far.\"',
+    },
+    home: {
+      cook: 'She burns the bread and you eat it anyway, both of you laughing.',
+      fire: 'She falls asleep against your shoulder and wakes up apologising.',
+      craft: 'She is hopeless with a needle and very proud of the crooked result.',
+    },
+  };
+
+  /* =========================================================
+     ELOWEN — gardener, self-reliant, learning to be helped
+     ========================================================= */
+  N.elowen = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'quiet, observant, and easily overwhelmed by kindness',
+    pace: 0.8,
+    boundaries: {
+      pda: false,
+      privateOnly: true,
+      note: 'Affection is not a performance for her. It happens in greenhouses and kitchens.',
+      noTouching: ['kiss', 'cuddle'],
+    },
+    refusals: {
+      private: '\"Not outside. Please. I do not want to be looked at while I feel something.\"',
+      pace: '\"That is a lot. In a good way. I still need a minute to hold it.\"',
+      low: '\"I like you. I am not there yet. I am not going to say it to be polite.\"',
+      night: '\"I have seedlings that need me at dawn. Another night.\"',
+    },
+    lines: {
+      walk: 'She names every plant you pass. Half of them she apologises to.',
+      hand: 'She goes still, then holds on with the concentration of someone carrying something fragile.',
+      hug: 'She forgets to let go, then remembers, then looks at the floor.',
+      stargaze: '\"The stars are just very far plants. I know that is not accurate. I like it anyway.\"',
+      dance: 'She dances like she is being watched. Then you close the curtain, and she does not.',
+      memory: 'You tell her about asking for help and being refused. She says, \"That is why I stopped asking.\"',
+      gift: 'She turns it over twice. \"You noticed. Nobody notices the specific things.\"',
+      dinner: 'She brings vegetables from the greenhouse and refuses to be thanked.',
+      kiss: 'She asks if it is okay with her eyes before she moves, and waits for the answer.',
+      cuddle: 'She is tense for a minute, then goes soft, like soil after rain.',
+      cook: 'She cuts everything into perfect pieces and cannot explain why it matters.',
+      fire: 'She sits close enough that your sleeves touch, and pretends not to notice.',
+      craft: 'She makes a tiny pot by hand. \"For a cutting. Not for you. Maybe for you.\"',
+      rain: '\"The beds needed this,\" she says, and then stays at the window anyway.',
+    },
+    morning: '\"You are up. Good. I was going to be normal about it and then I saw you.\"',
+    goodnight: '\"Sleep well. I will be here in the morning. That is — that is fine, right?\"',
+    comfort: 'She does not say anything useful. She stays, and that is the useful part.',
+    events: {
+      friend: ['\"I saved you a cutting. It is nothing.\" It is clearly not nothing.'],
+      story: ['\"When the roof broke I fixed it alone because asking felt like a bill I could not pay.\"', '\"You asked me to let you help and I have been thinking about it for weeks.\"'],
+      date: ['She takes you to the greenhouse after closing. It is the most personal place she has.', '\"I want you to see it. That is a big thing for me. Please do not make it weird.\"'],
+      commit: ['\"I have been alone on purpose for a long time. It stopped being a preference and became a habit.\"', '\"I would like to break it with you. Carefully.\"'],
+      anniversary: ['\"The lavender we planted is four years old now. So are we. Both still alive. Good.\"'],
+    },
+    confession: {
+      ask: 'You tell her you would like to be someone she does not have to do everything without.',
+      yes: ['She covers her face with both hands for a second. \"Okay. Okay. Yes.\"', '\"I am going to be bad at this. I want to be bad at it with you.\"'],
+      notYet: '\"I need time. I am not saying no. I am saying I need to be sure I mean it.\"',
+    },
+    home: {
+      cook: 'She arranges the vegetables by colour and you let her, because it makes her happy.',
+      fire: 'She brings a plant to the fire because \"it was cold\". You let that happen too.',
+      craft: 'She learns the stitch in one try and then teaches it back to you, patiently.',
+    },
+  };
+
+  /* =========================================================
+     ROWAN — windmill keeper, overthinking, generous
+     ========================================================= */
+  N.rowan = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'nervous, sincere, and always rehearsing',
+    pace: 1,
+    boundaries: {
+      pda: true,
+      privateOnly: false,
+      note: 'He is fine being seen. He will simply think about it for three days afterwards.',
+    },
+    refusals: {
+      private: '\"Oh — here? In front of the bread queue? I would love to. I would also die.\"',
+      pace: '\"Can I have a second? Not because I do not want to. Because I am me.\"',
+      low: '\"I like you a lot. I am not ready to say the bigger thing yet. I hope that is okay.\"',
+      night: '\"I have to be up with the sails. Rain check? That was not a weather joke. Or it was.\"',
+    },
+    lines: {
+      walk: 'He talks the whole way about a conversation you had last week, then apologises for it.',
+      hand: 'He checks twice that your hand is comfortable. Then he relaxes, finally.',
+      hug: 'He holds on and says, \"Okay. This is good. I am noting this.\"',
+      stargaze: '\"I have counted those three about forty times. I keep thinking they will change.\"',
+      dance: 'He is a terrible dancer and stops apologising after the second song.',
+      memory: 'You tell him the thing you have never said out loud. He says, \"I will not repeat it. I will just know it.\"',
+      gift: 'He looks at it for a long time. \"You chose this for me. On purpose. That is — okay. Wow.\"',
+      dinner: 'He rehearsed three topics. You talk about none of them and it is better.',
+      kiss: 'He says, \"I have thought about this so much,\" and then stops thinking.',
+      cuddle: 'He goes quiet in a way that means his head has finally stopped.',
+      cook: 'He reads the recipe aloud like a legal document. It helps, somehow.',
+      fire: 'He asks if he can put his head on your shoulder. Then asks again to be sure.',
+      craft: 'He makes a mess and a small wooden bird. \"It is a bird. It is not a good bird.\"',
+      rain: 'He stands at the window and says, \"Rain is just the sky doing something instead of nothing.\"',
+    },
+    morning: '\"Hi. Good morning. I have already thought about six things to say. This is the one.\"',
+    goodnight: '\"Goodnight. I will probably replay this conversation. In a nice way.\"',
+    comfort: 'He asks what would help, then does exactly that, then asks if it helped.',
+    events: {
+      friend: ['\"I wrote you a note and then did not send it. Here. I am sending it now. Please read it later.\"'],
+      story: ['\"I keep a notebook of things I almost said. There are a lot of pages.\"', '\"You are the first person I have read one to.\"'],
+      date: ['He plans it for two weeks. The plan is a disaster. The date is not.', '\"I am going to stop apologising for being excited. Starting now. Sorry. Starting now.\"'],
+      commit: ['\"I used to think if I stopped worrying I would miss something.\"', '\"With you I miss fewer things. I would like to keep doing that.\"'],
+      anniversary: ['\"I remembered the date without checking. That is a first. I am very proud.\"'],
+    },
+    confession: {
+      ask: 'You tell him that you have noticed the notes, and that you would like to be the person they are for.',
+      yes: ['\"Oh. Oh no. I had a whole calm speech.\"', '\"Yes. Obviously yes. I have been obvious, haven\'t I?\"'],
+      notYet: '\"I need to be sure I am not just excited. That is not a no. Please wait for me.\"',
+    },
+    home: {
+      cook: 'He measures everything twice. You kiss his shoulder and he loses count.',
+      fire: 'He sits on the floor by your chair and finally stops talking.',
+      craft: 'He makes a second bird, better than the first, and gives it to you without a joke.',
+    },
+  };
+
+  /* =========================================================
+     MIRA — baker, generous, learning to receive
+     ========================================================= */
+  N.mira = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'warm, funny, and quietly starving for care',
+    pace: 1.2,
+    boundaries: {
+      pda: true,
+      privateOnly: false,
+      note: 'She will hold your hand across the counter in front of everyone. She will not be rushed.',
+    },
+    refusals: {
+      private: '\"Sweetheart, there are four people in this shop. Later.\"',
+      pace: '\"Not so fast. I have spent my whole life being the one who gives. Let me breathe.\"',
+      low: '\"I adore you. I am not ready for that. Please do not make it heavy.\"',
+      night: '\"I am up at four. Another night, I promise.\"',
+    },
+    lines: {
+      walk: 'She brings bread for the walk and gives half of it away before you leave the square.',
+      hand: 'She holds your hand over the counter and dares anyone to comment.',
+      hug: 'She hugs like she is putting something down that she has carried all day.',
+      stargaze: 'She brings a blanket and two slices of cake and says, \"A picnic. At night. I am a genius.\"',
+      dance: 'She dances like the kitchen is a ballroom and the flour is confetti.',
+      memory: 'You tell her about being the one who holds everything. She says, \"Oh, honey. Me too.\"',
+      gift: 'She actually sits down with it. \"Nobody gives me things. I do not know where to put my face.\"',
+      dinner: 'She cooks, you wash up, and she lets you.',
+      kiss: 'She tastes like cinnamon and she laughs halfway through, delighted.',
+      cuddle: 'She falls asleep in three minutes flat and wakes up saying sorry.',
+      cook: 'She bosses you around the kitchen lovingly and feeds you constantly.',
+      fire: 'She brings a tray of mostly-failed pastries and calls it dinner.',
+      craft: 'She decorates everything you make with little dough flowers. It is not a craft anymore.',
+      rain: 'She opens the shop door to the rain and says, \"Smell that. Free aromatherapy.\"',
+    },
+    morning: '\"Morning, love. There is bread. There is always bread. Sit down.\"',
+    goodnight: '\"Goodnight. Eat something before bed. That is an order from a professional.\"',
+    comfort: 'She feeds you first and asks questions second, which is exactly the right order.',
+    events: {
+      friend: ['\"You are taking the bread. Good. People who refuse things make me nervous.\"'],
+      story: ['\"I inherited this shop. Everyone says how lucky. I have never once said how tired.\"', '\"I am telling you because you would not make it a thing.\"'],
+      date: ['She closes the bakery early, which has never happened. \"Do not tell the village.\"', 'She sets the table with the good plates and cries a little at the good plates.'],
+      commit: ['\"I have looked after this whole village. It is a good life. It is also very loud.\"', '\"I want one quiet person to look after me. I am choosing you. Please choose back.\"'],
+      anniversary: ['\"One year since I let someone bring me bread. Life-changing. Genuinely.\"'],
+    },
+    confession: {
+      ask: 'You tell her you would like to be the one who brings her bread.',
+      yes: ['She puts down the tray she is holding. \"Say that again. Slowly.\"', '\"Yes. God, yes. I have been so obvious.\"'],
+      notYet: '\"I need to believe it first. Give me a little time. I am not going anywhere.\"',
+    },
+    home: {
+      cook: 'You cook together and she tastes everything with a spoon and gives notes.',
+      fire: 'She puts her feet in your lap and says, \"This is the entire holiday I wanted.\"',
+      craft: 'She is covered in flour and glitter and having the best evening of her month.',
+    },
+  };
+
+  /* =========================================================
+     CELESTE — florist, gentle, speaks in flowers
+     ========================================================= */
+  N.celeste = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'slow, tender, and a little far away',
+    pace: 0.8,
+    boundaries: {
+      pda: false,
+      privateOnly: true,
+      note: 'She keeps affection out of the shop. Flowers are for the public; this is not.',
+    },
+    refusals: {
+      private: '\"Not in the shop. The whole village buys flowers here and I would like to keep it mine.\"',
+      pace: '\"Let this be slow. Slow things keep.\"',
+      low: '\"There is affection here. There is not yet the thing you are asking for.\"',
+      night: '\"The flowers need closing up. Tomorrow, if the weather is kind.\"',
+    },
+    lines: {
+      walk: 'She stops at every garden. You are late everywhere and it does not matter.',
+      hand: 'She holds your hand like she is arranging it, then leaves it alone.',
+      hug: 'She smells of green stems and rain. She holds you until you let go first.',
+      stargaze: '\"Starflowers open for the moon. I think they are showing off.\"',
+      dance: 'She dances with her eyes closed. \"I am not good at this. I am good at meaning it.\"',
+      memory: 'You tell her about someone you lost. She does not comfort you with flowers. She just listens.',
+      gift: 'She presses it into her book immediately. \"This one goes in the good book.\"',
+      dinner: 'She arranges the table like a bouquet and refuses to explain the symbolism.',
+      kiss: 'She takes your face in both hands first, and asks with a look.',
+      cuddle: 'She is still for once. No arranging. No planning. Just there.',
+      cook: 'She puts edible flowers on everything, including things that should not have flowers.',
+      fire: 'She talks about the village in bouquets: who is grieving, who is in love, who is pretending.',
+      craft: 'She makes a dried-flower charm and ties it to your bag without a word.',
+      rain: 'She stands in the doorway with you, watching the garden drink.',
+    },
+    morning: '\"You are here. Good. I picked something for you at dawn. I always do now.\"',
+    goodnight: '\"Sleep. I will leave the window open for the night flowers.\"',
+    comfort: 'She brings you a single stem and sits beside you, saying nothing.',
+    events: {
+      friend: ['\"I put your flowers in the front window now. I do not do that for everyone.\"'],
+      story: ['\"I loved someone once who bought flowers every week for someone else.\"', '\"I gave him the best ones. I have been trying to be less generous with myself since.\"'],
+      date: ['She closes the shop and lights a single candle among the buckets.', '\"This is the first time this room has been only mine, and I am sharing it.\"'],
+      commit: ['\"I have spent ten years saying things with flowers because words frightened me.\"', '\"Here are the words: I want a life with you in it.\"'],
+      anniversary: ['\"The peonies come back every year without being asked. I am trying to learn that.\"'],
+    },
+    confession: {
+      ask: 'You tell her, in words, what the flowers have been saying.',
+      yes: ['She is quiet for a long time. \"I wondered if I was inventing it.\"', '\"Yes. I would like that very much. Slowly.\"'],
+      notYet: '\"Not yet. I need to be sure it is not just the season. Wait for me.\"',
+    },
+    home: {
+      cook: 'She makes tea out of things she grew and you pretend to like all of them.',
+      fire: 'She sits with her head on your shoulder and names the plants in the firelight.',
+      craft: 'She presses flowers into the pages of your notebook, marking days.',
+    },
+  };
+
+  /* =========================================================
+     THEO — merchant, theatrical, secretly steady
+     ========================================================= */
+  N.theo = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'playful on the surface, sincere underneath',
+    pace: 1,
+    boundaries: {
+      pda: true,
+      privateOnly: false,
+      note: 'He will flirt in public all day. He will only mean it in private.',
+    },
+    refusals: {
+      private: '\"In the market? My reputation is theatrical, not scandalous.\"',
+      pace: '\"You are outpacing the cart. The cart is slow. Be slow with me.\"',
+      low: '\"I like you. I am not ready to make it a fact. Give me a season.\"',
+      night: '\"The cart leaves at dawn. Tonight I need to pack. Ask me tomorrow.\"',
+    },
+    lines: {
+      walk: 'He narrates the walk like a tour of places that do not exist. It is wonderful.',
+      hand: 'He holds your hand and says, \"Careful. I am a bad investment,\" and does not let go.',
+      hug: 'He hugs like a man who has not been hugged in a while and is pretending it is casual.',
+      stargaze: '\"I have navigated by those. Badly. That is why I stay on roads.\"',
+      dance: 'He is excellent and makes sure you notice, then gets shy when you say so.',
+      memory: 'You tell him something true. He drops the performance completely. \"Thank you. That is the real thing.\"',
+      gift: 'He examines it like merchandise, then puts it in his coat pocket, close.',
+      dinner: 'He sets the table with things from the cart and tells you what each one cost, then admits the real price.',
+      kiss: 'He is quiet afterwards, which from him is enormous.',
+      cuddle: 'He strokes your hair and says nothing clever at all.',
+      cook: 'He claims to have invented the recipe. He has not. He is a good chopper.',
+      fire: 'He tells you a story with three endings until you tell him which one you believe.',
+      craft: 'He makes something with too many clasps and is unreasonably proud.',
+      rain: 'He says, \"Rain is good for the cart. Rust is good for the story.\"',
+    },
+    morning: '\"Good morning. I have already invented a rumour about us. It is tasteful.\"',
+    goodnight: '\"Goodnight. I will be here in the morning. That is not a sales pitch.\"',
+    comfort: 'He makes a joke, then stops making jokes, then stays.',
+    events: {
+      friend: ['\"I do not usually stay two seasons in one place. Ask me why I am still here.\"'],
+      story: ['\"My father drove this cart. He sold a man a map to a place that was not real, and the man found it.\"', '\"I have been trying to work out if I am running toward something or from it.\"'],
+      date: ['He takes you to the cart after closing, which is the closest thing he has to a home.', '\"This is not impressive. It is the most honest thing I own.\"'],
+      commit: ['\"I could leave tomorrow. I have done it before, easily.\"', '\"The fact that I do not want to is the most frightening thing in my life. I would like to stay.\"'],
+      anniversary: ['\"One year in one place. My father would be astonished. He would also approve.\"'],
+    },
+    confession: {
+      ask: 'You tell him you would like him to stay because he wants to, not because the cart is stuck.',
+      yes: ['\"You know I am going to say something theatrical.\" He does not. He just nods, twice.', '\"Yes. Stay. I will stay. That is the whole answer.\"'],
+      notYet: '\"Ask me when I have unpacked. I want to give you a real answer, not a performance.\"',
+    },
+    home: {
+      cook: 'He seasons things by instinct and is right every time, which is infuriating.',
+      fire: 'He tells you about the roads, one town at a time, until you both fall asleep.',
+      craft: 'He builds a little shelf for your things and hides a note under it.',
+    },
+  };
+
+  /* =========================================================
+     ARIA — librarian, dry, hopelessly romantic under it
+     ========================================================= */
+  N.aria = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'dry, precise, and devastating when she means something',
+    pace: 0.9,
+    boundaries: {
+      pda: false,
+      privateOnly: true,
+      note: 'The library is her whole self. She will not be affectionate where she works.',
+    },
+    refusals: {
+      private: '\"Not in the library. I have a system. The system does not include this.\"',
+      pace: '\"Let me finish the sentence, at least. You are always three lines ahead.\"',
+      low: '\"I am fond of you. I am not finished deciding how much. Do not take that as a no.\"',
+      night: '\"I have an index to finish. Tomorrow.\"',
+    },
+    lines: {
+      walk: 'She brings a book and does not read a word of it.',
+      hand: 'She laces her fingers through yours and says, \"Filed under: good.\"',
+      hug: 'She is stiff, then not, and then says, \"Do not tell anyone I am like this.\"',
+      stargaze: '\"None of this is catalogued. It is deeply upsetting. It is also beautiful.\"',
+      dance: 'She claims not to dance. She dances exactly three steps and then cannot stop.',
+      memory: 'You tell her about a thing you have been trying to outlive. She says, \"I am putting it in the record. It is not a sad entry.\"',
+      gift: 'She goes quiet. \"This is going on the shelf. The special one. I told you about the special one.\"',
+      dinner: 'She brings a book to dinner and closes it before the first course.',
+      kiss: 'She takes off her glasses. That is the whole sentence.',
+      cuddle: 'She reads aloud to you, badly, on purpose, and keeps going after you fall asleep.',
+      cook: 'She follows the recipe exactly and it is the blandest meal you have ever loved.',
+      fire: 'She reads you the village ledger from a hundred years ago. It is funnier than it should be.',
+      craft: 'She writes a label for everything you make, including the failures.',
+      rain: 'She opens the window and says, \"The library needed the noise.\"',
+    },
+    morning: '\"Morning. I wrote something about you. No, you cannot read it. Yes, it is good.\"',
+    goodnight: '\"Goodnight. I will leave a lamp on. That is not a metaphor. It is also a metaphor.\"',
+    comfort: 'She puts down the book entirely. That is how you know.',
+    events: {
+      friend: ['\"You are in the ledger. Under things worth keeping.\"'],
+      story: ['\"I remember everything so it cannot surprise me at night.\"', '\"You are the first thing I have wanted to be surprised by.\"'],
+      date: ['She closes the library early and takes you to the back room nobody sees.', '\"This is the real building. The rest is a public service.\"'],
+      commit: ['\"I am very good at recording other people\'s lives. I have not been brave about my own.\"', '\"I would like to write you in. Permanently.\"'],
+      anniversary: ['\"One year. I have the date in three places, and I checked all three this morning.\"'],
+    },
+    confession: {
+      ask: 'You tell her you would like to be a fact she keeps, not a footnote.',
+      yes: ['\"Oh.\" She takes off her glasses, which is a whole language.', '\"Yes. I have had this drafted for some time. I was waiting for the right edition.\"'],
+      notYet: '\"I need to be certain. Not about you. About me. Give me a little time.\"',
+    },
+    home: {
+      cook: 'She alphabetises the spices and you let her, then she cooks something wonderful.',
+      fire: 'She reads to you in the firelight until her voice goes soft.',
+      craft: 'She writes a tiny title on the book you bind and hides her pride badly.',
+    },
+  };
+
+  /* =========================================================
+     FINN — fisherman, easygoing, quietly grieving
+     ========================================================= */
+  N.finn = {
+    adult: true, // every romanceable character is an adult; intimate scenes fade to black
+    style: 'easy, warm, and slower than he looks',
+    pace: 1,
+    boundaries: {
+      pda: true,
+      privateOnly: false,
+      note: 'He is comfortable in public. He will not be rushed into anything that matters.',
+    },
+    refusals: {
+      private: '\"Here? With the whole pier watching? No, thank you.\"',
+      pace: '\"Slow down, friend. The good fish take time.\"',
+      low: '\"I am fond of you. I am not ready to say it bigger than that.\"',
+      night: '\"Tide turns at four. Tonight is not the night.\"',
+    },
+    lines: {
+      walk: 'He walks the tideline, points at nothing, and is right about most of it.',
+      hand: 'He holds your hand and says, \"Well. This is a good day.\"',
+      hug: 'He gives a long, solid hug and then clears his throat and changes the subject.',
+      stargaze: 'He names the stars wrong on purpose until you laugh at him.',
+      dance: 'He shuffles, entirely unembarrassed, and it is the most charming thing in the village.',
+      memory: 'You tell him something heavier than you meant to. He says, \"I know that weight. I will not tell you it is light.\"',
+      gift: 'He turns it in his hands. \"My wife would have liked you. That is not a sad thing. It is the highest thing.\"',
+      dinner: 'He cooks fish. You act surprised. He acts surprised that you are surprised.',
+      kiss: 'He is careful and warm and afterwards he just smiles, that slow one.',
+      cuddle: 'He is solid and still, and says, \"This is the best weather.\"',
+      cook: 'He guts the fish with terrifying efficiency and then apologises for the smell.',
+      fire: 'He tells you about his father and the three bass, and cries a little, and keeps talking.',
+      craft: 'He mends a net and teaches you a knot you will never forget.',
+      rain: 'He says, \"The sea is doing its big mood. We can do ours.\"',
+    },
+    morning: '\"Morning. Kettle is on. The water is calm today. Good sign.\"',
+    goodnight: '\"Sleep easy. If you cannot, come out and we will watch the dark together.\"',
+    comfort: 'He sits beside you with a hand on your back and does not say a word.',
+    events: {
+      friend: ['\"I saved your spot on the pier. It is a real spot. I painted a small mark.\"'],
+      story: ['\"My wife died six years ago. I came out here the next morning and kept working.\"', '\"I am not sad all the time. I am sad at the edges. That is easier to carry.\"'],
+      date: ['He takes you out on the water at sunset. \"This is the good tour. There is no other tour.\"', 'He is quiet out here in a way that makes you quiet too.'],
+      commit: ['\"I thought I had my one great love and that was that.\"', '\"I keep finding out I was wrong about how much room there is. I would like to make room with you.\"'],
+      anniversary: ['\"One year of good weather. Not the literal weather. You.\"'],
+    },
+    confession: {
+      ask: 'You tell him that this has stopped being friendship for you, and you are not asking for guarantees.',
+      yes: ['She (He) nods slowly, twice. \"I was hoping. I did not want to presume.\"', '\"Yes. Come on, then. Let us be weather-companions properly.\"'],
+      notYet: '\"I need a little while. Not because of you. Because of me. Do not go far.\"',
+    },
+    home: {
+      cook: 'He cooks, you fetch things, and he narrates the meal like a sea voyage.',
+      fire: 'He sits with his arm along the back of the sofa and lets the fire do the talking.',
+      craft: 'He fixes a chair that did not need fixing and looks pleased about it.',
+    },
+  };
+
+  /* fill pronoun tokens in any line */
+  R.fill = function (text, player) {
+    const p = SAN.state.pronoun(player && player.pronoun);
+    return String(text)
+      .replace(/\{name\}/g, (player && player.name) || 'you')
+      .replace(/\{they\}/g, p.subject)
+      .replace(/\{them\}/g, p.object)
+      .replace(/\{their\}/g, p.possessive)
+      .replace(/\{They\}/g, p.subject.charAt(0).toUpperCase() + p.subject.slice(1));
+  };
+})();
+</script>
+<script>
 /* Main Character — single source of truth for the official reference artwork.
    Every screen reads from here; nothing draws a second, generic version. */
 (function () {
@@ -5356,6 +5952,18 @@ window.SAN = window.SAN || {};
     add(a, 'catbed', 4, 11, { w: 2, h: 1, solid: false });
     add(a, 'catbowl', 6, 11, { solid: false });
     add(a, 'window', 2, 1, { solid: true });
+    /* Victorian dressing: framed botanicals, a hallway clock, quiet comforts */
+    add(a, 'painting', 9, 1, { solid: true, interact: { type: 'sign', text: 'A pressed sprig of lavender under glass, labelled in handwriting you almost recognise.' } });
+    add(a, 'painting', 12, 1, { solid: true });
+    add(a, 'mirror', 13, 1, { solid: true, interact: { type: 'sign', text: 'An oval mirror in a gilded frame. Your reflection arrives half a second late, then smiles.' } });
+    add(a, 'clock', 18, 1, { solid: true, interact: { type: 'sign', text: 'A small oak clock, wound every Sunday. It keeps village time, which is to say: approximate.' } });
+    add(a, 'vase', 8, 2, { solid: false });
+    add(a, 'bookstack', 11, 10, { solid: false });
+    add(a, 'cushion', 13, 10, { solid: false });
+    /* Mochi's corner: a woven mat under the nest and a spare cushion */
+    fillRect(a, 3, 12, 4, 1, 'r');
+    add(a, 'cushion', 8, 12, { solid: false });
+
     add(a, 'plaque', 10, 1, { solid: false, text: 'Home' });
     return a;
   }
@@ -5903,8 +6511,736 @@ window.SAN = window.SAN || {};
   /* =========================================================
      TILES
      ========================================================= */
+  /* =========================================================
+     COTTAGE INTERIOR — Cozy Victorian pixel art (home only)
+     Every piece below is drawn pixel by pixel on a transparent
+     background at the game's native 16 px tile scale, so the
+     cottage keeps the existing top-down grid, collision and
+     interaction positions while looking like the reference
+     artwork. Other areas keep their original furniture.
+     ========================================================= */
+  const HM = {
+    oak: '#a8764f', oak2: '#8a5f3c', oakDeep: '#5f4029', oakLight: '#c9a97e', oakPale: '#e0c39a',
+    cream: '#f7f0e2', cream2: '#eadfc8', cream3: '#d9c9ad',
+    lav: '#bda8dc', lavDeep: '#8f79b0', lavSoft: '#d9cbea', lavPale: '#ece4f6',
+    sage: '#a8bfa0', sageDeep: '#7d9a7a', sagePale: '#c8dabf',
+    gold: '#c9ad75', goldLight: '#eddcae', goldDeep: '#a2823c',
+    flame: '#f09a45', flame2: '#f7c96a', hot: '#ffeec0',
+    soot: '#2b211b', shadow: 'rgba(44,30,22,0.16)',
+  };
+
+  /* --- walls: cream wallpaper above an oak wainscot --- */
+  function homeWall(sx, sy, tx, ty, h) {
+    const lower = ty === 1;
+    // cream plaster, faint vertical stripes, a picture rail and oak dado
+    px(sx, sy, T, T, lower ? '#f0e4d2' : '#ebdcc8');
+    if (tx % 2 === 0) px(sx + 7, sy, 3, T, 'rgba(233,221,203,0.45)');
+    if (tx % 2 === 1) px(sx + 1, sy, 1, T, 'rgba(214,196,172,0.16)');
+    if (!lower) {
+      // a quiet damask motif, only every other tile, so the wall is not bare
+      if (tx % 2 === 1) {
+        px(sx + 7, sy + 3, 2, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 6, sy + 4, 4, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 6, sy + 5, 4, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 7, sy + 6, 2, 1, 'rgba(185,164,216,0.20)');
+        px(sx + 7, sy + 9, 2, 1, 'rgba(168,191,160,0.16)');
+      }
+      px(sx, sy + 12, T, 1, 'rgba(201,173,117,0.22)');
+      px(sx, sy + 13, T, 1, 'rgba(168,118,79,0.20)');
+    }
+    if (lower) {
+      // panelled oak dado along the foot of the wall
+      px(sx, sy + 7, T, 9, HM.oak2);
+      px(sx, sy + 7, T, 1, HM.oakPale);
+      px(sx, sy + 8, T, 1, HM.oak);
+      px(sx + 2, sy + 9, 5, 5, HM.oak);
+      px(sx + 9, sy + 9, 5, 5, HM.oak);
+      px(sx + 2, sy + 9, 5, 1, HM.oakLight);
+      px(sx + 9, sy + 9, 5, 1, HM.oakLight);
+      px(sx, sy + 15, T, 1, HM.oakDeep);
+      px(sx, sy + 6, T, 1, 'rgba(201,173,117,0.45)');
+    } else {
+      px(sx, sy + 15, T, 1, 'rgba(150,120,96,0.2)');
+    }
+    if (tx === 0) {
+      px(sx + 11, sy, 5, T, HM.oak2);
+      px(sx + 11, sy, 1, T, HM.oakPale);
+      px(sx + 12, sy + 1, 3, T - 2, 'rgba(201,169,126,0.22)');
+    }
+    if (tx === curArea.w - 1) {
+      px(sx, sy, 5, T, HM.oak2);
+      px(sx + 4, sy, 1, T, HM.oakPale);
+      px(sx + 1, sy + 1, 3, T - 2, 'rgba(201,169,126,0.22)');
+    }
+  }
+  /* --- floor: long warm oak boards, not a brick pattern --- */
+  function homeFloor(sx, sy, tx, ty, h) {
+    px(sx, sy, T, T, '#bd9166');
+    // tone drifts in wide patches, never per tile, so no vertical banding
+    const v = SAN.util.hash(Math.floor(tx / 3), Math.floor(ty / 2));
+    if (v > 0.62) px(sx, sy, T, T, 'rgba(206,164,120,0.16)');
+    else if (v < 0.26) px(sx, sy, T, T, 'rgba(116,80,50,0.09)');
+    // continuous board seams (same height in every tile)
+    px(sx, sy, T, 1, 'rgba(240,216,180,0.20)');
+    px(sx, sy + 7, T, 1, 'rgba(122,86,56,0.26)');
+    px(sx, sy + 8, T, 1, 'rgba(240,216,180,0.12)');
+    px(sx, sy + 15, T, 1, 'rgba(110,76,48,0.42)');
+    const g1 = 1 + Math.floor((h * 43) % 8), g2 = 2 + Math.floor((h * 67) % 7);
+    px(sx + g1, sy + 3, 6, 1, 'rgba(150,106,68,0.24)');
+    px(sx + g2, sy + 12, 7, 1, 'rgba(150,106,68,0.18)');
+    if (h > 0.62) px(sx + 4, sy + 10, 4, 1, 'rgba(230,200,160,0.20)');
+    if (h > 0.88) px(sx + 13, sy + 1, 1, 6, 'rgba(122,86,56,0.18)');
+  }
+  /* --- the big lavender rug with a woven border --- */
+  function homeRug(sx, sy, tx, ty, h) {
+    const at = (dx, dy) => ((curArea.grid[ty + dy] || [])[tx + dx] || '');
+    px(sx, sy, T, T, '#c6b2e0');
+    for (let i = 0; i < T; i += 4) px(sx, sy + i, T, 1, 'rgba(150,120,182,0.12)');
+    if ((tx + ty) % 2 === 0) px(sx + 3, sy + 3, 1, 1, 'rgba(246,239,224,0.32)');
+    px(sx + 10, sy + 10, 1, 1, 'rgba(246,239,224,0.26)');
+    if (h > 0.6) px(sx + 6, sy + 6, 3, 3, 'rgba(201,173,117,0.2)');
+    if (at(0, -1) !== 'r') {
+      px(sx, sy, T, 4, HM.lavDeep);
+      px(sx, sy, T, 1, HM.gold);
+      px(sx, sy + 1, T, 1, 'rgba(237,220,174,0.5)');
+      px(sx, sy + 4, T, 1, HM.goldDeep);
+      px(sx, sy + 5, T, 1, 'rgba(247,240,226,0.5)');
+    }
+    if (at(0, 1) !== 'r') {
+      px(sx, sy + 12, T, 4, HM.lavDeep);
+      px(sx, sy + 15, T, 1, HM.gold);
+      px(sx, sy + 14, T, 1, 'rgba(237,220,174,0.5)');
+      px(sx, sy + 11, T, 1, 'rgba(247,240,226,0.5)');
+    }
+    if (at(-1, 0) !== 'r') {
+      px(sx, sy, 4, T, HM.lavDeep);
+      px(sx, sy, 1, T, HM.gold);
+      px(sx + 4, sy, 1, T, HM.goldDeep);
+      px(sx + 5, sy, 1, T, 'rgba(247,240,226,0.45)');
+    }
+    if (at(1, 0) !== 'r') {
+      px(sx + 12, sy, 4, T, HM.lavDeep);
+      px(sx + 15, sy, 1, T, HM.gold);
+      px(sx + 11, sy, 1, T, 'rgba(247,240,226,0.45)');
+    }
+    if (at(0, -1) !== 'r' && at(-1, 0) !== 'r') {
+      px(sx + 5, sy + 5, 3, 3, HM.cream3);
+      px(sx + 6, sy + 6, 1, 1, HM.gold);
+    }
+    if (at(0, -1) !== 'r' && at(1, 0) !== 'r') {
+      px(sx + 8, sy + 5, 3, 3, HM.cream3);
+      px(sx + 9, sy + 6, 1, 1, HM.gold);
+    }
+    if (at(0, 1) !== 'r' && at(-1, 0) !== 'r') {
+      px(sx + 5, sy + 8, 3, 3, HM.cream3);
+      px(sx + 6, sy + 9, 1, 1, HM.gold);
+    }
+    if (at(0, 1) !== 'r' && at(1, 0) !== 'r') {
+      px(sx + 8, sy + 8, 3, 3, HM.cream3);
+      px(sx + 9, sy + 9, 1, 1, HM.gold);
+    }
+  }
+
+  function homeTile(ch, sx, sy, tx, ty, h, t) {
+    if (ch === 'x') { homeWall(sx, sy, tx, ty, h); return true; }
+    if (ch === 'w') {
+      if (ty <= 1 || ty >= curArea.h - 1 || tx === 0 || tx === curArea.w - 1) {
+        homeWall(sx, sy, tx, ty, h);
+      } else {
+        homeFloor(sx, sy, tx, ty, h);
+      }
+      return true;
+    }
+    if (ch === 'r') { homeRug(sx, sy, tx, ty, h); return true; }
+    return false;
+  }
+
+  function homeProp(p, x, y, t) {
+    const w = (p.w || 1) * T;
+    const h = (p.h || 1) * T;
+    switch (p.t) {
+      case 'bed': {
+        // shadow and feet first: the bed should sit on the floor
+        px(x + 4, y + 41, 40, 8, HM.shadow);
+        px(x + 4, y + 43, 5, 5, HM.oakDeep);
+        px(x + 39, y + 43, 5, 5, HM.oakDeep);
+        // carved headboard, only at the head of the bed
+        px(x + 6, y - 4, 36, 16, HM.oakDeep);
+        px(x + 7, y - 3, 34, 14, HM.oak2);
+        px(x + 9, y - 2, 30, 12, HM.oak);
+        px(x + 10, y - 1, 28, 1, HM.oakPale);
+        px(x + 11, y + 1, 10, 7, HM.oakLight);
+        px(x + 27, y + 1, 10, 7, HM.oakLight);
+        for (let i = 0; i < 3; i++) {
+          px(x + 14 + i * 3, y + 2, 1, 5, HM.oak2);
+          px(x + 30 + i * 3, y + 2, 1, 5, HM.oak2);
+        }
+        circle(x + 24, y + 2, 2.4, HM.gold);
+        px(x + 23, y + 1, 2, 1, HM.goldLight);
+        // mattress: rounded cream block, quilt hangs over the sides
+        px(x + 5, y + 11, 3, 32, HM.cream3);
+        px(x + 39, y + 11, 4, 32, HM.cream3);
+        px(x + 6, y + 12, 36, 31, HM.cream);
+        px(x + 6, y + 12, 36, 1, 'rgba(255,255,255,0.5)');
+        px(x + 6, y + 42, 36, 1, 'rgba(217,201,173,0.9)');
+        // two plump pillows
+        px(x + 8, y + 14, 14, 2, HM.lavPale);
+        px(x + 7, y + 16, 16, 7, HM.lavPale);
+        px(x + 8, y + 22, 14, 3, HM.lavPale);
+        px(x + 8, y + 16, 14, 6, '#fdf8ee');
+        px(x + 8, y + 21, 14, 1, HM.lav);
+        px(x + 25, y + 14, 14, 2, HM.lavPale);
+        px(x + 24, y + 16, 16, 7, HM.lavPale);
+        px(x + 25, y + 22, 14, 3, HM.lavPale);
+        px(x + 25, y + 16, 14, 6, '#fdf8ee');
+        px(x + 25, y + 21, 14, 1, HM.lav);
+        // quilt: soft rounded top edge, draping 2px over both sides
+        px(x + 3, y + 25, 42, 2, 'rgba(143,121,176,0.45)');
+        px(x + 3, y + 26, 42, 16, HM.lav);
+        px(x + 4, y + 26, 40, 1, HM.lavSoft);
+        px(x + 3, y + 26, 42, 1, HM.lavSoft);
+        for (let i = 0; i < 4; i++) px(x + 4, y + 30 + i * 3, 40, 1, 'rgba(143,121,176,0.14)');
+        circle(x + 15, y + 32, 1.4, HM.cream);
+        px(x + 15, y + 33, 1, 2, HM.cream2);
+        circle(x + 30, y + 36, 1.4, HM.goldLight);
+        px(x + 30, y + 37, 1, 2, HM.goldLight);
+        // folded-back corner shows the cream mattress underneath
+        px(x + 30, y + 25, 13, 8, HM.cream);
+        px(x + 30, y + 25, 13, 1, HM.cream2);
+        px(x + 33, y + 24, 10, 1, 'rgba(143,121,176,0.35)');
+        // lace band at the foot, then a low footboard
+        px(x + 5, y + 37, 38, 3, HM.cream);
+        for (let i = 0; i < 9; i++) px(x + 6 + i * 4, y + 39, 2, 1, HM.cream2);
+        px(x + 5, y + 40, 38, 1, 'rgba(217,201,173,0.9)');
+        px(x + 4, y + 42, 40, 4, HM.oak);
+        px(x + 5, y + 42, 38, 1, HM.oakPale);
+        px(x + 4, y + 45, 40, 1, HM.oakDeep);
+        px(x + 10, y + 44, 28, 1, 'rgba(201,173,117,0.4)');
+        return true;
+      }      case 'wardrobe': {
+        px(x + 2, y + 3, 28, 29, HM.shadow);
+        px(x, y, 32, 4, HM.oak);
+        px(x + 1, y + 1, 30, 1, HM.oakPale);
+        px(x, y + 3, 32, 1, HM.oakDeep);
+        px(x + 2, y + 4, 28, 26, HM.oak2);
+        px(x + 4, y + 6, 11, 20, HM.oak);
+        px(x + 17, y + 6, 11, 20, HM.oak);
+        px(x + 5, y + 7, 9, 18, HM.oakLight);
+        px(x + 18, y + 7, 9, 18, HM.oakLight);
+        px(x + 8, y + 11, 2, 8, HM.oak2);
+        px(x + 7, y + 13, 4, 1, HM.oak2);
+        circle(x + 9, y + 10, 1.6, HM.gold);
+        px(x + 22, y + 11, 2, 8, HM.oak2);
+        px(x + 21, y + 13, 4, 1, HM.oak2);
+        circle(x + 23, y + 10, 1.6, HM.gold);
+        px(x + 14, y + 15, 1, 4, HM.goldLight);
+        px(x + 17, y + 15, 1, 4, HM.goldLight);
+        px(x + 15, y + 20, 2, 2, HM.goldDeep);
+        px(x + 4, y + 30, 4, 2, HM.oakDeep);
+        px(x + 24, y + 30, 4, 2, HM.oakDeep);
+        return true;
+      }
+      case 'bookshelf': {
+        px(x + 2, y + 2, 44, 30, HM.shadow);
+        px(x + 1, y, 46, 31, HM.oak2);
+        px(x + 2, y + 1, 44, 29, HM.oakDeep);
+        px(x + 2, y + 1, 44, 2, HM.oak);
+        px(x + 3, y + 2, 42, 1, HM.oakPale);
+        px(x + 1, y + 29, 46, 2, HM.oakDeep);
+        const cols = ['#c98a8a', '#8aa9c9', '#c9c08a', '#a98ac9', '#8ac9a9', '#e0b48a', '#b98d8d'];
+        for (let shelf = 0; shelf < 2; shelf++) {
+          const sy2 = y + 4 + shelf * 12;
+          px(x + 2, sy2 + 9, 44, 2, HM.oak);
+          px(x + 2, sy2 + 9, 44, 1, HM.oakPale);
+          let bx = x + 4;
+          let k = 0;
+          while (bx < x + 39) {
+            const bw = 2 + ((k * 7 + shelf * 3) % 2);
+            const bh = 6 + ((k * 5 + shelf) % 3);
+            px(bx, sy2 + 9 - bh, bw, bh, cols[(k + shelf * 2) % cols.length]);
+            px(bx, sy2 + 9 - bh, bw, 1, 'rgba(255,255,255,0.16)');
+            px(bx, sy2 + 9 - 2, bw, 1, 'rgba(90,70,60,0.35)');
+            bx += bw + 1; k++;
+            if (k % 6 === 5) bx += 2;
+          }
+          if (shelf === 0) {
+            px(x + 40, sy2 + 4, 3, 5, '#a9b8a0');
+            px(x + 40, sy2 + 3, 3, 1, HM.gold);
+          }
+        }
+        return true;
+      }
+      case 'fireplace': {
+        px(x + 3, y + 3, 26, 27, HM.shadow);
+        // chimney breast, light stone with visible courses
+        px(x + 2, y + 2, 28, 27, '#9a9386');
+        px(x + 3, y + 3, 26, 25, '#c9c2b3');
+        for (let ry = 0; ry < 4; ry++) {
+          for (let rx2 = 0; rx2 < 4; rx2++) {
+            px(x + 4 + rx2 * 7, y + 5 + ry * 6, 6, 4, (rx2 + ry) % 2 ? '#c1baab' : '#d2cbbe');
+            px(x + 4 + rx2 * 7, y + 5 + ry * 6, 6, 1, '#ded7c8');
+          }
+        }
+        // arched stone opening
+        px(x + 5, y + 12, 22, 17, '#8f887c');
+        px(x + 6, y + 10, 20, 3, '#8f887c');
+        px(x + 7, y + 13, 18, 16, HM.soot);
+        circle(x + 16, y + 15, 7, HM.soot);
+        px(x + 7, y + 28, 18, 1, '#6b655c');
+        // hearth slab in front
+        px(x + 3, y + 28, 26, 3, '#a29a8e');
+        px(x + 3, y + 28, 26, 1, '#b6aea1');
+        // fire: taller tongues and a warm halo
+        const fl = 0.85 + Math.sin(t * 3.1) * 0.15;
+        circle(x + 16, y + 23, 13, `rgba(255,170,80,${0.17 * fl})`);
+        for (let i = 0; i < 7; i++) {
+          const sway = Math.sin(t * 5.2 + i * 1.7) * 2.2;
+          const fy = y + 24 + Math.sin(t * 4 + i) * 2;
+          circle(x + 9 + i * 2.1 + sway, fy, 3 + (i % 2), i % 2 ? HM.flame : HM.flame2);
+        }
+        px(x + 10, y + 20, 12, 8, HM.flame);
+        px(x + 11, y + 21, 10, 6, HM.flame2);
+        circle(x + 16, y + 18, 3.4, HM.hot);
+        circle(x + 16, y + 23, 2.6, HM.hot);
+        // logs under the fire
+        px(x + 9, y + 26, 14, 2, '#8d5b32');
+        px(x + 10, y + 28, 12, 1, '#734324');
+        px(x + 11, y + 27, 3, 1, '#c9761f');
+        px(x + 18, y + 27, 3, 1, '#c9761f');        // thick mantel with brackets
+        px(x - 1, y - 1, 34, 4, HM.oakLight);
+        px(x - 1, y + 2, 34, 2, HM.oak);
+        px(x - 1, y + 4, 34, 1, HM.oakDeep);
+        px(x, y, 32, 1, HM.oakPale);
+        px(x + 1, y + 5, 3, 2, HM.oak2);
+        px(x + 28, y + 5, 3, 2, HM.oak2);
+        // candles, lavender vase, brass clock on the mantel
+        px(x + 3, y - 7, 2, 6, HM.cream);
+        circle(x + 4, y - 8, 1.5, 'rgba(255,214,130,0.95)');
+        px(x + 7, y - 6, 2, 5, HM.cream2);
+        circle(x + 8, y - 7, 1.3, 'rgba(255,214,130,0.85)');
+        px(x + 20, y - 6, 4, 5, HM.oakLight);
+        px(x + 21, y - 7, 2, 2, HM.lav);
+        px(x + 21, y - 9, 1, 3, HM.sageDeep);
+        circle(x + 22, y - 9, 1.5, HM.lavSoft);
+        px(x + 25, y - 7, 3, 6, HM.gold);
+        px(x + 26, y - 6, 1, 1, HM.cream);
+        // framed botanical above the mantel
+        px(x + 8, y - 14, 16, 10, HM.gold);
+        px(x + 9, y - 13, 14, 8, HM.oakDeep);
+        px(x + 10, y - 12, 12, 6, '#f4eddd');
+        px(x + 15, y - 11, 1, 4, HM.sageDeep);
+        circle(x + 15, y - 11, 1.6, HM.lav);
+        px(x + 13, y - 9, 2, 1, HM.sage);
+        px(x + 17, y - 9, 2, 1, HM.sage);
+        return true;
+      }      case 'sofa': {
+        px(x + 4, y + 12, 40, 4, HM.shadow);
+        px(x + 5, y + 14, 3, 2, HM.oakDeep);
+        px(x + 40, y + 14, 3, 2, HM.oakDeep);
+        // rolled back with an outline that separates it from the floor
+        px(x + 2, y, 44, 10, HM.lavDeep);
+        px(x + 3, y + 1, 42, 8, HM.lav);
+        px(x + 5, y + 1, 38, 1, HM.lavSoft);
+        for (let i = 0; i < 5; i++) px(x + 10 + i * 7, y + 4, 1, 2, 'rgba(246,239,224,0.45)');
+        // arms
+        px(x, y + 3, 5, 11, HM.lavDeep);
+        px(x + 1, y + 4, 3, 8, HM.lav);
+        px(x + 1, y + 4, 3, 1, HM.lavSoft);
+        px(x + 43, y + 3, 5, 11, HM.lavDeep);
+        px(x + 44, y + 4, 3, 8, HM.lav);
+        px(x + 44, y + 4, 3, 1, HM.lavSoft);
+        // seat cushions with piping and a front skirt
+        px(x + 4, y + 8, 19, 6, HM.lavSoft);
+        px(x + 25, y + 8, 19, 6, HM.lavSoft);
+        px(x + 4, y + 8, 40, 1, HM.lavPale);
+        px(x + 4, y + 13, 40, 1, HM.lavDeep);
+        px(x + 23, y + 9, 1, 5, 'rgba(143,121,176,0.32)');
+        // throw pillows + folded sage throw
+        px(x + 6, y + 2, 9, 7, HM.cream2);
+        px(x + 7, y + 3, 7, 5, HM.cream);
+        px(x + 6, y + 2, 9, 1, '#fffaf0');
+        px(x + 32, y + 2, 9, 7, HM.lavPale);
+        px(x + 33, y + 3, 7, 5, HM.lavSoft);
+        px(x + 21, y + 3, 7, 6, HM.sage);
+        px(x + 21, y + 3, 7, 1, HM.sagePale);
+        px(x + 21, y + 6, 7, 1, HM.sageDeep);
+        return true;
+      }      case 'table': {
+        px(x + 2, y + 9, 28, 16, HM.shadow);
+        // rounded table top with a darker front edge for depth
+        px(x + 4, y + 5, 24, 11, HM.oakDeep);
+        px(x + 3, y + 6, 26, 9, HM.oak2);
+        px(x + 4, y + 6, 24, 8, HM.oakLight);
+        px(x + 4, y + 6, 24, 1, HM.oakPale);
+        for (let i = 0; i < 3; i++) px(x + 5, y + 8 + i * 2, 22, 1, 'rgba(168,118,79,0.22)');
+        px(x + 3, y + 14, 26, 3, HM.oak);
+        px(x + 3, y + 14, 26, 1, HM.oakLight);
+        px(x + 3, y + 16, 26, 1, HM.oakDeep);
+        // lace runner down the middle, not over the whole top
+        px(x + 12, y + 7, 8, 9, 'rgba(250,244,232,0.92)');
+        px(x + 12, y + 7, 8, 1, 'rgba(255,255,255,0.7)');
+        for (let i = 0; i < 3; i++) px(x + 12, y + 10 + i * 2, 8, 1, 'rgba(233,220,200,0.55)');
+        // teapot on the runner, cup beside it
+        px(x + 13, y + 9, 5, 4, HM.cream);
+        px(x + 13, y + 8, 5, 1, HM.lavSoft);
+        px(x + 18, y + 9, 2, 1, HM.cream2);
+        circle(x + 15, y + 8, 1, HM.lavPale);
+        px(x + 21, y + 10, 3, 3, HM.cream);
+        px(x + 21, y + 10, 3, 1, HM.lavSoft);
+        // open book + candle
+        px(x + 6, y + 8, 5, 4, '#f6efe0');
+        px(x + 8, y + 8, 1, 4, 'rgba(168,118,79,0.55)');
+        px(x + 6, y + 9, 5, 1, 'rgba(168,118,79,0.3)');
+        px(x + 22, y + 6, 2, 4, HM.goldLight);
+        circle(x + 23, y + 5, 1.2, 'rgba(255,214,130,0.9)');
+        // turned legs
+        px(x + 5, y + 17, 3, 8, HM.oak2);
+        px(x + 24, y + 17, 3, 8, HM.oak2);
+        px(x + 5, y + 17, 1, 8, HM.oakLight);
+        px(x + 26, y + 17, 1, 8, HM.oakLight);
+        px(x + 5, y + 24, 3, 1, HM.oakDeep);
+        px(x + 24, y + 24, 3, 1, HM.oakDeep);
+        return true;
+      }      case 'chair': {
+        px(x + 3, y + 11, 10, 4, HM.shadow);
+        px(x + 2, y + 3, 12, 8, HM.lavDeep);
+        px(x + 3, y + 3, 10, 6, HM.lav);
+        px(x + 3, y + 3, 10, 1, HM.lavSoft);
+        px(x + 5, y + 5, 1, 1, HM.cream);
+        px(x + 10, y + 5, 1, 1, HM.cream);
+        px(x + 7, y + 8, 2, 1, 'rgba(143,121,176,0.45)');
+        px(x + 2, y + 10, 12, 2, HM.oak);
+        px(x + 2, y + 10, 12, 1, HM.oakPale);
+        px(x + 3, y + 12, 2, 5, HM.oakDeep);
+        px(x + 11, y + 12, 2, 5, HM.oakDeep);
+        return true;
+      }
+      case 'desk': {
+        px(x + 2, y + 9, 28, 19, HM.shadow);
+        px(x + 1, y + 5, 30, 15, HM.oak2);
+        px(x + 2, y + 6, 28, 8, HM.oakLight);
+        px(x + 2, y + 6, 28, 1, HM.oakPale);
+        px(x + 4, y + 8, 15, 7, '#f7f0e2');
+        px(x + 5, y + 9, 13, 1, 'rgba(168,140,100,0.5)');
+        px(x + 5, y + 11, 11, 1, 'rgba(168,140,100,0.35)');
+        px(x + 5, y + 13, 12, 1, 'rgba(168,140,100,0.35)');
+        px(x + 4, y + 8, 15, 1, '#fffaf0');
+        px(x + 21, y + 9, 3, 4, '#3a4a52');
+        px(x + 21, y + 8, 3, 1, '#6a7a82');
+        px(x + 22, y + 5, 1, 4, HM.cream3);
+        px(x + 26, y + 7, 2, 5, HM.cream);
+        circle(x + 27, y + 6, 1.2, 'rgba(255,214,130,0.9)');
+        px(x + 2, y + 14, 28, 5, HM.oak);
+        px(x + 2, y + 14, 28, 1, HM.oakPale);
+        px(x + 10, y + 16, 12, 2, HM.oakLight);
+        px(x + 15, y + 16, 2, 1, HM.gold);
+        px(x + 3, y + 19, 3, 8, HM.oakDeep);
+        px(x + 26, y + 19, 3, 8, HM.oakDeep);
+        return true;
+      }
+      case 'nightstand': {
+        px(x + 1, y + 7, 14, 8, HM.shadow);
+        px(x + 1, y + 4, 14, 10, HM.oak2);
+        px(x + 2, y + 5, 12, 8, HM.oak);
+        px(x + 2, y + 5, 12, 1, HM.oakPale);
+        px(x + 4, y + 9, 8, 3, HM.oakLight);
+        px(x + 7, y + 10, 2, 1, HM.gold);
+        px(x + 3, y + 14, 2, 2, HM.oakDeep);
+        px(x + 11, y + 14, 2, 2, HM.oakDeep);
+        px(x + 4, y + 1, 3, 4, HM.cream);
+        circle(x + 5.5, y, 1.4, 'rgba(255,214,130,0.95)');
+        px(x + 4, y + 3, 3, 1, HM.gold);
+        px(x + 8, y + 2, 6, 2, HM.lavSoft);
+        px(x + 8, y + 2, 6, 1, HM.lavPale);
+        px(x + 10, y + 2, 2, 2, 'rgba(143,121,176,0.4)');
+        return true;
+      }
+      case 'plant': {
+        const kind = (p.x * 3 + p.y) % 3;
+        px(x + 4, y + 14, 9, 2, HM.shadow);
+        if (kind === 0) {
+          px(x + 4, y + 10, 9, 5, HM.cream2);
+          px(x + 4, y + 10, 9, 1, HM.cream);
+          px(x + 5, y + 11, 1, 3, 'rgba(255,255,255,0.4)');
+          for (let i = 0; i < 5; i++) {
+            const sx2 = x + 4 + i * 2;
+            px(sx2, y + 4 + (i % 2), 1, 6, HM.sageDeep);
+            circle(sx2 + 0.5, y + 3 + (i % 2), 1.6, i % 2 ? HM.lav : HM.lavDeep);
+            circle(sx2 + 0.5, y + 2.5 + (i % 2), 0.7, HM.lavPale);
+          }
+        } else if (kind === 1) {
+          px(x + 4, y + 10, 9, 5, HM.oak2);
+          px(x + 5, y + 10, 7, 1, HM.oakLight);
+          for (let i = 0; i < 7; i++) {
+            const a = -1.2 + i * 0.4;
+            circle(x + 8 + Math.cos(a) * 5, y + 8 + Math.sin(a) * 4.4, 1.7, i % 2 ? '#8fbf7a' : HM.sage);
+          }
+          circle(x + 8, y + 7, 3.2, HM.sage);
+        } else {
+          px(x + 4, y + 10, 9, 5, HM.cream2);
+          px(x + 4, y + 10, 9, 1, HM.cream);
+          circle(x + 8, y + 5, 4.6, '#cfc0e8');
+          circle(x + 5, y + 5, 2.6, HM.lavSoft);
+          circle(x + 11, y + 5, 2.6, HM.lavSoft);
+          circle(x + 8, y + 2.6, 2.2, HM.lavPale);
+          px(x + 7, y + 8, 1, 4, HM.sageDeep);
+          circle(x + 6, y + 9, 1.6, HM.sage);
+        }
+        return true;
+      }
+      case 'window': {
+        const lit = windowsLit();
+        px(x + 1, y + 1, w - 2, h - 2, HM.oak2);
+        px(x + 2, y + 2, w - 4, h - 4, lit ? '#ffeec2' : '#dcecf2');
+        if (lit) {
+          const gg = ctx.createRadialGradient(x + w / 2, y + 8, 2, x + w / 2, y + 8, w * 0.95);
+          gg.addColorStop(0, 'rgba(255,232,168,0.45)');
+          gg.addColorStop(1, 'rgba(255,232,168,0)');
+          ctx.fillStyle = gg;
+          ctx.fillRect(x - 12, y - 8, w + 24, h + 18);
+        }
+        px(x + Math.round(w / 2) - 1, y + 2, 1, h - 4, HM.oak);
+        px(x + 2, y + Math.round(h / 2) - 1, w - 4, 1, HM.oak);
+        px(x + 2, y + 2, w - 4, 1, 'rgba(255,255,255,0.55)');
+        px(x + 3, y + 4, 4, 1, 'rgba(255,255,255,0.45)');
+        px(x + 3, y + 5, 2, 1, 'rgba(255,255,255,0.3)');
+        px(x, y + 2, 4, h - 2, HM.lavDeep);
+        px(x + 1, y + 2, 2, h - 3, HM.lav);
+        px(x + 1, y + 3, 2, 1, HM.lavSoft);
+        px(x + w - 4, y + 2, 4, h - 2, HM.lavDeep);
+        px(x + w - 3, y + 2, 2, h - 3, HM.lav);
+        px(x + w - 3, y + 3, 2, 1, HM.lavSoft);
+        px(x, y, w, 3, HM.oakLight);
+        px(x + 1, y + 3, w - 2, 1, 'rgba(250,244,232,0.8)');
+        for (let i = 0; i < 5; i++) px(x + 3 + i * 6, y + 4, 4, 1, 'rgba(250,244,232,0.55)');
+        return true;
+      }
+      case 'cattower': {
+        px(x + 3, y + h - 5, 10, 5, HM.shadow);
+        px(x + 5, y + 8, 6, h - 11, HM.oakLight);
+        for (let i = 0; i < 5; i++) px(x + 5, y + 11 + i * 4, 6, 1, HM.oak);
+        px(x + 2, y + 2, 12, 6, HM.lavSoft);
+        px(x + 3, y + 3, 10, 4, HM.lav);
+        px(x + 3, y + 3, 10, 1, HM.lavPale);
+        px(x + 2, y + h - 13, 12, 4, HM.lavDeep);
+        px(x + 3, y + h - 13, 10, 2, HM.lav);
+        px(x + 12, y + 6, 1, 5, HM.gold);
+        circle(x + 12.5, y + 11 + Math.sin(t * 2) * 1.2, 1.8, HM.lavDeep);
+        return true;
+      }
+      case 'catbed': {
+        px(x + 3, y + 12, 26, 3, HM.shadow);
+        ellipse(x + 16, y + 10, 13, 5.4, HM.lavDeep);
+        ellipse(x + 16, y + 9, 11, 4.2, HM.lav);
+        ellipse(x + 16, y + 9, 8, 3, HM.lavPale);
+        px(x + 8, y + 7, 16, 2, HM.cream);
+        px(x + 8, y + 7, 16, 1, '#fdf8ee');
+        circle(x + 12, y + 9, 1, HM.lavDeep);
+        circle(x + 14, y + 9, 1, HM.lavDeep);
+        px(x + 12, y + 10, 2, 1, HM.lavDeep);
+        px(x + 20, y + 9, 1, 1, HM.lavDeep);
+        px(x + 22, y + 9, 1, 1, HM.lavDeep);
+        px(x + 21, y + 8, 1, 1, HM.lavDeep);
+        px(x + 21, y + 10, 1, 1, HM.lavDeep);
+        return true;
+      }
+      case 'catbowl': {
+        ellipse(x + 8, y + 13, 6, 2.4, HM.shadow);
+        ellipse(x + 8, y + 11, 6, 2.8, HM.cream2);
+        ellipse(x + 8, y + 10.5, 4.6, 1.8, '#b9c9d6');
+        px(x + 6, y + 10, 4, 1, '#dfeaf0');
+        px(x + 4, y + 10, 2, 1, HM.gold);
+        px(x + 11, y + 11, 1, 1, HM.oakDeep);
+        px(x + 3, y + 11, 1, 1, HM.lavDeep);
+        return true;
+      }
+      case 'craftbench': {
+        px(x + 2, y + 9, 28, 19, HM.shadow);
+        px(x + 1, y + 6, 30, 11, HM.oak2);
+        px(x + 2, y + 6, 28, 8, HM.oakLight);
+        px(x + 2, y + 6, 28, 1, HM.oakPale);
+        px(x + 3, y + 8, 9, 5, HM.lav);
+        px(x + 3, y + 8, 9, 1, HM.lavSoft);
+        px(x + 3, y + 10, 9, 1, HM.lavDeep);
+        px(x + 3, y + 12, 9, 1, HM.lavDeep);
+        px(x + 14, y + 8, 3, 3, HM.cream);
+        px(x + 14, y + 8, 3, 1, HM.sage);
+        px(x + 18, y + 9, 2, 2, HM.gold);
+        px(x + 22, y + 8, 3, 1, '#8a8a90');
+        px(x + 23, y + 9, 1, 3, '#8a8a90');
+        px(x + 5, y + 2, 12, 3, '#5a5a62');
+        px(x + 6, y + 3, 3, 2, '#7a7a82');
+        px(x + 14, y + 4, 2, 2, '#5a5a62');
+        px(x + 5, y + 5, 1, 1, HM.cream);
+        px(x + 3, y + 17, 3, 10, HM.oakDeep);
+        px(x + 26, y + 17, 3, 10, HM.oakDeep);
+        px(x + 6, y + 24, 20, 2, HM.oak);
+        return true;
+      }
+      case 'counter': {
+        px(x + 2, y + 9, 28, 6, HM.shadow);
+        px(x + 1, y + 4, 30, 9, HM.oak2);
+        px(x + 1, y + 3, 30, 2, HM.cream2);
+        px(x + 1, y + 3, 30, 1, HM.cream);
+        px(x + 2, y + 8, 28, 4, HM.oak);
+        px(x + 3, y + 9, 8, 1, HM.oakDeep);
+        px(x + 12, y + 9, 8, 1, HM.oakDeep);
+        px(x + 4, y + 10, 1, 2, HM.gold);
+        px(x + 26, y + 10, 1, 2, HM.gold);
+        px(x + 3, y - 3, 4, 6, '#c9b58a');
+        px(x + 3, y - 4, 4, 1, HM.gold);
+        px(x + 3, y - 1, 4, 2, '#d8a86a');
+        px(x + 8, y - 2, 3, 5, '#e0b48a');
+        px(x + 8, y - 3, 3, 1, HM.gold);
+        px(x + 12, y - 1, 3, 4, HM.cream2);
+        px(x + 18, y - 2, 9, 5, HM.oakLight);
+        px(x + 19, y - 3, 4, 3, '#d8a86a');
+        px(x + 24, y - 3, 1, 3, HM.sageDeep);
+        circle(x + 24, y - 4, 1.4, HM.sage);
+        return true;
+      }
+      case 'sink': {
+        px(x + 2, y + 7, 28, 7, HM.shadow);
+        px(x + 1, y + 3, 30, 8, HM.cream2);
+        px(x + 1, y + 3, 30, 1, HM.cream);
+        px(x + 5, y + 5, 22, 4, '#8fb3bc');
+        px(x + 6, y + 5, 20, 1, '#b6d3da');
+        px(x + 7, y + 7, 18, 1, '#7ea7b2');
+        px(x + 15, y - 1, 2, 6, HM.gold);
+        px(x + 15, y - 1, 7, 1, HM.gold);
+        px(x + 21, y, 1, 2, HM.goldLight);
+        px(x + 3, y + 4, 2, 2, HM.lavSoft);
+        px(x + 25, y + 4, 3, 2, HM.cream);
+        px(x + 4, y + 10, 24, 2, HM.oak);
+        px(x + 4, y + 10, 24, 1, HM.oakLight);
+        return true;
+      }
+      case 'stove': {
+        px(x + 2, y + 7, 28, 22, HM.shadow);
+        // enamelled range with a cast-iron top
+        px(x + 1, y + 4, 30, 24, '#6f6f78');
+        px(x + 2, y + 5, 28, 22, '#b6b6bd');
+        px(x + 3, y + 5, 26, 1, '#d6d6dc');
+        px(x + 2, y + 5, 28, 5, '#8b8b93');
+        px(x + 3, y + 6, 26, 3, '#c6c6cc');
+        // two hob plates and a kettle
+        ellipse(x + 9, y + 7.5, 4.4, 1.8, '#5e5e66');
+        ellipse(x + 23, y + 7.5, 3.6, 1.6, '#5e5e66');
+        circle(x + 9, y + 6, 3.4, '#8a5f3c');
+        circle(x + 9, y + 5.4, 2.6, '#b07c4e');
+        px(x + 12, y + 5, 3, 1, '#b07c4e');
+        circle(x + 9, y + 4, 1, '#d09c6a');
+        if (Math.sin(t * 2) > 0) {
+          circle(x + 14, y + 2, 1.3, 'rgba(255,255,255,0.4)');
+          circle(x + 16, y - 1, 1, 'rgba(255,255,255,0.25)');
+        }
+        // oven door: dark enamel with a small glowing grate, not a screen
+        px(x + 4, y + 12, 24, 12, '#4a4a52');
+        px(x + 5, y + 13, 22, 10, '#33333a');
+        px(x + 7, y + 15, 18, 6, '#26262c');
+        px(x + 8, y + 16, 16, 4, 'rgba(201,106,74,0.55)');
+        for (let i = 0; i < 3; i++) circle(x + 12 + i * 4, y + 18 + Math.sin(t * 4 + i) * 0.8, 1.4, HM.flame);
+        px(x + 15, y + 12, 6, 1, '#9a9aa2');
+        px(x + 17, y + 14, 4, 1, 'rgba(201,173,117,0.85)');
+        // warm light spilling onto the floor
+        circle(x + 16, y + 24, 16, 'rgba(255,180,110,0.10)');
+        px(x + 5, y + 9, 2, 2, HM.gold);
+        px(x + 25, y + 9, 2, 2, HM.gold);
+        // plate rail along the top and a cloth on the handle
+        px(x + 2, y + 3, 28, 2, HM.cream2);
+        px(x + 2, y + 3, 28, 1, HM.cream);
+        px(x + 3, y + 1, 3, 2, '#cfd8da');
+        px(x + 8, y + 1, 3, 2, HM.cream);
+        px(x + 14, y + 1, 4, 2, '#d8b0a0');
+        px(x + 21, y + 1, 3, 2, HM.lavSoft);
+        px(x + 26, y + 1, 2, 2, HM.sage);
+        px(x + 2, y + 26, 28, 3, '#5e5e66');
+        px(x + 2, y + 26, 28, 1, '#86868e');
+        px(x + 21, y + 26, 6, 4, HM.lavSoft);
+        px(x + 21, y + 26, 6, 1, HM.lav);
+        return true;
+      }      case 'painting': {
+        px(x + 1, y + 1, 14, 14, HM.gold);
+        px(x + 2, y + 2, 12, 12, HM.oakDeep);
+        px(x + 3, y + 3, 10, 10, '#f4eddd');
+        px(x + 4, y + 11, 8, 1, '#cdbb9c');
+        px(x + 7, y + 4, 1, 7, HM.sageDeep);
+        circle(x + 7, y + 4, 1.6, HM.lav);
+        circle(x + 5, y + 6, 1.4, HM.lavSoft);
+        circle(x + 9, y + 6, 1.4, HM.lavSoft);
+        px(x + 5, y + 9, 3, 1, HM.sage);
+        px(x + 1, y + 1, 14, 1, HM.goldLight);
+        px(x + 1, y + 14, 14, 1, HM.goldDeep);
+        return true;
+      }
+      case 'mirror': {
+        ellipse(x + 8, y + 8, 7, 7, HM.gold);
+        ellipse(x + 8, y + 8, 5.6, 5.6, '#e6eef0');
+        ellipse(x + 6.5, y + 6.5, 2.4, 3, 'rgba(255,255,255,0.75)');
+        px(x + 4, y + 11, 6, 1, 'rgba(185,164,216,0.5)');
+        px(x + 3, y + 4, 1, 3, 'rgba(255,255,255,0.5)');
+        return true;
+      }
+      case 'clock': {
+        px(x + 3, y + 1, 10, 14, HM.oak2);
+        px(x + 4, y + 2, 8, 12, HM.oak);
+        px(x + 4, y + 2, 8, 1, HM.oakPale);
+        circle(x + 8, y + 5, 3, HM.cream);
+        px(x + 8, y + 4, 1, 2, HM.oakDeep);
+        px(x + 8, y + 5, 2, 1, HM.oakDeep);
+        px(x + 7, y + 10, 2, 4, HM.gold);
+        circle(x + 8, y + 12, 1.4, HM.goldLight);
+        return true;
+      }
+      case 'vase': {
+        px(x + 5, y + 9, 7, 5, 'rgba(214,226,228,0.9)');
+        px(x + 6, y + 9, 5, 1, 'rgba(255,255,255,0.7)');
+        px(x + 7, y + 8, 3, 1, HM.cream3);
+        for (let i = 0; i < 3; i++) {
+          px(x + 6 + i * 2, y + 2, 1, 6, HM.sageDeep);
+          circle(x + 6.5 + i * 2, y + 1, 1.4, HM.lav);
+        }
+        return true;
+      }
+      case 'bookstack': {
+        px(x + 3, y + 10, 10, 3, HM.lavDeep);
+        px(x + 3, y + 10, 10, 1, HM.lavSoft);
+        px(x + 4, y + 7, 9, 3, HM.sageDeep);
+        px(x + 4, y + 7, 9, 1, HM.sagePale);
+        px(x + 5, y + 4, 8, 3, HM.oakLight);
+        px(x + 5, y + 4, 8, 1, HM.goldLight);
+        px(x + 6, y + 13, 9, 1, HM.shadow);
+        return true;
+      }
+      case 'plaque': {
+        px(x + 1, y + 2, 14, 12, HM.oakDeep);
+        px(x + 2, y + 3, 12, 10, HM.oak);
+        px(x + 2, y + 3, 12, 1, HM.oakPale);
+        px(x + 3, y + 4, 10, 6, '#f4ecd8');
+        px(x + 3, y + 4, 10, 1, 'rgba(201,173,117,0.85)');
+        for (let i = 0; i < 3; i++) px(x + 5 + i * 3, y + 6, 2, 1, 'rgba(95,64,41,0.5)');
+        px(x + 4, y + 9, 8, 1, 'rgba(95,64,41,0.3)');
+        px(x + 1, y + 13, 14, 1, HM.oakDeep);
+        return true;
+      }
+      case 'cushion': {
+        ellipse(x + 8, y + 12, 6.6, 3, HM.shadow);
+        ellipse(x + 8, y + 9, 6.4, 4.4, HM.sage);
+        ellipse(x + 8, y + 8, 5, 3.2, HM.sagePale);
+        px(x + 4, y + 6, 1, 1, HM.lavDeep);
+        px(x + 11, y + 10, 1, 1, HM.lavDeep);
+        px(x + 2, y + 9, 1, 1, HM.gold);
+        px(x + 13, y + 7, 1, 1, HM.gold);
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
   R.drawTile = function (ch, sx, sy, tx, ty, t) {
     const h = SAN.util.hash(tx, ty);
+    if (curArea && curArea.id === 'home' && homeTile(ch, sx, sy, tx, ty, h, t)) return;
     switch (ch) {
       case '.': {
         px(sx, sy, T, T, '#8abb72');
@@ -6440,6 +7776,7 @@ window.SAN = window.SAN || {};
 
   function drawProp(p, x, y, t) {
     const w = (p.w || 1) * T, h = (p.h || 1) * T;
+    if (curArea && curArea.id === 'home' && homeProp(p, x, y, t)) return;
     switch (p.t) {
       case 'tree': drawTree(x, y, p.variant || 0); break;
       case 'pine': drawPine(x, y); break;
@@ -8268,6 +9605,7 @@ window.SAN = window.SAN || {};
     W.cam.x = camX; W.cam.y = camY;
     W.clampCam();
     W.spawnNPCs(true);
+    if (SAN.romance) SAN.romance.onEnter(id);
     W.transitionCooldown = 0.5;
     if (S) {
       if (!S.discovered[id]) {
@@ -8348,6 +9686,7 @@ window.SAN = window.SAN || {};
         act: entry.act, pose: 'stand', bubble: null, chatTimer: 0, chatting: false,
       });
     });
+    if (SAN.romance) SAN.romance.addCottageGuest(W);
   };
 
   W.refreshNPCsIfNeeded = function () {
@@ -8803,6 +10142,7 @@ window.SAN = window.SAN || {};
         exploration: { lvl: 1, xp: 0 },
       },
       friendship: {},
+      romance: {},
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -8871,6 +10211,7 @@ window.SAN = window.SAN || {};
     if (!merged.inventory.camera) merged.inventory.camera = 1;
     merged.discovered = Object.assign({ home: true }, snap.discovered || {});
     merged.friendship = Object.assign({}, base.friendship, snap.friendship || {});
+    merged.romance = Object.assign({}, base.romance, snap.romance || {});
     merged.journal = snap.journal || [];
     merged.memories = snap.memories || [];
     merged.achievements = snap.achievements || {};
@@ -9986,6 +11327,618 @@ window.SAN = window.SAN || {};
   };
 
   R.allTiers = function () { return SAN.data.FRIEND_TIERS; };
+})();
+</script>
+<script>
+/* Sanctuary — romance: affection, stages, consent, activities, events, cottage visits.
+   Friendship is unchanged; romance sits on top of it. Nothing here can lower friendship. */
+(function () {
+  const RM = (SAN.romance = {});
+  const D = () => SAN.data.romance;
+  const S = () => SAN.state.S;
+  const ACT = (id) => D().ACTIVITY(id);
+  const DAILY_AFFECTION_CAP = 22;
+
+  const PHYSICAL = ['hand', 'hug', 'kiss', 'cuddle'];
+  const MIN_AFFECTION = { hand: 26, hug: 26, kiss: 46, cuddle: 46, dinner: 40, dance: 28, stargaze: 24, gift: 20, memory: 30, walk: 0, cook: 40, fire: 35, craft: 35 };
+
+  function today() { const s = S(); return s.time.season * 28 + s.time.day; }
+
+  RM.def = (id) => D().npcs[id] || null;
+  RM.romanceable = (id) => !!D().npcs[id] && D().romanceable.indexOf(id) >= 0;
+  // hard guard: romance is adults only, checked against both the NPC record and its romance entry
+  RM.adult = function (id) {
+    const info = SAN.data.npcs[id] || {};
+    const def = RM.def(id);
+    if (!info || !def || !def.adult) return false;
+    return info.age == null ? true : info.age >= 18;
+  };
+
+  RM.state = function (id) {
+    const s = S();
+    if (!s) return null;
+    if (!s.romance) s.romance = {};
+    if (!s.romance[id]) {
+      s.romance[id] = {
+        affection: 0, accepted: false, committed: false, partner: false,
+        datingDay: null, datingSeason: null, commitDay: null, partnerDay: null,
+        events: {}, memories: [], history: [],
+        activityDay: 0, activityCount: {}, affectionToday: 0,
+        notYet: false, lastMorning: 0, lastGoodnight: 0, lastRain: 0, declined: {},
+      };
+    }
+    const st = s.romance[id];
+    if (st.activityDay !== today()) { st.activityDay = today(); st.activityCount = {}; st.affectionToday = 0; }
+    if (!st.memories) st.memories = [];
+    if (!st.history) st.history = [];
+    if (!st.events) st.events = {};
+    return st;
+  };
+
+  RM.affection = (id) => (RM.state(id) ? RM.state(id).affection : 0);
+  RM.friendship = (id) => (SAN.rel ? SAN.rel.pts(id) : 0);
+
+  RM.stageIndex = function (id) {
+    const st = RM.state(id);
+    if (!st) return 0;
+    if (st.partner) return 7;
+    if (st.committed) return 6;
+    if (st.accepted) return 5;
+    const f = RM.friendship(id);
+    let base = 0;
+    if (f >= 61) base = 3; else if (f >= 41) base = 2; else if (f >= 21) base = 1;
+    if (base >= 3 && st.affection >= 20) return 4;
+    return base;
+  };
+  RM.stage = (id) => D().STAGES[RM.stageIndex(id)] || D().STAGES[0];
+  RM.statusName = (id) => RM.stage(id).name;
+
+  RM.partnerId = function () {
+    const s = S();
+    if (!s || !s.romance) return null;
+    const ids = Object.keys(s.romance).filter((id) => s.romance[id].partner || s.romance[id].committed);
+    // the deepest bond is the one who comes home
+    ids.sort((a, b) => RM.stageIndex(b) - RM.stageIndex(a));
+    return ids[0] || null;
+  };
+  RM.datingIds = function () {
+    const s = S();
+    if (!s || !s.romance) return [];
+    return Object.keys(s.romance).filter((id) => s.romance[id].accepted);
+  };
+
+  /* ---------------- memories & history ---------------- */
+  RM.remember = function (id, text, kind) {
+    const st = RM.state(id);
+    const s = S();
+    const entry = { text: D().fill(text, s.player), kind: kind || 'moment', day: s.time.day, season: s.time.season, year: s.time.year };
+    st.memories.push(entry);
+    st.history.push(Object.assign({}, entry));
+    if (st.memories.length > 60) st.memories.shift();
+    if (st.history.length > 80) st.history.shift();
+    if (SAN.journal && SAN.journal.add) { /* journal integration is optional */ }
+    return entry;
+  };
+
+  RM.npcLine = function (id, key) {
+    const def = RM.def(id);
+    if (!def) return '';
+    return D().fill((def.lines && def.lines[key]) || '', S().player);
+  };
+  RM.voice = function (id, key) {
+    const def = RM.def(id);
+    if (!def) return '';
+    return D().fill((def[key]) || '', S().player);
+  };
+  RM.eventLines = function (id, kind) {
+    const def = RM.def(id);
+    const arr = (def && def.events && def.events[kind]) || [];
+    return arr.map((t) => D().fill(t, S().player));
+  };
+
+  /* ---------------- affection ---------------- */
+  RM.addAffection = function (id, n, silent) {
+    const st = RM.state(id);
+    if (!st) return 0;
+    const room = Math.max(0, DAILY_AFFECTION_CAP - st.affectionToday);
+    const gain = Math.min(Math.max(0, n), room);
+    if (n < 0) { st.affection = Math.max(0, st.affection + n); return st.affection; }
+    st.affection = Math.min(100, st.affection + gain);
+    st.affectionToday += gain;
+    if (!silent && gain > 0 && SAN.ui) SAN.ui.toast('+' + gain + ' affection', 'friend');
+    return st.affection;
+  };
+
+  /* ---------------- activity availability ---------------- */
+  RM.activityGain = function (id, actId) {
+    const a = ACT(actId);
+    const def = RM.def(id);
+    if (!a) return 0;
+    const pace = (def && def.pace) || 1;
+    const stage = RM.stageIndex(id);
+    let g = a.gain;
+    if (stage <= 4) g = Math.round(g * 0.8 * pace);
+    else if (stage >= 6) g = Math.round(g * 1.1);
+    return Math.max(1, g);
+  };
+
+  RM.canActivity = function (id, actId) {
+    const a = ACT(actId);
+    const def = RM.def(id);
+    const st = RM.state(id);
+    const s = S();
+    if (!a || !def || !st) return { ok: false, why: 'Not now.' };
+    if (!RM.romanceable(id)) return { ok: false, why: 'You do not think of them this way.' };
+    if (!RM.adult(id)) return { ok: false, why: 'Not like this.' };
+    if (RM.stageIndex(id) < a.minStage) {
+      return { ok: false, why: D().STAGES[a.minStage].name + ' or closer before this.' };
+    }
+    if (a.home && s.player.area !== 'home') return { ok: false, why: 'Only at your cottage.' };
+    if (a.night && s.time.minutes < 18 * 60) return { ok: false, why: 'Better after dark.' };
+    if (a.evening && s.time.minutes < 17 * 60) return { ok: false, why: 'Better in the evening.' };
+    const used = st.activityCount[actId] || 0;
+    if (a.once && used >= 1) return { ok: false, why: 'Already today. Tomorrow, maybe.' };
+    if (!a.once && a.limit && used >= a.limit) return { ok: false, why: 'That is enough for today.' };
+    if (a.gain > 0 && st.affectionToday >= DAILY_AFFECTION_CAP) return { ok: false, why: 'Today is already full. Let it settle.' };
+    if (RM.affection(id) < (MIN_AFFECTION[actId] || 0)) {
+      return { ok: false, why: def.refusals.pace, refuse: true };
+    }
+    // personal boundaries: privacy, public affection, comfort with touching
+    const b = def.boundaries || {};
+    const npcInfo = SAN.data.npcs[id] || {};
+    const atHome = s.player.area === 'home';
+    const hereDef = SAN.world.areas[s.player.area] || {};
+    // "their place" only counts when it is a room, not the whole village square
+    const theirPlace = npcInfo.homeArea === s.player.area && hereDef.region === 'indoor';
+    if (a.privateOnly && !atHome && !theirPlace) return { ok: false, why: def.refusals.private, refuse: true };
+    if (b.privateOnly && PHYSICAL.indexOf(actId) >= 0 && !atHome && !theirPlace) {
+      return { ok: false, why: def.refusals.private, refuse: true };
+    }
+    if (b.pda === false && PHYSICAL.indexOf(actId) >= 0 && !atHome && !theirPlace && s.player.area === 'village') {
+      return { ok: false, why: def.refusals.private, refuse: true };
+    }
+    if (b.noTouching && b.noTouching.indexOf(actId) >= 0 && RM.stageIndex(id) < 6) {
+      return { ok: false, why: def.refusals.pace };
+    }
+    if (actId === 'gift' && !RM.romanticGiftId()) return { ok: false, why: 'You have no flower or keepsake to give.' };
+    return { ok: true };
+  };
+
+  RM.activities = function (id) {
+    return D().ACTIVITIES.map((a) => Object.assign({}, a, RM.canActivity(id, a.id), { computedGain: RM.activityGain(id, a.id) }));
+  };
+
+  RM.romanticGiftId = function () {
+    const s = S();
+    const pool = ['wild_lavender', 'lavender', 'starflower', 'moonpetal', 'snowdrop', 'wild_rose', 'bluebell', 'sunrose', 'forget_me_not', 'daisy', 'sunflower', 'pearl', 'sea_glass'];
+    return pool.find((id) => s.inventory[id] > 0) || null;
+  };
+
+  /* ---------------- consent ---------------- */
+  RM.askConsent = function (opts) {
+    const o = Object.assign({ onYes: null, onNo: null, yesLabel: 'Yes, please', noLabel: 'Not tonight', prompt: '' }, opts || {});
+    SAN.ui.dialogue({
+      pages: [{ speaker: o.speaker || 'narrator', text: o.prompt }],
+      choices: [
+        { label: o.yesLabel, icon: '💗', cb: function () { if (o.onYes) o.onYes(); } },
+        { label: o.noLabel, icon: '🤍', cb: function () { if (o.onNo) o.onNo(); } },
+        { label: 'Say nothing for now', icon: '✕', cb: function () { if (o.onNo) o.onNo(); } },
+      ],
+    });
+  };
+
+  RM.refuse = function (id, why) {
+    const npc = SAN.data.npcs[id];
+    SAN.ui.dialogue({ pages: [{ speaker: id, text: why, context: 'concerned' }] });
+    const st = RM.state(id);
+    st.declined[why.slice(0, 24)] = (st.declined[why.slice(0, 24)] || 0) + 1;
+    // a no is information, not a penalty: no points are removed anywhere
+  };
+
+  /* ---------------- performing an activity ---------------- */
+  RM.perform = function (id, actId) {
+    if (!RM.adult(id)) return false;
+    const npc = SAN.data.npcs[id];
+    const def = RM.def(id);
+    const st = RM.state(id);
+    const a = ACT(actId);
+    if (!npc || !a || !st) return false;
+    const can = RM.canActivity(id, actId);
+    if (!can.ok) { RM.refuse(id, can.why || 'Not now.'); return false; }
+
+    const run = function () {
+      let extra = null;
+      if (actId === 'gift') {
+        const item = RM.romanticGiftId();
+        if (item) { SAN.state.removeItem(item, 1); extra = SAN.data.item(item).name; }
+      }
+      const gain = RM.activityGain(id, actId);
+      RM.addAffection(id, gain, true);
+      st.activityCount[actId] = (st.activityCount[actId] || 0) + 1;
+      const line = RM.npcLine(id, actId);
+      const pages = [{ speaker: 'narrator', text: RM.activityNarration(id, actId, extra) }, { speaker: id, text: line, context: actId === 'kiss' || actId === 'cuddle' ? 'gentle' : 'happy' }];
+      if (actId !== 'walk') RM.remember(id, line, actId);
+      SAN.ui.dialogue({ pages, onClose: function () { SAN.progression.checkAchievements(); } });
+      SAN.audio.sfx(actId === 'kiss' ? 'sparkle' : 'page');
+      RM.heartFx(actId);
+      if (RM.stageIndex(id) >= 5) RM.checkPartnerAvailable(id);
+    };
+
+    const needsConsent = actId === 'kiss' || actId === 'cuddle';
+    if (needsConsent) {
+      RM.askConsent({
+        speaker: 'narrator',
+        prompt: RM.consentPrompt(id, actId),
+        yesLabel: 'Yes, that is what I want',
+        noLabel: 'Not right now',
+        onYes: run,
+        onNo: function () { RM.remember(id, 'You asked, and they said not now. Nothing changed between you.', 'consent'); },
+      });
+      return true;
+    }
+    run();
+    return true;
+  };
+
+  RM.activityNarration = function (id, actId, itemName) {
+    const npc = SAN.data.npcs[id].name;
+    const map = {
+      walk: 'You walk with ' + npc + ' for a while, saying very little.',
+      hand: 'You offer your hand. ' + npc + ' takes it.',
+      hug: npc + ' steps into the hug and stays there.',
+      stargaze: 'The two of you sit out under the dark and look up.',
+      dance: 'You hold out a hand and ' + npc + ' takes it, laughing at the lack of music.',
+      memory: 'You tell ' + npc + ' something you do not usually say out loud.',
+      gift: 'You give ' + npc + ' the ' + (itemName || 'flower') + '.',
+      dinner: 'You set out two plates and one candle.',
+      kiss: 'You ask, quietly. ' + npc + ' says yes.',
+      cuddle: 'You settle in close, and it is easy to stay.',
+      cook: 'You cook together, badly and happily.',
+      fire: 'You sit by the fire with ' + npc + ' until the room goes soft.',
+      craft: 'You make something small together, badly, on purpose.',
+    };
+    return map[actId] || 'You spend a while together.';
+  };
+
+  RM.consentPrompt = function (id, actId) {
+    const npc = SAN.data.npcs[id].name;
+    if (actId === 'kiss') return 'You would like to kiss ' + npc + '. You have not asked yet. You can still not ask.';
+    return 'You would like to be closer to ' + npc + '. Nothing happens unless they say yes, and they can change their mind.';
+  };
+
+  /* ---------------- confession, commitment, partnership ---------------- */
+  RM.canConfess = function (id) {
+    const st = RM.state(id);
+    if (!RM.romanceable(id) || st.accepted) return false;
+    return RM.friendship(id) >= 55 && st.affection >= 35;
+  };
+  RM.canCommit = function (id) {
+    const st = RM.state(id);
+    if (!st.accepted || st.committed) return false;
+    const days = RM.daysSince(st.datingDay, st.datingSeason);
+    return days >= 3 && st.affection >= 78;
+  };
+  RM.canPartner = function (id) {
+    const st = RM.state(id);
+    if (!st.committed || st.partner) return false;
+    return RM.daysSince(st.commitDay, st.commitSeason) >= 5 && st.affection >= 92;
+  };
+  RM.daysSince = function (day, season) {
+    if (day == null) return 0;
+    const s = S();
+    const now = s.time.season * 28 + s.time.day;
+    const then = (season || 0) * 28 + day;
+    return Math.max(0, now - then);
+  };
+
+  RM.confess = function (id) {
+    const npc = SAN.data.npcs[id];
+    const def = RM.def(id);
+    const st = RM.state(id);
+    if (!RM.canConfess(id)) {
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: 'Not yet. There is not enough between you for words this big.' }] });
+      return;
+    }
+    const enough = st.affection >= 45 && RM.friendship(id) >= 60;
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: def.confession.ask },
+        { speaker: 'player', text: 'I would like this to be more than friendship. If you do not, I will still be here.' },
+      ],
+      choices: [
+        { label: 'Wait for their answer', icon: '💗', cb: function () {
+          if (!enough) {
+            st.notYet = true;
+            RM.remember(id, D().fill(def.confession.notYet, S().player), 'not_yet');
+            SAN.ui.dialogue({ pages: [{ speaker: id, text: def.confession.notYet, context: 'concerned' }] });
+            return;
+          }
+          st.accepted = true;
+          st.notYet = false;
+          st.datingDay = S().time.day;
+          st.datingSeason = S().time.season;
+          st.events.date = st.events.date || false;
+          RM.addAffection(id, 6, true);
+          RM.remember(id, 'You told ' + npc.name + ' the truth, and they said yes.', 'confession');
+          SAN.ui.dialogue({
+            pages: def.confession.yes.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'surprised' : 'happy' })),
+            onClose: function () {
+              RM.playEvent(id, 'date');
+              SAN.ui.toast('You are dating ' + npc.name + '.', 'friend');
+            },
+          });
+          SAN.audio.sfx('sparkle');
+        } },
+        { label: 'Decide not to say it', icon: '✕', cb: function () {
+          RM.remember(id, 'You almost said it, and decided the moment was not yours to take.', 'unspoken');
+        } },
+      ],
+    });
+  };
+
+  RM.commit = function (id) {
+    const npc = SAN.data.npcs[id];
+    const def = RM.def(id);
+    const st = RM.state(id);
+    if (!RM.canCommit(id)) {
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: 'Not yet. A commitment should not be a shortcut past the ordinary days.' }] });
+      return;
+    }
+    SAN.ui.dialogue({
+      pages: [{ speaker: 'narrator', text: 'You ask ' + npc.name + ' to stop being a maybe.' }],
+      choices: [
+        { label: 'Ask them to be yours, and you theirs', icon: '💞', cb: function () {
+          st.committed = true;
+          st.commitDay = S().time.day;
+          st.commitSeason = S().time.season;
+          RM.addAffection(id, 5, true);
+          RM.remember(id, 'You and ' + npc.name + ' chose each other, out loud.', 'commitment');
+          SAN.ui.dialogue({ pages: def.events.commit.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'serious' : 'gentle' })) });
+          SAN.audio.sfx('sparkle');
+          SAN.ui.toast('Committed to ' + npc.name + '.', 'friend');
+        } },
+        { label: 'Not yet', icon: '✕', cb: function () {} },
+      ],
+    });
+  };
+
+  RM.propose = function (id) {
+    const npc = SAN.data.npcs[id];
+    const st = RM.state(id);
+    if (!RM.canPartner(id)) {
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: 'Not yet. There is more ordinary life to live first.' }] });
+      return;
+    }
+    SAN.ui.dialogue({
+      pages: [{ speaker: 'narrator', text: 'You ask ' + npc.name + ' whether this is the life, the whole of it, shared.' }],
+      choices: [
+        { label: 'Ask them to share your life', icon: '💍', cb: function () {
+          st.partner = true;
+          st.partnerDay = S().time.day;
+          RM.remember(id, npc.name + ' said yes to a shared life.', 'partner');
+          SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Yes. Not as an ending. As the ordinary thing we keep choosing.', context: 'happy' }] });
+          SAN.audio.sfx('sparkle');
+          SAN.ui.toast(npc.name + ' is your life partner.', 'friend');
+        } },
+        { label: 'Not yet', icon: '✕', cb: function () {} },
+      ],
+    });
+  };
+
+  /* ---------------- events ---------------- */
+  RM.pendingScene = function (id) {
+    const st = RM.state(id);
+    if (!RM.romanceable(id)) return null;
+    const f = RM.friendship(id);
+    if (!st.events.friend && f >= 41) return 'friend';
+    if (!st.events.story && f >= 61 && st.affection >= 18) return 'story';
+    return null;
+  };
+
+  RM.playEvent = function (id, kind) {
+    const st = RM.state(id);
+    if (!st || !kind) return false;
+    const lines = RM.eventLines(id, kind);
+    if (!lines.length) { st.events[kind] = true; return false; }
+    st.events[kind] = true;
+    RM.remember(id, lines[0], 'event_' + kind);
+    SAN.ui.dialogue({
+      pages: lines.map((t, i) => ({ speaker: id, text: t, context: i === 0 ? 'serious' : 'gentle' })),
+      onClose: function () { if (kind === 'story') RM.addAffection(id, 4, true); },
+    });
+    return true;
+  };
+
+  RM.anniversaryDue = function (id) {
+    const st = RM.state(id);
+    if (!st.accepted || st.datingDay == null) return false;
+    const s = S();
+    if (s.time.day !== st.datingDay) return false;
+    if (s.time.season !== st.datingSeason) return false;
+    const yearKey = 'anniversary_' + s.time.year;
+    if (st.events[yearKey]) return false;
+    st.events[yearKey] = true;
+    return true;
+  };
+
+  RM.celebrateAnniversary = function (id) {
+    const npc = SAN.data.npcs[id];
+    RM.remember(id, 'An anniversary with ' + npc.name + '.', 'anniversary');
+    RM.addAffection(id, 4, true);
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'It is the day you began. Neither of you said so out loud this morning, and both of you remembered.' },
+      ].concat(RM.eventLines(id, 'anniversary').map((t) => ({ speaker: id, text: t, context: 'happy' }))),
+    });
+    SAN.audio.sfx('sparkle');
+  };
+
+  /* ---------------- check-ins ---------------- */
+  RM.checkPartnerAvailable = function (id) {
+    const st = RM.state(id);
+    if (st.accepted && RM.stageIndex(id) === 5) {
+      // nothing forced: the cottage visit is a possibility, not a demand
+      return true;
+    }
+    return false;
+  };
+
+  RM.comfort = function (id) {
+    const def = RM.def(id);
+    const st = RM.state(id);
+    if (RM.affection(id) < 25) {
+      SAN.ui.dialogue({ pages: [{ speaker: id, text: 'I am all right. But thank you for asking. People do not usually.' }] });
+      return;
+    }
+    RM.addAffection(id, 3, true);
+    st.activityCount.comfort = (st.activityCount.comfort || 0) + 1;
+    RM.remember(id, 'You asked if they were all right, and stayed for the answer.', 'comfort');
+    SAN.ui.dialogue({
+      pages: [
+        { speaker: 'narrator', text: 'You ask, plainly, how they are. Not the polite version.' },
+        { speaker: id, text: D().fill(def.comfort, S().player), context: 'gentle' },
+      ],
+    });
+  };
+
+  RM.stayNight = function (id) {
+    if (!RM.adult(id)) return;
+    const npc = SAN.data.npcs[id];
+    const def = RM.def(id);
+    const st = RM.state(id);
+    const s = S();
+    if (!st.accepted) {
+      SAN.ui.dialogue({ pages: [{ speaker: 'narrator', text: 'That is not where this story is yet.' }] });
+      return;
+    }
+    if (s.player.area !== 'home') {
+      SAN.ui.dialogue({ pages: [{ speaker: id, text: 'My place is not built for two. Yours might be.' }] });
+      return;
+    }
+    if (RM.affection(id) < 50) {
+      SAN.ui.dialogue({ pages: [{ speaker: id, text: def.refusals.pace, context: 'concerned' }] });
+      return;
+    }
+    RM.askConsent({
+      prompt: 'You ask ' + npc.name + ' to stay. You mean: sleep beside me, nothing more than that. They can say no, and it changes nothing.',
+      yesLabel: 'Ask them to stay',
+      noLabel: 'Not tonight',
+      onYes: function () {
+        RM.remember(id, 'You slept beside ' + npc.name + ', and woke up to the same quiet.', 'night');
+        RM.heartFx('cuddle');
+        st.lastGoodnight = today();
+        SAN.ui.fadeTo(function () {
+          SAN.time.sleep(true);
+          RM.addAffection(id, 4, true);
+          SAN.ui.dialogue({
+            pages: [
+              { speaker: 'narrator', text: 'The lamp goes out. The rest of the night belongs to the two of you, and to no one else.' },
+              { speaker: id, text: D().fill(def.morning, s.player), context: 'gentle' },
+            ],
+          });
+        }, 900);
+        st.lastMorning = today() + 1;
+        if (SAN.state.S.stats) SAN.state.S.stats.nightsTogether = (SAN.state.S.stats.nightsTogether || 0) + 1;
+      },
+      onNo: function () {
+        RM.remember(id, 'You asked them to stay, and they did not, and the morning was still kind.', 'consent');
+        SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Not tonight. But I am glad you asked instead of assuming.', context: 'gentle' }] });
+      },
+    });
+  };
+
+  /* ---------------- cottage guest ---------------- */
+  RM.guestExpected = function () {
+    const s = S();
+    const dated = RM.datingIds().sort((a, b) => RM.stageIndex(b) - RM.stageIndex(a));
+    const pid = RM.partnerId() || dated[0];
+    if (!pid) return null;
+    const st = RM.state(pid);
+    if (!st.accepted) return null;
+    const hour = Math.floor(s.time.minutes / 60);
+    if (st.committed || st.partner) return hour >= 16 || hour < 7 ? pid : null;
+    return hour >= 18 && hour < 22 ? pid : null;
+  };
+
+  RM.addCottageGuest = function (W) {
+    if (!W || W.cur !== 'home') return;
+    const pid = RM.guestExpected();
+    if (!pid) return;
+    if (W.npcs.some((n) => n.def.id === pid)) return;
+    const def = SAN.data.npcs[pid];
+    if (!def) return;
+    const spots = [[11.5, 7.4], [14.5, 8.4], [13.5, 9.6], [9.5, 5.6]];
+    let spot = spots.find((p) => !W.isSolid(Math.floor(p[0]), Math.floor(p[1]))) || [10.5, 8.4];
+    W.npcs.push({
+      def, x: spot[0], y: spot[1], px: spot[0] * 16, py: spot[1] * 16,
+      facing: 'down', moving: false, think: 2 + Math.random() * 2,
+      anchor: { x: spot[0], y: spot[1] }, target: { x: spot[0], y: spot[1] },
+      act: 'visiting you', pose: 'stand', bubble: null, chatTimer: 0, chatting: false, guest: true,
+    });
+  };
+
+  RM.onEnter = function (areaId) {
+    if (areaId !== 'home') return;
+    const pid = RM.guestExpected();
+    if (!pid) return;
+    const st = RM.state(pid);
+    const def = RM.def(pid);
+    const s = S();
+    const key = today();
+    if (s.time.minutes < 11 * 60 && st.lastMorning !== key) {
+      st.lastMorning = key;
+      setTimeout(function () {
+        if (SAN.ui.isPaused() || SAN.world.cur !== 'home') return;
+        SAN.ui.dialogue({ pages: [{ speaker: pid, text: D().fill(def.morning, s.player), context: 'gentle' }] });
+      }, 700);
+    }
+  };
+
+  /* greeting flavour added to ordinary chats */
+  RM.chatFlavour = function (id) {
+    const def = RM.def(id);
+    const st = RM.state(id);
+    if (!def || !st || !st.accepted) return null;
+    const s = S();
+    const key = today();
+    if ((s.time.weather === 'rain' || s.time.weather === 'storm') && st.lastRain !== key) {
+      st.lastRain = key;
+      return { text: D().fill(def.lines.rain, s.player), context: 'gentle' };
+    }
+    if (s.time.minutes >= 20 * 60 && st.lastGoodnight !== key) {
+      st.lastGoodnight = key;
+      return { text: D().fill(def.goodnight, s.player), context: 'gentle' };
+    }
+    return null;
+  };
+
+  // a small, motion-safe flourish so an interaction reads as happening
+  RM.heartFx = function (actId) {
+    if (!S() || (S().settings && S().settings.reduceMotion)) return;
+    const glyph = actId === 'kiss' || actId === 'cuddle' ? '💗' : actId === 'dance' ? '♪' : '❦';
+    const host = document.createElement('div');
+    host.className = 'rom-fx';
+    for (let i = 0; i < 5; i++) {
+      const dot = document.createElement('span');
+      dot.textContent = glyph;
+      dot.style.left = (32 + Math.random() * 36) + '%';
+      dot.style.animationDelay = (i * 0.11) + 's';
+      dot.style.fontSize = (12 + Math.random() * 10) + 'px';
+      host.appendChild(dot);
+    }
+    document.body.appendChild(host);
+    setTimeout(function () { host.remove(); }, 1900);
+  };
+
+  RM.nextStep = function (id) {
+    if (!RM.romanceable(id)) return '';
+    if (RM.canPartner(id)) return 'You could ask them to share your life.';
+    if (RM.canCommit(id)) return 'You could ask them to commit.';
+    if (RM.canConfess(id)) return 'You could tell them how you feel.';
+    if (RM.stageIndex(id) >= 4) return 'Spend more time together. Affection grows from doing things, not from gifts.';
+    if (RM.stageIndex(id) >= 2) return 'Closer friendship first. Keep talking, keep showing up.';
+    return 'Get to know them.';
+  };
 })();
 </script>
 <script>
@@ -11587,6 +13540,11 @@ window.SAN = window.SAN || {};
       const ms = SAN.living.pendingMilestone(def.id);
       if (ms) { SAN.living.playMilestone(def.id, ms); return; }
     }
+    if (SAN.romance) {
+      const rscene = SAN.romance.pendingScene(def.id);
+      if (rscene) { SAN.romance.playEvent(def.id, rscene); return; }
+      if (SAN.romance.anniversaryDue(def.id)) { SAN.romance.celebrateAnniversary(def.id); return; }
+    }
     const avail = SAN.quests.availableFor(def.id);
     if (avail) { A.offerQuest(avail); return; }
     A.chat(npc, { firstTime });
@@ -11638,6 +13596,11 @@ window.SAN = window.SAN || {};
       }
     }
 
+    if (SAN.romance) {
+      const flavour = SAN.romance.chatFlavour(def.id);
+      if (flavour) lines.push({ speaker: def.id, text: flavour.text, context: flavour.context });
+    }
+
     const choices = [];
     (def.topics || []).forEach((t) => {
       if (SAN.rel.pts(def.id) >= t.min && !(S_.dialogueSeen[def.id + '_' + t.id])) {
@@ -11648,6 +13611,15 @@ window.SAN = window.SAN || {};
         });
       }
     });
+    if (SAN.romance && SAN.romance.romanceable(def.id)) {
+      const rstage = SAN.romance.stageIndex(def.id);
+      if (rstage >= 2) choices.push({ label: 'Spend time together', icon: '❦', cb: function () { SAN.ui.openPanel('romance', { npcId: def.id }); } });
+      if (SAN.romance.canConfess(def.id)) choices.push({ label: 'Tell them how you feel', icon: '💗', cb: function () { SAN.romance.confess(def.id); } });
+      if (SAN.romance.canCommit(def.id)) choices.push({ label: 'Ask them to commit', icon: '💞', cb: function () { SAN.romance.commit(def.id); } });
+      if (SAN.romance.canPartner(def.id)) choices.push({ label: 'Ask them to share your life', icon: '💍', cb: function () { SAN.romance.propose(def.id); } });
+      if (rstage >= 4) choices.push({ label: 'Ask how they are', icon: '🤍', cb: function () { SAN.romance.comfort(def.id); } });
+      if (rstage >= 5 && SAN.state.S.player.area === 'home') choices.push({ label: 'Ask them to stay the night', icon: '🌙', cb: function () { SAN.romance.stayNight(def.id); } });
+    }
     choices.push({ label: 'Give a gift', icon: '🎁', cb: function () { SAN.ui.openPanel('gift', { npcId: def.id }); } });
     choices.push({ label: 'Just talk', icon: '💬', cb: function () { A.smallTalk(npc); } });
     choices.push({ label: 'Not right now', icon: '✕', cb: function () { } });
@@ -13371,14 +15343,18 @@ window.SAN = window.SAN || {};
       const tier = SAN.data.friendTier(f.pts);
       const card = document.createElement('button');
       card.className = 'rel-card';
+      const rstage = SAN.romance && SAN.romance.romanceable(id) ? SAN.romance.stage(id) : null;
+      const raff = SAN.romance ? SAN.romance.affection(id) : 0;
+      const romantic = rstage && ['interest', 'dating', 'committed', 'partner'].indexOf(rstage.id) >= 0;
       card.innerHTML = `
         <div class="rel-portrait">${SAN.render.portraitImg(id)}</div>
         <div class="rel-info">
           <div class="rel-name">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}</div>
-          <div class="rel-tier">${f.met ? tier.name : 'Not yet met'}</div>
+          <div class="rel-tier">${f.met ? tier.name : 'Not yet met'}${romantic ? ' · ' + rstage.name : ''}</div>
           <div class="rel-bar">${bar(f.pts)}</div>
-          <div class="rel-pts">${f.pts} / 100</div>
+          <div class="rel-pts">${f.pts} / 100 friendship</div>
+          ${romantic ? `<div class="rel-pts rom-aff">${raff} / 100 affection</div>` : ''}
         </div>`;
       card.addEventListener('click', () => relDetail(id));
       grid.appendChild(card);
@@ -13422,10 +15398,116 @@ window.SAN = window.SAN || {};
         <div class="prompt-label">${knowsTastes ? 'Loves' : 'You do not know their tastes yet'}</div>
         <div class="likes-list">${knowsTastes ? (npc.loves || []).map((i) => `<span class="tag-pill">${U.esc(SAN.data.item(i).name)}</span>`).join('') : '<span class="fineprint">Talk with them more. People reveal themselves slowly.</span>'}</div>
       </div>
+      ${romanceDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
+    attachRomanceButtons(d, id);
   }
 
+  function romanceDetailHTML(id) {
+    if (!SAN.romance || !SAN.romance.romanceable(id)) return '';
+    const npc = SAN.data.npcs[id];
+    const def = SAN.romance.def(id);
+    const st = SAN.romance.state(id);
+    const stage = SAN.romance.stage(id);
+    const aff = SAN.romance.affection(id);
+    const memories = (st.memories || []).slice(-5).reverse();
+    const unlocked = Object.keys(st.events || {}).filter((k) => st.events[k] && k.indexOf('anniversary') < 0);
+    const out = [];
+    out.push('<div class="prompt-label">Relationship</div>');
+    out.push(`<div class="rom-head"><span class="rom-stage">${stage.name}</span><span class="rom-aff-num">affection ${aff} / 100</span></div>`);
+    out.push(bar(aff, 'rom'));
+    out.push(`<div class="fineprint">${U.esc(SAN.romance.nextStep(id))}</div>`);
+    if (def && def.boundaries && def.boundaries.note && SAN.romance.stageIndex(id) >= 3) {
+      out.push(`<div class="rom-boundary"><b>Their boundary</b> · ${U.esc(def.boundaries.note)}</div>`);
+    }
+    out.push('<div class="rom-actions"></div>');
+    out.push('<div class="prompt-label">Memories</div>');
+    out.push(memories.length
+      ? '<div class="rom-memories">' + memories.map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('') + '</div>'
+      : '<div class="fineprint">Nothing shared yet. Start with a walk.</div>');
+    const hist = (st.history || []).slice(-3).reverse();
+    if (hist.length) {
+      out.push('<div class="prompt-label">History</div>');
+      out.push('<div class="rom-memories">' + hist.map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('') + '</div>');
+    }
+    out.push('<div class="prompt-label">Events</div><div class="rom-events">' +
+      ['friend', 'story', 'date', 'commit', 'anniversary'].map((k) => {
+        const on = unlocked.indexOf(k) >= 0 || (k === 'anniversary' && st.accepted);
+        return `<span class="tag-pill ${on ? 'on' : ''}">${k}</span>`;
+      }).join('') + '</div>');
+    return out.join('');
+  }
+
+  function attachRomanceButtons(el, id) {
+    const host = el.querySelector('.rom-actions');
+    if (!host) return;
+    const mk = (label, cb) => {
+      const b = document.createElement('button');
+      b.className = 'btn small';
+      b.textContent = label;
+      b.addEventListener('click', cb);
+      host.appendChild(b);
+    };
+    const nearby = (SAN.world.npcs || []).some((n) => n.def.id === id);
+    if (nearby) mk('Spend time together', () => { UI.closeAll(); UI.openPanel('romance', { npcId: id }); });
+    if (SAN.romance.canConfess(id)) mk('Tell them how you feel', () => { UI.closeAll(); SAN.romance.confess(id); });
+    if (SAN.romance.canCommit(id)) mk('Ask them to commit', () => { UI.closeAll(); SAN.romance.commit(id); });
+    if (SAN.romance.canPartner(id)) mk('Ask them to share your life', () => { UI.closeAll(); SAN.romance.propose(id); });
+    if (!host.children.length) {
+      const note = document.createElement('div');
+      note.className = 'fineprint';
+      note.textContent = 'Find them in Sanctuary to spend time together.';
+      host.appendChild(note);
+    }
+  }
+
+  P.romance = function (data) {
+    const npc = SAN.data.npcs[data.npcId];
+    if (!npc) return;
+    const def = SAN.romance.def(npc.id);
+    const st = SAN.romance.state(npc.id);
+    const stage = SAN.romance.stage(npc.id);
+    const aff = SAN.romance.affection(npc.id);
+    const acts = SAN.romance.activities(npc.id);
+    const el = UI.panel('romance', 'Time with ' + npc.name, `
+      <div class="rom-panel-head">
+        <div class="rom-panel-portrait">${SAN.render.portraitImg(npc.id)}</div>
+        <div class="rom-panel-meta">
+          <div class="rel-name">${U.esc(npc.name)}</div>
+          <div class="rel-title">${U.esc(npc.title)}</div>
+          <div class="rom-head"><span class="rom-stage">${stage.name}</span><span class="rom-aff-num">affection ${aff} / 100</span></div>
+          ${bar(aff, 'rom')}
+          <div class="fineprint">${U.esc(SAN.romance.nextStep(npc.id))}</div>
+        </div>
+      </div>
+      <p class="panel-intro">Everything here is a question. If they say no, nothing is lost — not a point, not a day, not the friendship.</p>
+      <div class="rom-act-list"></div>
+      ${def && def.boundaries && def.boundaries.note ? `<div class="rom-boundary"><b>Their boundary</b> · ${U.esc(def.boundaries.note)}</div>` : ''}
+      ${(st.memories || []).length ? `<div class="prompt-label">Recent memories</div><div class="rom-memories">${(st.memories || []).slice(-4).reverse().map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('')}</div>` : ''}
+    `, { className: 'medium-panel' });
+    const list = el.querySelector('.rom-act-list');
+    acts.forEach((a) => {
+      const b = document.createElement('button');
+      b.className = 'rom-act' + (a.ok ? '' : ' off');
+      b.innerHTML = `<span class="rom-act-ico">${a.icon}</span>
+        <span class="rom-act-text"><b>${U.esc(a.label)}</b><small>${U.esc(a.ok ? a.blurb : a.why)}</small></span>
+        <span class="rom-act-gain">${a.ok ? '+' + a.computedGain : ''}</span>`;
+      b.addEventListener('click', () => {
+        if (!a.ok) { SAN.romance.refuse(npc.id, a.why); return; }
+        UI.closePanel('romance');
+        SAN.romance.perform(npc.id, a.id);
+      });
+      list.appendChild(b);
+    });
+    const giftId = SAN.romance.romanticGiftId();
+    if (giftId) {
+      const g = document.createElement('div');
+      g.className = 'fineprint';
+      g.textContent = 'Romantic gifts in your satchel: ' + SAN.data.item(giftId).name;
+      el.querySelector('.panel-body').appendChild(g);
+    }
+  };
   /* =========================================================
      MAP
      ========================================================= */

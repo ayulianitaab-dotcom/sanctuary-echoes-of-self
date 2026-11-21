@@ -11,6 +11,7 @@ FILES=(
   js/core/save.js
   js/data/items.js
   js/data/npcs.js
+  js/data/romance.js
   js/data/character.js
   js/data/quests.js
   js/data/life.js
@@ -26,6 +27,7 @@ FILES=(
   js/systems/journal.js
   js/systems/memory.js
   js/systems/relationships.js
+  js/systems/romance.js
   js/systems/quests.js
   js/systems/cat.js
   js/systems/living.js

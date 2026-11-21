@@ -89,6 +89,7 @@
     W.cam.x = camX; W.cam.y = camY;
     W.clampCam();
     W.spawnNPCs(true);
+    if (SAN.romance) SAN.romance.onEnter(id);
     W.transitionCooldown = 0.5;
     if (S) {
       if (!S.discovered[id]) {
@@ -169,6 +170,7 @@
         act: entry.act, pose: 'stand', bubble: null, chatTimer: 0, chatting: false,
       });
     });
+    if (SAN.romance) SAN.romance.addCottageGuest(W);
   };
 
   W.refreshNPCsIfNeeded = function () {

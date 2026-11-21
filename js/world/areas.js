@@ -255,6 +255,18 @@
     add(a, 'catbed', 4, 11, { w: 2, h: 1, solid: false });
     add(a, 'catbowl', 6, 11, { solid: false });
     add(a, 'window', 2, 1, { solid: true });
+    /* Victorian dressing: framed botanicals, a hallway clock, quiet comforts */
+    add(a, 'painting', 9, 1, { solid: true, interact: { type: 'sign', text: 'A pressed sprig of lavender under glass, labelled in handwriting you almost recognise.' } });
+    add(a, 'painting', 12, 1, { solid: true });
+    add(a, 'mirror', 13, 1, { solid: true, interact: { type: 'sign', text: 'An oval mirror in a gilded frame. Your reflection arrives half a second late, then smiles.' } });
+    add(a, 'clock', 18, 1, { solid: true, interact: { type: 'sign', text: 'A small oak clock, wound every Sunday. It keeps village time, which is to say: approximate.' } });
+    add(a, 'vase', 8, 2, { solid: false });
+    add(a, 'bookstack', 11, 10, { solid: false });
+    add(a, 'cushion', 13, 10, { solid: false });
+    /* Mochi's corner: a woven mat under the nest and a spare cushion */
+    fillRect(a, 3, 12, 4, 1, 'r');
+    add(a, 'cushion', 8, 12, { solid: false });
+
     add(a, 'plaque', 10, 1, { solid: false, text: 'Home' });
     return a;
   }

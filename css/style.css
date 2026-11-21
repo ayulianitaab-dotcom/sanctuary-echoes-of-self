@@ -2464,3 +2464,36 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
   .dlg-side { flex: 1 0 100%; order: 4; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .dlg-side:empty { display: none; }
 }
+
+/* ---------------- romance ---------------- */
+.rom-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 4px 0 6px; }
+.rom-stage { font-family: var(--font-display, serif); font-size: 15px; color: #8f79b0; letter-spacing: .02em; }
+.rom-aff-num { font-size: 12px; color: #8a7a6a; }
+.bar.rom i { background: linear-gradient(90deg, #c9ad75, #bda8dc); }
+.rom-aff { color: #8f79b0; }
+.rom-boundary { margin: 10px 0; padding: 8px 10px; font-size: 12px; line-height: 1.5; color: #6d5f52; background: rgba(189, 168, 220, 0.12); border-left: 3px solid #bda8dc; border-radius: 6px; }
+.rom-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.rom-memories { display: flex; flex-direction: column; gap: 6px; margin: 6px 0 10px; }
+.rom-memory { font-size: 12.5px; line-height: 1.5; color: #5f5245; padding-left: 10px; border-left: 2px solid rgba(201, 173, 117, 0.5); }
+.rom-memory-day { font-size: 11px; color: #a08a6a; margin-right: 4px; }
+.rom-events { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tag-pill.on { background: rgba(189, 168, 220, 0.35); border-color: #bda8dc; color: #5f4f70; }
+.rom-panel-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 8px; }
+.rom-panel-portrait { width: 84px; flex: 0 0 84px; }
+.rom-panel-portrait img { width: 100%; display: block; border-radius: 10px; }
+.rom-panel-meta { flex: 1 1 auto; min-width: 0; }
+.rom-act-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.rom-act { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(201, 173, 117, 0.45); background: #fbf6ec; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.rom-act:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(95, 64, 41, 0.12); }
+.rom-act.off { opacity: .5; cursor: not-allowed; }
+.rom-act-ico { font-size: 20px; flex: 0 0 auto; }
+.rom-act-text { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
+.rom-act-text b { font-size: 13.5px; color: #4a3a2a; font-weight: 600; }
+.rom-act-text small { font-size: 11.5px; color: #7a6a58; line-height: 1.4; }
+.rom-act-gain { font-size: 12px; color: #8f79b0; flex: 0 0 auto; }.rom-fx { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+.rom-fx span { position: absolute; bottom: 44%; color: #b98fc4; opacity: 0; text-shadow: 0 2px 6px rgba(143, 121, 176, .35); animation: romFloat 1.7s ease-out forwards; }
+@keyframes romFloat {
+  0% { opacity: 0; transform: translateY(0) scale(.7); }
+  18% { opacity: .95; }
+  100% { opacity: 0; transform: translateY(-130px) scale(1.15); }
+}

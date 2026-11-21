@@ -542,14 +542,18 @@
       const tier = SAN.data.friendTier(f.pts);
       const card = document.createElement('button');
       card.className = 'rel-card';
+      const rstage = SAN.romance && SAN.romance.romanceable(id) ? SAN.romance.stage(id) : null;
+      const raff = SAN.romance ? SAN.romance.affection(id) : 0;
+      const romantic = rstage && ['interest', 'dating', 'committed', 'partner'].indexOf(rstage.id) >= 0;
       card.innerHTML = `
         <div class="rel-portrait">${SAN.render.portraitImg(id)}</div>
         <div class="rel-info">
           <div class="rel-name">${U.esc(npc.name)}</div>
           <div class="rel-title">${U.esc(npc.title)}</div>
-          <div class="rel-tier">${f.met ? tier.name : 'Not yet met'}</div>
+          <div class="rel-tier">${f.met ? tier.name : 'Not yet met'}${romantic ? ' · ' + rstage.name : ''}</div>
           <div class="rel-bar">${bar(f.pts)}</div>
-          <div class="rel-pts">${f.pts} / 100</div>
+          <div class="rel-pts">${f.pts} / 100 friendship</div>
+          ${romantic ? `<div class="rel-pts rom-aff">${raff} / 100 affection</div>` : ''}
         </div>`;
       card.addEventListener('click', () => relDetail(id));
       grid.appendChild(card);
@@ -593,10 +597,116 @@
         <div class="prompt-label">${knowsTastes ? 'Loves' : 'You do not know their tastes yet'}</div>
         <div class="likes-list">${knowsTastes ? (npc.loves || []).map((i) => `<span class="tag-pill">${U.esc(SAN.data.item(i).name)}</span>`).join('') : '<span class="fineprint">Talk with them more. People reveal themselves slowly.</span>'}</div>
       </div>
+      ${romanceDetailHTML(id)}
       <div class="fineprint">Friendship never decays — the village is not keeping score. Gifts: ${f.giftsToday || 0}/2 today.</div>`,
       { className: 'medium-panel' });
+    attachRomanceButtons(d, id);
   }
 
+  function romanceDetailHTML(id) {
+    if (!SAN.romance || !SAN.romance.romanceable(id)) return '';
+    const npc = SAN.data.npcs[id];
+    const def = SAN.romance.def(id);
+    const st = SAN.romance.state(id);
+    const stage = SAN.romance.stage(id);
+    const aff = SAN.romance.affection(id);
+    const memories = (st.memories || []).slice(-5).reverse();
+    const unlocked = Object.keys(st.events || {}).filter((k) => st.events[k] && k.indexOf('anniversary') < 0);
+    const out = [];
+    out.push('<div class="prompt-label">Relationship</div>');
+    out.push(`<div class="rom-head"><span class="rom-stage">${stage.name}</span><span class="rom-aff-num">affection ${aff} / 100</span></div>`);
+    out.push(bar(aff, 'rom'));
+    out.push(`<div class="fineprint">${U.esc(SAN.romance.nextStep(id))}</div>`);
+    if (def && def.boundaries && def.boundaries.note && SAN.romance.stageIndex(id) >= 3) {
+      out.push(`<div class="rom-boundary"><b>Their boundary</b> · ${U.esc(def.boundaries.note)}</div>`);
+    }
+    out.push('<div class="rom-actions"></div>');
+    out.push('<div class="prompt-label">Memories</div>');
+    out.push(memories.length
+      ? '<div class="rom-memories">' + memories.map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('') + '</div>'
+      : '<div class="fineprint">Nothing shared yet. Start with a walk.</div>');
+    const hist = (st.history || []).slice(-3).reverse();
+    if (hist.length) {
+      out.push('<div class="prompt-label">History</div>');
+      out.push('<div class="rom-memories">' + hist.map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('') + '</div>');
+    }
+    out.push('<div class="prompt-label">Events</div><div class="rom-events">' +
+      ['friend', 'story', 'date', 'commit', 'anniversary'].map((k) => {
+        const on = unlocked.indexOf(k) >= 0 || (k === 'anniversary' && st.accepted);
+        return `<span class="tag-pill ${on ? 'on' : ''}">${k}</span>`;
+      }).join('') + '</div>');
+    return out.join('');
+  }
+
+  function attachRomanceButtons(el, id) {
+    const host = el.querySelector('.rom-actions');
+    if (!host) return;
+    const mk = (label, cb) => {
+      const b = document.createElement('button');
+      b.className = 'btn small';
+      b.textContent = label;
+      b.addEventListener('click', cb);
+      host.appendChild(b);
+    };
+    const nearby = (SAN.world.npcs || []).some((n) => n.def.id === id);
+    if (nearby) mk('Spend time together', () => { UI.closeAll(); UI.openPanel('romance', { npcId: id }); });
+    if (SAN.romance.canConfess(id)) mk('Tell them how you feel', () => { UI.closeAll(); SAN.romance.confess(id); });
+    if (SAN.romance.canCommit(id)) mk('Ask them to commit', () => { UI.closeAll(); SAN.romance.commit(id); });
+    if (SAN.romance.canPartner(id)) mk('Ask them to share your life', () => { UI.closeAll(); SAN.romance.propose(id); });
+    if (!host.children.length) {
+      const note = document.createElement('div');
+      note.className = 'fineprint';
+      note.textContent = 'Find them in Sanctuary to spend time together.';
+      host.appendChild(note);
+    }
+  }
+
+  P.romance = function (data) {
+    const npc = SAN.data.npcs[data.npcId];
+    if (!npc) return;
+    const def = SAN.romance.def(npc.id);
+    const st = SAN.romance.state(npc.id);
+    const stage = SAN.romance.stage(npc.id);
+    const aff = SAN.romance.affection(npc.id);
+    const acts = SAN.romance.activities(npc.id);
+    const el = UI.panel('romance', 'Time with ' + npc.name, `
+      <div class="rom-panel-head">
+        <div class="rom-panel-portrait">${SAN.render.portraitImg(npc.id)}</div>
+        <div class="rom-panel-meta">
+          <div class="rel-name">${U.esc(npc.name)}</div>
+          <div class="rel-title">${U.esc(npc.title)}</div>
+          <div class="rom-head"><span class="rom-stage">${stage.name}</span><span class="rom-aff-num">affection ${aff} / 100</span></div>
+          ${bar(aff, 'rom')}
+          <div class="fineprint">${U.esc(SAN.romance.nextStep(npc.id))}</div>
+        </div>
+      </div>
+      <p class="panel-intro">Everything here is a question. If they say no, nothing is lost — not a point, not a day, not the friendship.</p>
+      <div class="rom-act-list"></div>
+      ${def && def.boundaries && def.boundaries.note ? `<div class="rom-boundary"><b>Their boundary</b> · ${U.esc(def.boundaries.note)}</div>` : ''}
+      ${(st.memories || []).length ? `<div class="prompt-label">Recent memories</div><div class="rom-memories">${(st.memories || []).slice(-4).reverse().map((m) => `<div class="rom-memory"><span class="rom-memory-day">Day ${m.day}</span> ${U.esc(m.text)}</div>`).join('')}</div>` : ''}
+    `, { className: 'medium-panel' });
+    const list = el.querySelector('.rom-act-list');
+    acts.forEach((a) => {
+      const b = document.createElement('button');
+      b.className = 'rom-act' + (a.ok ? '' : ' off');
+      b.innerHTML = `<span class="rom-act-ico">${a.icon}</span>
+        <span class="rom-act-text"><b>${U.esc(a.label)}</b><small>${U.esc(a.ok ? a.blurb : a.why)}</small></span>
+        <span class="rom-act-gain">${a.ok ? '+' + a.computedGain : ''}</span>`;
+      b.addEventListener('click', () => {
+        if (!a.ok) { SAN.romance.refuse(npc.id, a.why); return; }
+        UI.closePanel('romance');
+        SAN.romance.perform(npc.id, a.id);
+      });
+      list.appendChild(b);
+    });
+    const giftId = SAN.romance.romanticGiftId();
+    if (giftId) {
+      const g = document.createElement('div');
+      g.className = 'fineprint';
+      g.textContent = 'Romantic gifts in your satchel: ' + SAN.data.item(giftId).name;
+      el.querySelector('.panel-body').appendChild(g);
+    }
+  };
   /* =========================================================
      MAP
      ========================================================= */
