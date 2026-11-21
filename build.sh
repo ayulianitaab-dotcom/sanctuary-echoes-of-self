@@ -12,6 +12,8 @@ FILES=(
   js/data/items.js
   js/data/npcs.js
   js/data/romance.js
+  js/data/scenes-illustrated.js
+  js/data/scenes.js
   js/data/character.js
   js/data/quests.js
   js/data/life.js
@@ -28,6 +30,7 @@ FILES=(
   js/systems/memory.js
   js/systems/relationships.js
   js/systems/romance.js
+  js/systems/scenes.js
   js/systems/quests.js
   js/systems/cat.js
   js/systems/living.js
@@ -129,6 +132,7 @@ if ! php tools/build-deploy-assets.php; then
 fi
 # index.html keeps .png for local play; the published copy asks for .webp
 sed -i 's/window.SAN_ASSET_PORTRAIT_EXT = "png"/window.SAN_ASSET_PORTRAIT_EXT = "webp"/' deploy/public/index.html
+sed -i 's/window.SAN_SCENE_EXT = "jpg"/window.SAN_SCENE_EXT = "webp"/' deploy/public/index.html
 if ! grep -q 'SAN_ASSET_PORTRAIT_EXT = "webp"' deploy/public/index.html; then
   echo "ERROR: could not point the deploy build at the WebP assets" >&2
   exit 1

@@ -450,6 +450,7 @@
     }
     const avail = SAN.quests.availableFor(def.id);
     if (avail) { A.offerQuest(avail); return; }
+    if (firstTime && SAN.scenes) { SAN.scenes.showChat(def.id, 'first', function () { A.chat(npc, { firstTime }); }); return; }
     A.chat(npc, { firstTime });
   };
 

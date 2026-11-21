@@ -145,3 +145,39 @@ if (!is_file($mochiOut . '/poses/idle.webp')) {
     fwrite(STDERR, "ERROR: companion packaging missing idle.webp\n");
     exit(1);
 }
+
+/* cinematic location plates: same pixels, WebP for the published copy. The
+ * local build keeps the JPEGs, so the game works from disk with no server. */
+$sceneSrc = $root . '/assets/scenes';
+$sceneOut = $root . '/deploy/public/assets/scenes';
+if (is_dir($sceneSrc)) {
+    $sceneFiles = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($sceneSrc, FilesystemIterator::SKIP_DOTS)
+    );
+    $sceneCount = 0;
+    foreach ($sceneFiles as $file) {
+        $ext = strtolower($file->getExtension());
+        if ($ext !== 'jpg' && $ext !== 'jpeg' && $ext !== 'png') continue;
+        $rel = str_replace('\\', '/', substr($file->getPathname(), strlen($sceneSrc) + 1));
+        $dest = $sceneOut . '/' . preg_replace('/\.(jpe?g|png)$/i', '.webp', $rel);
+        if (!is_dir(dirname($dest)) && !mkdir(dirname($dest), 0777, true)) {
+            fwrite(STDERR, "ERROR: cannot create " . dirname($dest) . "\n");
+            exit(1);
+        }
+        $im = @imagecreatefromstring(file_get_contents($file->getPathname()));
+        if (!$im) {
+            fwrite(STDERR, "ERROR: cannot read scene art $rel\n");
+            exit(1);
+        }
+        imagealphablending($im, false);
+        imagesavealpha($im, true);
+        $ok = imagewebp($im, $dest, 82);
+        imagedestroy($im);
+        if (!$ok || !is_file($dest)) {
+            fwrite(STDERR, "ERROR: cannot write $dest\n");
+            exit(1);
+        }
+        $sceneCount++;
+    }
+    printf("Packaged %d cinematic plates for the web\n", $sceneCount);
+}

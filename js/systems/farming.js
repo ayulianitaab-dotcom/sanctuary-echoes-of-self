@@ -90,6 +90,7 @@
     SAN.progression.addXp('farming', crop.xp || 8);
     SAN.audio.sfx('harvest');
     st.crop = null; st.stage = 0; st.watered = false;
+    if (SAN.scenes) SAN.scenes.showDaily('harvest', { caption: crop.name + ', ' + qty + ' in the basket.' });
     // occasional extra seed back
     if (Math.random() < 0.3) SAN.state.addItem(crop.seed, 1, { silent: true });
     SAN.progression.checkAchievements();

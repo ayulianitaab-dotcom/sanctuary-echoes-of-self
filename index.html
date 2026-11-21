@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#2b2334">
 <title>Sanctuary: Echoes of Self</title>
 <script>window.SAN_ASSET_PORTRAIT_EXT = "png";</script>
+<script>window.SAN_SCENE_EXT = "jpg";</script>
 <style>
 /* ============================================================
    SANCTUARY: ECHOES OF SELF — cozy fantasy UI
@@ -2506,6 +2507,45 @@ body.rail-collapsed #rail-open { display: grid; place-items: center; }
   18% { opacity: .95; }
   100% { opacity: 0; transform: translateY(-130px) scale(1.15); }
 }
+/* ---------------- cinematic scenes ---------------- */
+.scene-layer { position: fixed; inset: 0; z-index: 72; display: flex; align-items: center; justify-content: center; background: #17111d; opacity: 0; transition: opacity .28s ease; padding: 18px; }
+.scene-layer.open { opacity: 1; }
+.scene-layer.hidden { display: none; }
+.scene-frame { position: relative; width: min(1120px, 96vw); aspect-ratio: 16 / 9; max-height: 92vh; border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(201, 173, 117, .5); background: #241c2e; }
+.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.scene-bg-missing { opacity: 0; }
+.scene-grade { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .5; }
+.scene-grade-soft { opacity: .25; }
+.scene-tint-day { background: linear-gradient(180deg, rgba(255, 244, 226, .18), rgba(255, 236, 214, .05)); mix-blend-mode: soft-light; opacity: .8; }
+.scene-tint-dawn { background: linear-gradient(180deg, rgba(255, 214, 190, .3), rgba(255, 240, 226, .06)); mix-blend-mode: soft-light; }
+.scene-tint-dusk { background: linear-gradient(180deg, rgba(255, 178, 140, .35), rgba(120, 90, 140, .2)); mix-blend-mode: soft-light; }
+.scene-tint-night { background: linear-gradient(180deg, rgba(46, 40, 84, .55), rgba(20, 18, 40, .45)); mix-blend-mode: multiply; opacity: .8; }
+.scene-tint-warm { background: linear-gradient(180deg, rgba(255, 208, 150, .26), rgba(255, 236, 210, .08)); mix-blend-mode: soft-light; }
+.scene-tint-forest { background: linear-gradient(180deg, rgba(150, 190, 150, .22), rgba(60, 90, 70, .2)); mix-blend-mode: soft-light; }
+.scene-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 40%, rgba(0, 0, 0, 0) 45%, rgba(24, 16, 28, .55) 100%); }
+.scene-cast { position: absolute; inset: 0; pointer-events: none; }
+.scene-actor { position: absolute; bottom: 88px; height: calc(100% - 96px); width: auto; filter: drop-shadow(0 14px 22px rgba(30, 18, 40, .45)); animation: sceneFloatIn .5s ease both; }
+.scene-actor.left { left: 4%; }
+.scene-actor.right { right: 4%; }
+.scene-actor.small { height: 30%; right: 22%; bottom: 88px; }
+@keyframes sceneFloatIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.scene-plate { position: absolute; left: 0; right: 0; bottom: 0; height: 92px; padding: 10px 190px 16px 24px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-end; color: #fdf7ec; background: linear-gradient(180deg, rgba(20, 13, 26, 0), rgba(20, 13, 26, .62) 26%, rgba(20, 13, 26, .92) 70%); text-shadow: 0 2px 12px rgba(20, 12, 24, .8); }
+.scene-kicker { text-shadow: 0 1px 6px rgba(16, 10, 20, .9); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: #e6d3ac; margin-bottom: 6px; }
+.scene-title { margin: 0 0 6px; font-size: clamp(18px, 2.4vw, 30px); font-family: var(--font-display, serif); font-weight: 600; }
+.scene-caption { margin: 0; font-size: clamp(12.5px, 1.3vw, 15px); line-height: 1.55; color: #f4e9dc; max-width: 46ch; }
+.scene-controls { position: absolute; right: 20px; bottom: 26px; display: flex; gap: 8px; z-index: 3; }
+.scene-btn { border: 1px solid rgba(201, 173, 117, .55); background: rgba(28, 20, 34, .62); color: #f6ecdc; padding: 8px 14px; border-radius: 999px; font-size: 12.5px; cursor: pointer; backdrop-filter: blur(6px); }
+.scene-btn:hover { background: rgba(48, 36, 58, .8); }
+.scene-btn.primary { background: rgba(201, 173, 117, .9); color: #2a2030; border-color: rgba(255, 244, 226, .6); font-weight: 600; }
+.vault-scene-btn { margin-left: auto; }
+.scene-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.scene-card { padding: 0; border: 1px solid rgba(201, 173, 117, .45); border-radius: 12px; overflow: hidden; background: #fbf6ec; cursor: pointer; text-align: left; }
+.scene-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(95, 64, 41, .16); }
+.scene-card-art { height: 96px; background-size: cover; background-position: center; }
+.scene-card-body { padding: 8px 10px 10px; }
+.scene-card-cat { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: #a08a6a; }
+.scene-card-title { font-size: 13px; color: #4a3a2a; font-weight: 600; margin-top: 2px; }
+.scene-card-meta { font-size: 11px; color: #8a7a6a; margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -4827,6 +4867,176 @@ window.SAN = window.SAN || {};
       .replace(/\{their\}/g, p.possessive)
       .replace(/\{They\}/g, p.subject.charAt(0).toUpperCase() + p.subject.slice(1));
   };
+})();
+</script>
+<script>
+/* Generated by tools/scene-generate.php when a reference-capable model has
+   produced a full illustration for a scene id. Empty means no full
+   illustrations exist yet, so scenes are composed from the illustrated
+   location plate plus the official character artwork. */
+window.SAN_SCENE_ILLUSTRATED = {};
+</script>
+<script>
+/* Sanctuary — cinematic scene catalog.
+   Characters are NEVER redrawn: every scene composites the official character
+   artwork over a location plate. Plates live in assets/scenes/backdrops/ and are
+   produced once by tools/scene-generate.php, then cached and shipped offline. */
+(function () {
+  const D = SAN.data || (SAN.data = {});
+  const SC = (D.scenes = {});
+
+  SC.CATEGORIES = {
+    daily: 'Daily Life',
+    conversations: 'Conversations',
+    romance: 'Romance',
+    intimate: 'Intimate Moments',
+    'special-events': 'Special Events',
+    'npc-stories': 'NPC Stories',
+  };
+
+  /* ---------------- location plates ----------------
+     file is relative to assets/scenes/backdrops/. Generated art is optional:
+     a missing plate falls back to a painted gradient of the same palette, so
+     the game never shows a broken image and never calls an API at runtime. */
+  SC.BACKDROPS = {
+    cottage_day: { file: 'cottage-day', name: 'Your Cottage', area: 'home', tint: 'day' },
+    cottage_night: { file: 'cottage-night', name: 'Your Cottage, Evening', area: 'home', tint: 'night' },
+    beach_sunset: { file: 'beach-sunset', name: 'The Shore at Sunset', area: 'beach', tint: 'dusk' },
+    greenhouse: { file: 'greenhouse', name: 'The Shared Greenhouse', area: 'greenhouse', tint: 'day' },
+    garden: { file: 'garden', name: 'The Garden', area: 'garden', tint: 'day' },
+    village: { file: 'village-square', name: 'Sanctuary Village', area: 'village', tint: 'day' },
+    library: { file: 'library', name: 'The Library', area: 'library', tint: 'warm' },
+    lighthouse: { file: 'lighthouse-night', name: 'The Lighthouse', area: 'lighthouse', tint: 'night' },
+    windmill: { file: 'village-square', name: 'The Windmill Yard', area: 'windmill', tint: 'day' },
+    bakery: { file: 'bakery', name: "Mira's Bakery", area: 'bakery', tint: 'warm' },
+    teashop: { file: 'teashop', name: 'The Tea Shop', area: 'teashop', tint: 'warm' },
+    flower: { file: 'garden', name: 'The Flower Shop', area: 'flower', tint: 'day' },
+    forest: { file: 'garden', name: 'The Memory Forest', area: 'forest', tint: 'forest' },
+    meadow: { file: 'garden', name: 'The Hidden Meadow', area: 'meadow', tint: 'dusk' },
+  };
+
+  SC.AREA_BACKDROP = {
+    home: 'cottage_day',
+    beach: 'beach_sunset',
+    greenhouse: 'greenhouse',
+    garden: 'garden',
+    village: 'village',
+    library: 'library',
+    lighthouse: 'lighthouse',
+    windmill: 'windmill',
+    bakery: 'bakery',
+    teashop: 'teashop',
+    flower: 'flower',
+    forest: 'forest',
+    meadow: 'meadow',
+    grove: 'forest',
+  };
+
+  /* ---------------- activity & event framing ---------------- */
+  SC.ACTIVITY_FRAMES = {
+    walk: { cat: 'conversations', title: 'Walking Together', frame: 'side by side, unhurried, the village behind them' },
+    hand: { cat: 'romance', title: 'Holding Hands', frame: 'close, fingers laced, a soft blush' },
+    hug: { cat: 'romance', title: 'A Long Hug', frame: 'embracing, faces turned into each other\'s shoulders' },
+    stargaze: { cat: 'romance', title: 'Under the Stars', frame: 'sitting on the grass, looking up, faces lit by starlight' },
+    dance: { cat: 'romance', title: 'A Dance With No Music', frame: 'mid-turn, hands raised, skirt and coat in motion' },
+    memory: { cat: 'conversations', title: 'Something True', frame: 'sitting close, speaking quietly, eyes lowered' },
+    gift: { cat: 'romance', title: 'A Gift With Meaning', frame: 'offering a flower, both hands, a small smile' },
+    dinner: { cat: 'romance', title: 'Dinner for Two', frame: 'candlelit table, two plates, leaning slightly in' },
+    kiss: { cat: 'intimate', title: 'A First Kiss', frame: 'foreheads tilted together, eyes closed, tender' },
+    cuddle: { cat: 'intimate', title: 'Close and Warm', frame: 'curled together, blanket, safe and quiet' },
+    cook: { cat: 'daily', title: 'Cooking Together', frame: 'flour on sleeves, shared chopping board, laughing' },
+    fire: { cat: 'intimate', title: 'By the Fire', frame: 'two chairs, one blanket, embers glowing' },
+    craft: { cat: 'daily', title: 'Making Something Small', frame: 'hands busy over a workbench, thread and wood shavings' },
+  };
+
+  SC.EVENT_FRAMES = {
+    friend: { cat: 'conversations', title: 'A Little Closer', frame: 'an easy conversation, shoulders relaxed' },
+    story: { cat: 'npc-stories', title: 'Their Own Story', frame: 'a personal confession, guarded but honest' },
+    date: { cat: 'romance', title: 'The First Date', frame: 'a table or a blanket, nervous happiness' },
+    commit: { cat: 'romance', title: 'Choosing Each Other', frame: 'hands held, promises spoken, warm light' },
+    anniversary: { cat: 'special-events', title: 'An Anniversary', frame: 'small gift, candles, comfortable silence' },
+    confession: { cat: 'romance', title: 'The Confession', frame: 'one step closer, heart visibly fast, hopeful' },
+    partner: { cat: 'special-events', title: 'A Shared Life', frame: 'the cottage doorway, morning light, together' },
+    night: { cat: 'intimate', title: 'Morning After', frame: 'fade-to-black frame: only a rumpled quilt and dawn light, no figures' },
+  };
+
+  SC.CHAT_FRAMES = {
+    first: { cat: 'conversations', title: 'A First Meeting', frame: 'introducing themselves, curious and polite' },
+    emotional: { cat: 'conversations', title: 'A Hard Day', frame: 'sitting near, listening, no fixing' },
+    serious: { cat: 'conversations', title: 'Something Serious', frame: 'facing each other, steady eye contact' },
+    farewell: { cat: 'conversations', title: 'A Farewell', frame: 'a doorway, a last look back' },
+  };
+
+  SC.DAILY_SCENES = {
+    cook: { cat: 'daily', title: 'Cooking', frame: 'at the stove, steam and herbs, sleeves pushed up' },
+    craft: { cat: 'daily', title: 'At the Workbench', frame: 'focused hands, small tools, sawdust' },
+    fish: { cat: 'daily', title: 'A Good Cast', frame: 'on the pier, rod bent, sea light' },
+    harvest: { cat: 'daily', title: 'Harvest', frame: 'basket full, soil on hands, satisfied' },
+    rest: { cat: 'daily', title: 'Rest', frame: 'curtains half drawn, quilt, quiet afternoon' },
+    mochi: { cat: 'daily', title: 'Mochi', frame: 'a cat in a sunbeam, a hand reaching to pet' },
+  };
+
+  SC.TIME_TINT = {
+    day: 'scene-tint-day', dawn: 'scene-tint-dawn', dusk: 'scene-tint-dusk',
+    night: 'scene-tint-night', warm: 'scene-tint-warm', forest: 'scene-tint-forest',
+  };
+
+  SC.tintFor = function (minutes, weather) {
+    if (weather === 'rain' || weather === 'storm') return 'rain';
+    if (minutes == null) return 'day';
+    if (minutes < 7 * 60) return 'dawn';
+    if (minutes < 17 * 60) return 'day';
+    if (minutes < 19 * 60 + 30) return 'dusk';
+    return 'night';
+  };
+
+  SC.backdropFor = function (area, minutes, weather, prefer) {
+    if (prefer && SC.BACKDROPS[prefer]) return prefer;
+    let key = SC.AREA_BACKDROP[area] || 'village';
+    if (area === 'home' && (SC.tintFor(minutes, weather) === 'night' || SC.tintFor(minutes, weather) === 'dusk')) key = 'cottage_night';
+    return key;
+  };
+
+  SC.backdropPath = function (key, ext) {
+    const b = SC.BACKDROPS[key] || SC.BACKDROPS.village;
+    return 'assets/scenes/backdrops/' + b.file + '.' + (ext || 'jpg');
+  };
+
+  /* the ids used for generated full illustrations, if any ever exist */
+  SC.sceneId = function (cat, npcId, key) {
+    return (npcId ? npcId + '-' : '') + key;
+  };
+
+  /* ---------------- prompt builder (development only) ----------------
+     The generator uses this so every plate is asked for in one consistent
+     style; the game itself never builds prompts at runtime. */
+  SC.STYLE_PROMPT = [
+    'High-quality anime visual novel background illustration, romantic Victorian fantasy,',
+    'soft pastel lighting, detailed environment, cinematic wide composition,',
+    'lavender, cream, dusty pink, sage green and antique gold palette,',
+    'painterly light, gentle depth of field, no text, no watermark, no characters, no people.',
+  ].join(' ');
+
+  SC.promptFor = function (backdropKey) {
+    const b = SC.BACKDROPS[backdropKey] || SC.BACKDROPS.village;
+    const subject = {
+      'cottage-day': 'A cozy Victorian cottage interior in daylight: oak panel walls, cream plaster, long plank floor, lavender sofa, stone fireplace, lace table runner, potted lavender, warm morning light through lace-curtained windows.',
+      'cottage-night': 'The same cozy Victorian cottage at night: fireplace glowing amber, candles, lavender quilt, deep blue dusk outside the windows, quiet and intimate.',
+      'beach-sunset': 'A quiet pebble shore at sunset in a fantasy coastal village, lighthouse silhouette far off, warm rose and gold sky, gentle surf, wooden pier.',
+      'greenhouse': 'The interior of a Victorian glass greenhouse, iron arches, ferns and seedlings on wooden benches, soft diffused daylight, watering cans.',
+      'garden': 'A cottage garden in full bloom, lavender and sage beds, stone path, low stone wall, soft morning haze.',
+      'village-square': 'A small fantasy village square with timber-framed cottages, a stone well, flower carts and bunting, golden afternoon light.',
+      'library': 'A Victorian village library interior, tall oak shelves, warm lamps, reading table with books and a ladder, dust motes in window light.',
+      'lighthouse-night': 'The lamp room of a lighthouse at night, brass lens glowing, iron stairs, sea and stars beyond the glass.',
+      'bakery': 'A warm village bakery interior at dawn, wooden counter, bread loaves, flour dust in the light, copper pots.',
+      'teashop': 'A cozy Victorian tea shop interior, lace curtains, small round tables, porcelain cups, hanging lamps.',
+    }[b.file] || 'A cozy fantasy village interior, warm light and quiet detail.';
+    return subject + ' ' + SC.STYLE_PROMPT;
+  };
+
+  /* full illustrations produced by an external reference-capable model are
+     registered here by tools/scene-generate.php (empty until any exist) */
+  SC.ILLUSTRATED = (typeof window !== 'undefined' && window.SAN_SCENE_ILLUSTRATED) || {};
 })();
 </script>
 <script>
@@ -10143,6 +10353,7 @@ window.SAN = window.SAN || {};
       },
       friendship: {},
       romance: {},
+      scenes: { seen: {}, log: [] },
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -10212,6 +10423,7 @@ window.SAN = window.SAN || {};
     merged.discovered = Object.assign({ home: true }, snap.discovered || {});
     merged.friendship = Object.assign({}, base.friendship, snap.friendship || {});
     merged.romance = Object.assign({}, base.romance, snap.romance || {});
+    merged.scenes = Object.assign({ seen: {}, log: [] }, snap.scenes || {});
     merged.journal = snap.journal || [];
     merged.memories = snap.memories || [];
     merged.achievements = snap.achievements || {};
@@ -10624,6 +10836,7 @@ window.SAN = window.SAN || {};
     SAN.progression.addXp('farming', crop.xp || 8);
     SAN.audio.sfx('harvest');
     st.crop = null; st.stage = 0; st.watered = false;
+    if (SAN.scenes) SAN.scenes.showDaily('harvest', { caption: crop.name + ', ' + qty + ' in the basket.' });
     // occasional extra seed back
     if (Math.random() < 0.3) SAN.state.addItem(crop.seed, 1, { silent: true });
     SAN.progression.checkAchievements();
@@ -10855,6 +11068,7 @@ window.SAN = window.SAN || {};
     SAN.progression.addXp('fishing', Math.round(8 + fish.diff * 22));
     SAN.audio.sfx('catch');
     F.result = fish;
+    if (SAN.scenes) SAN.scenes.showDaily('fish', { caption: 'A ' + fish.name + ', still silver in the light.' });
     const rarity = fish.rarity || 'common';
     SAN.ui.toast('Caught a ' + fish.name + ' (' + rarity + ')!', 'fish', SAN.render.itemIcon(fish.id));
     if (rarity === 'rare' || rarity === 'legendary') {
@@ -10930,6 +11144,7 @@ window.SAN = window.SAN || {};
     SAN.progression.addXp('crafting', 8);
     SAN.audio.sfx('craft');
     SAN.ui.toast('Cooked ' + r.name + '.', 'item', SAN.render.itemIcon(r.out));
+    if (SAN.scenes) SAN.scenes.showDaily('cook', { caption: r.name + ', warm from the pan.' });
     return true;
   };
 
@@ -10952,6 +11167,7 @@ window.SAN = window.SAN || {};
     SAN.progression.addXp('crafting', 10);
     SAN.audio.sfx('craft');
     SAN.ui.toast('Crafted ' + r.name + '.', 'item', SAN.render.itemIcon(r.out));
+    if (SAN.scenes) SAN.scenes.showDaily('craft', { caption: r.name + ', a little crooked and entirely yours.' });
     return true;
   };
 
@@ -11558,7 +11774,8 @@ window.SAN = window.SAN || {};
       const line = RM.npcLine(id, actId);
       const pages = [{ speaker: 'narrator', text: RM.activityNarration(id, actId, extra) }, { speaker: id, text: line, context: actId === 'kiss' || actId === 'cuddle' ? 'gentle' : 'happy' }];
       if (actId !== 'walk') RM.remember(id, line, actId);
-      SAN.ui.dialogue({ pages, onClose: function () { SAN.progression.checkAchievements(); } });
+      const play = function () { SAN.ui.dialogue({ pages, onClose: function () { SAN.progression.checkAchievements(); } }); };
+      if (SAN.scenes) SAN.scenes.showActivity(id, actId, play); else play();
       SAN.audio.sfx(actId === 'kiss' ? 'sparkle' : 'page');
       RM.heartFx(actId);
       if (RM.stageIndex(id) >= 5) RM.checkPartnerAvailable(id);
@@ -11578,6 +11795,14 @@ window.SAN = window.SAN || {};
     }
     run();
     return true;
+  };
+
+  // every romantic beat becomes a cinematic frame; if scenes are unavailable the
+  // dialogue still runs exactly as before
+  RM.withScene = function (id, kind, fn) {
+    if (SAN.scenes && SAN.scenes.showEvent) { SAN.scenes.showEvent(id, kind, fn); return true; }
+    fn();
+    return false;
   };
 
   RM.activityNarration = function (id, actId, itemName) {
@@ -11660,12 +11885,14 @@ window.SAN = window.SAN || {};
           st.events.date = st.events.date || false;
           RM.addAffection(id, 6, true);
           RM.remember(id, 'You told ' + npc.name + ' the truth, and they said yes.', 'confession');
-          SAN.ui.dialogue({
-            pages: def.confession.yes.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'surprised' : 'happy' })),
-            onClose: function () {
-              RM.playEvent(id, 'date');
-              SAN.ui.toast('You are dating ' + npc.name + '.', 'friend');
-            },
+          RM.withScene(id, 'confession', function () {
+            SAN.ui.dialogue({
+              pages: def.confession.yes.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'surprised' : 'happy' })),
+              onClose: function () {
+                RM.playEvent(id, 'date');
+                SAN.ui.toast('You are dating ' + npc.name + '.', 'friend');
+              },
+            });
           });
           SAN.audio.sfx('sparkle');
         } },
@@ -11693,7 +11920,9 @@ window.SAN = window.SAN || {};
           st.commitSeason = S().time.season;
           RM.addAffection(id, 5, true);
           RM.remember(id, 'You and ' + npc.name + ' chose each other, out loud.', 'commitment');
-          SAN.ui.dialogue({ pages: def.events.commit.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'serious' : 'gentle' })) });
+          RM.withScene(id, 'commit', function () {
+            SAN.ui.dialogue({ pages: def.events.commit.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'serious' : 'gentle' })) });
+          });
           SAN.audio.sfx('sparkle');
           SAN.ui.toast('Committed to ' + npc.name + '.', 'friend');
         } },
@@ -11716,7 +11945,9 @@ window.SAN = window.SAN || {};
           st.partner = true;
           st.partnerDay = S().time.day;
           RM.remember(id, npc.name + ' said yes to a shared life.', 'partner');
-          SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Yes. Not as an ending. As the ordinary thing we keep choosing.', context: 'happy' }] });
+          RM.withScene(id, 'partner', function () {
+            SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Yes. Not as an ending. As the ordinary thing we keep choosing.', context: 'happy' }] });
+          });
           SAN.audio.sfx('sparkle');
           SAN.ui.toast(npc.name + ' is your life partner.', 'friend');
         } },
@@ -11742,9 +11973,11 @@ window.SAN = window.SAN || {};
     if (!lines.length) { st.events[kind] = true; return false; }
     st.events[kind] = true;
     RM.remember(id, lines[0], 'event_' + kind);
-    SAN.ui.dialogue({
-      pages: lines.map((t, i) => ({ speaker: id, text: t, context: i === 0 ? 'serious' : 'gentle' })),
-      onClose: function () { if (kind === 'story') RM.addAffection(id, 4, true); },
+    RM.withScene(id, kind, function () {
+      SAN.ui.dialogue({
+        pages: lines.map((t, i) => ({ speaker: id, text: t, context: i === 0 ? 'serious' : 'gentle' })),
+        onClose: function () { if (kind === 'story') RM.addAffection(id, 4, true); },
+      });
     });
     return true;
   };
@@ -11765,10 +11998,12 @@ window.SAN = window.SAN || {};
     const npc = SAN.data.npcs[id];
     RM.remember(id, 'An anniversary with ' + npc.name + '.', 'anniversary');
     RM.addAffection(id, 4, true);
-    SAN.ui.dialogue({
-      pages: [
-        { speaker: 'narrator', text: 'It is the day you began. Neither of you said so out loud this morning, and both of you remembered.' },
-      ].concat(RM.eventLines(id, 'anniversary').map((t) => ({ speaker: id, text: t, context: 'happy' }))),
+    RM.withScene(id, 'anniversary', function () {
+      SAN.ui.dialogue({
+        pages: [
+          { speaker: 'narrator', text: 'It is the day you began. Neither of you said so out loud this morning, and both of you remembered.' },
+        ].concat(RM.eventLines(id, 'anniversary').map((t) => ({ speaker: id, text: t, context: 'happy' }))),
+      });
     });
     SAN.audio.sfx('sparkle');
   };
@@ -11827,7 +12062,8 @@ window.SAN = window.SAN || {};
         RM.remember(id, 'You slept beside ' + npc.name + ', and woke up to the same quiet.', 'night');
         RM.heartFx('cuddle');
         st.lastGoodnight = today();
-        SAN.ui.fadeTo(function () {
+        const sleepNow = function () {
+          SAN.ui.fadeTo(function () {
           SAN.time.sleep(true);
           RM.addAffection(id, 4, true);
           SAN.ui.dialogue({
@@ -11836,7 +12072,9 @@ window.SAN = window.SAN || {};
               { speaker: id, text: D().fill(def.morning, s.player), context: 'gentle' },
             ],
           });
-        }, 900);
+          }, 900);
+        };
+        if (SAN.scenes) SAN.scenes.showEvent(id, 'night', sleepNow); else sleepNow();
         st.lastMorning = today() + 1;
         if (SAN.state.S.stats) SAN.state.S.stats.nightsTogether = (SAN.state.S.stats.nightsTogether || 0) + 1;
       },
@@ -11938,6 +12176,286 @@ window.SAN = window.SAN || {};
     if (RM.stageIndex(id) >= 4) return 'Spend more time together. Affection grows from doing things, not from gifts.';
     if (RM.stageIndex(id) >= 2) return 'Closer friendship first. Keep talking, keep showing up.';
     return 'Get to know them.';
+  };
+})();
+</script>
+<script>
+/* Sanctuary — cinematic scenes.
+   A scene is a composed frame: an illustrated location plate (generated once at
+   build time, cached on disk) plus the official character artwork on top. No
+   character is ever redrawn, and nothing is requested from an API while playing. */
+(function () {
+  const SM = (SAN.scenes = {});
+  const D = () => SAN.data.scenes;
+  const S = () => SAN.state.S;
+
+  SM.active = false;
+  SM.current = null;
+  let layer = null;
+  let closeCb = null;
+
+  function state() {
+    const s = S();
+    if (!s) return null;
+    if (!s.scenes) s.scenes = { seen: {}, log: [] };
+    if (!s.scenes.seen) s.scenes.seen = {};
+    if (!s.scenes.log) s.scenes.log = [];
+    return s.scenes;
+  }
+
+  SM.ext = function () {
+    const e = typeof window !== 'undefined' ? window.SAN_SCENE_EXT : '';
+    return e === 'webp' ? 'webp' : 'jpg';
+  };
+  SM.backdropSrc = function (key) {
+    return D().backdropPath(key, SM.ext());
+  };
+
+  function safeImg(src) {
+    return src ? String(src).replace(/"/g, '&quot;') : '';
+  }
+
+  function playerArt() {
+    if (SAN.render && SAN.render.mainAssetSrc) return SAN.render.mainAssetSrc('fullbody');
+    return '';
+  }
+  function npcArt(id) {
+    if (SAN.render && SAN.render.npcFullBodySrc) return SAN.render.npcFullBodySrc(id);
+    return '';
+  }
+  function catArt() {
+    const ext = SAN.render.assetExt ? SAN.render.assetExt() : 'png';
+    return 'assets/companions/mochi/poses/idle.' + ext;
+  }
+
+  /* ---------------- building a scene from game context ---------------- */
+  SM.build = function (opts) {
+    const o = opts || {};
+    const s = S();
+    const minutes = s ? s.time.minutes : 12 * 60;
+    const weather = s ? s.time.weather : 'sunny';
+    const area = o.area || (s ? s.player.area : 'village');
+    const cat = o.cat || 'daily';
+    const frame = o.frame || {};
+    const npcId = o.npc || null;
+    const tint = o.tint || D().tintFor(minutes, weather);
+    const backdrop = o.backdrop || D().backdropFor(area, minutes, weather, null);
+    const id = o.id || D().sceneId(cat.replace(/-/g, ''), npcId, o.key || cat);
+    const npc = npcId && SAN.data.npcs[npcId] ? SAN.data.npcs[npcId] : null;
+    const cast = [];
+    if (!o.noPlayer) cast.push({ who: 'player', side: 'left', src: playerArt(), label: (s && s.player.name) || 'You', mood: o.playerMood || 'neutral' });
+    if (npc) cast.push({ who: npcId, side: 'right', src: npcArt(npcId), label: npc.name, mood: o.npcMood || 'gentle' });
+    if (o.withCat) cast.push({ who: 'mochi', side: 'right', src: catArt(), label: s && s.cat ? s.cat.name : 'Mochi', mood: 'happy', small: true });
+    return {
+      id,
+      cat,
+      key: o.key || cat,
+      title: o.title || frame.title || D().CATEGORIES[cat] || 'A Moment',
+      caption: o.caption || frame.frame || '',
+      backdrop,
+      tint,
+      actors: cast,
+      illustrated: (D().ILLUSTRATED || {})[id] || null,
+      location: (D().BACKDROPS[backdrop] || {}).name || '',
+      npc: npcId,
+      day: s ? s.time.day : 1,
+      season: s ? s.time.season : 0,
+      year: s ? s.time.year : 1,
+      at: Date.now(),
+    };
+  };
+
+  /* ---------------- public triggers ---------------- */
+  SM.activity = function (npcId, actId) {
+    const frame = D().ACTIVITY_FRAMES[actId] || { cat: 'daily', title: 'Together', frame: '' };
+    const npc = SAN.data.npcs[npcId] || {};
+    let caption = frame.frame;
+    if (SAN.romance) {
+      const line = SAN.romance.npcLine(npcId, actId);
+      if (line) caption = line;
+    }
+    return SM.build({
+      cat: frame.cat, title: frame.title, caption, npc: npcId,
+      key: actId, npcMood: actId === 'kiss' || actId === 'cuddle' ? 'gentle' : 'happy',
+      backdrop: actId === 'stargaze' ? 'beach_sunset' : undefined,
+      tint: actId === 'stargaze' ? 'night' : undefined,
+      area: npc.homeArea && (actId === 'walk' || actId === 'stargaze') ? npc.homeArea : undefined,
+    });
+  };
+
+  SM.event = function (npcId, kind) {
+    const frame = D().EVENT_FRAMES[kind] || { cat: 'conversations', title: 'A Moment', frame: '' };
+    let caption = frame.frame;
+    if (SAN.romance) {
+      const lines = SAN.romance.eventLines(npcId, kind);
+      if (lines && lines.length) caption = lines[0];
+    }
+    const npc = SAN.data.npcs[npcId] || {};
+    return SM.build({
+      cat: frame.cat, title: frame.title, caption, npc: npcId, key: kind,
+      npcMood: kind === 'story' ? 'serious' : kind === 'anniversary' ? 'happy' : 'gentle',
+      noPlayer: kind === 'night',
+    });
+  };
+
+  SM.chat = function (npcId, kind) {
+    const frame = D().CHAT_FRAMES[kind] || D().CHAT_FRAMES.first;
+    return SM.build({ cat: frame.cat, title: frame.title, caption: frame.frame, npc: npcId, key: 'chat-' + kind });
+  };
+
+  SM.daily = function (key, opts) {
+    const frame = D().DAILY_SCENES[key] || { cat: 'daily', title: 'A Quiet Moment', frame: '' };
+    const o = opts || {};
+    return SM.build({
+      cat: frame.cat, title: o.title || frame.title, caption: o.caption || frame.frame,
+      key: 'daily-' + key, npc: o.npc || null, noPlayer: !!o.noPlayer, withCat: !!o.mochi, tint: o.tint,
+    });
+  };
+
+  /* ---------------- rendering ---------------- */
+  function ensureLayer() {
+    if (layer && document.body.contains(layer)) return layer;
+    layer = document.createElement('div');
+    layer.id = 'scene-layer';
+    layer.className = 'scene-layer hidden';
+    layer.innerHTML = `
+      <div class="scene-frame">
+        <img class="scene-bg" id="scene-bg" alt="" draggable="false">
+        <div class="scene-grade" id="scene-grade"></div>
+        <div class="scene-vignette"></div>
+        <div class="scene-cast" id="scene-cast"></div>
+        <div class="scene-plate">
+          <div class="scene-kicker" id="scene-kicker"></div>
+          <h3 class="scene-title" id="scene-title"></h3>
+          <p class="scene-caption" id="scene-caption"></p>
+        </div>
+        <div class="scene-controls">
+          <button class="scene-btn" id="scene-replay">Replay</button>
+          <button class="scene-btn" id="scene-journal">Save to journal</button>
+          <button class="scene-btn primary" id="scene-skip">Skip</button>
+          <button class="scene-btn primary" id="scene-next">Continue</button>
+        </div>
+      </div>`;
+    document.body.appendChild(layer);
+    layer.querySelector('#scene-skip').addEventListener('click', () => SM.close());
+    layer.querySelector('#scene-next').addEventListener('click', () => SM.close());
+    layer.querySelector('#scene-replay').addEventListener('click', () => { if (SM.current) SM.render(SM.current, true); });
+    layer.querySelector('#scene-journal').addEventListener('click', () => SM.saveToJournal());
+    return layer;
+  }
+
+  SM.render = function (spec, replay) {
+    const el = ensureLayer();
+    const bg = el.querySelector('#scene-bg');
+    const grade = el.querySelector('#scene-grade');
+    const cast = el.querySelector('#scene-cast');
+    el.querySelector('#scene-kicker').textContent = (D().CATEGORIES[spec.cat] || 'Scene') + (spec.location ? ' · ' + spec.location : '');
+    el.querySelector('#scene-title').textContent = spec.title;
+    el.querySelector('#scene-caption').textContent = spec.caption || '';
+
+    const full = spec.illustrated;
+    bg.src = full || SM.backdropSrc(spec.backdrop);
+    bg.onerror = function () { bg.classList.add('scene-bg-missing'); };
+    grade.className = 'scene-grade ' + (D().TIME_TINT[spec.tint] || 'scene-tint-day') + (full ? ' scene-grade-soft' : '');
+
+    cast.innerHTML = '';
+    if (!full) {
+      spec.actors.forEach((a) => {
+        if (!a.src) return;
+        const img = document.createElement('img');
+        img.className = 'scene-actor ' + (a.side === 'left' ? 'left' : 'right') + (a.small ? ' small' : '');
+        img.src = a.src;
+        img.alt = a.label || '';
+        img.draggable = false;
+        img.onerror = function () { img.remove(); };
+        cast.appendChild(img);
+      });
+    }
+    layer.classList.remove('hidden');
+    // force a reflow so the fade always starts, even when requestAnimationFrame
+    // is throttled in a background window
+    layer.classList.remove('open');
+    void layer.offsetWidth;
+    layer.classList.add('open');
+    SM.active = true;
+    if (!replay) {
+      const st = state();
+      if (st) {
+        st.seen[spec.id] = st.seen[spec.id] || (S().time.season * 28 + S().time.day);
+        st.log.push({ id: spec.id, cat: spec.cat, title: spec.title, caption: spec.caption, backdrop: spec.backdrop, npc: spec.npc, day: spec.day, season: spec.season, year: spec.year });
+        if (st.log.length > 120) st.log.shift();
+      }
+    }
+    SAN.audio && SAN.audio.sfx('open');
+  };
+
+  SM.show = function (spec, cb) {
+    if (!spec) { if (cb) cb(); return false; }
+    SM.current = spec;
+    closeCb = cb || null;
+    SM.render(spec, false);
+    return true;
+  };
+
+  SM.showActivity = function (npcId, actId, cb) { return SM.show(SM.activity(npcId, actId), cb); };
+  SM.showEvent = function (npcId, kind, cb) { return SM.show(SM.event(npcId, kind), cb); };
+  SM.showChat = function (npcId, kind, cb) { return SM.show(SM.chat(npcId, kind), cb); };
+  SM.showDaily = function (key, opts, cb) { return SM.show(SM.daily(key, opts), cb); };
+
+  SM.close = function () {
+    if (!layer) return;
+    layer.classList.remove('open');
+    SM.active = false;
+    const cb = closeCb;
+    closeCb = null;
+    setTimeout(() => {
+      if (!SM.active && layer) layer.classList.add('hidden');
+      if (cb) { try { cb(); } catch (e) { console.error(e); } }
+    }, 260);
+  };
+
+  /* ---------------- memory journal ---------------- */
+  SM.saveToJournal = function () {
+    const spec = SM.current;
+    if (!spec) return;
+    const s = S();
+    if (s && SAN.memory && SAN.memory.add) {
+      SAN.memory.add({ kind: 'scene', text: spec.title + (spec.caption ? ' — ' + spec.caption : ''), scene: spec.id });
+    } else if (s) {
+      s.memories = s.memories || [];
+      s.memories.push({ kind: 'scene', text: spec.title, scene: spec.id, day: s.time.day });
+    }
+    SAN.ui && SAN.ui.toast('Saved to your memory journal.', 'save');
+  };
+
+  SM.history = function () {
+    const st = state();
+    return st ? st.log.slice().reverse() : [];
+  };
+
+  /* the scene gallery: one entry per logged scene, newest first */
+  SM.gallery = function () {
+    const seen = {};
+    return SM.history().filter((e) => {
+      if (seen[e.id]) return false;
+      seen[e.id] = true;
+      return true;
+    });
+  };
+
+  /* rebuild a logged scene for replay, using current art and the saved context */
+  SM.replay = function (id) {
+    const entry = SM.history().find((e) => e.id === id);
+    if (!entry) return false;
+    const spec = SM.build({
+      id: entry.id,
+      cat: entry.cat,
+      title: entry.title,
+      caption: entry.caption,
+      backdrop: entry.backdrop,
+      npc: entry.npc,
+    });
+    return SM.show(spec);
   };
 })();
 </script>
@@ -13547,6 +14065,7 @@ window.SAN = window.SAN || {};
     }
     const avail = SAN.quests.availableFor(def.id);
     if (avail) { A.offerQuest(avail); return; }
+    if (firstTime && SAN.scenes) { SAN.scenes.showChat(def.id, 'first', function () { A.chat(npc, { firstTime }); }); return; }
     A.chat(npc, { firstTime });
   };
 
@@ -14143,7 +14662,7 @@ window.SAN = window.SAN || {};
   };
 
   UI.isPaused = function () {
-    return UI.panelStack.length > 0 || !!UI.dialogueState || UI.titleActive || UI.transitioning || !!(SAN.photos && SAN.photos.mode);
+    return UI.panelStack.length > 0 || !!UI.dialogueState || UI.titleActive || UI.transitioning || !!SAN.scenes && SAN.scenes.active || !!(SAN.photos && SAN.photos.mode);
   };
 
   /* ---------------- toasts ---------------- */
@@ -15200,6 +15719,11 @@ window.SAN = window.SAN || {};
       </div>
       <div id="vault-body"></div>`, { wide: true });
     const body = el.querySelector('#vault-body');
+    const sceneBtn = document.createElement('button');
+    sceneBtn.className = 'btn small vault-scene-btn';
+    sceneBtn.textContent = 'Cinematic scenes';
+    sceneBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('scenes'); });
+    el.querySelector('.panel-head').appendChild(sceneBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -16193,6 +16717,32 @@ window.SAN = window.SAN || {};
   /* =========================================================
      PAUSE
      ========================================================= */
+  P.scenes = function () {
+    const list = SAN.scenes ? SAN.scenes.gallery() : [];
+    const el = UI.panel('scenes', 'Cinematic Moments', `
+      <p class="panel-intro">Frames the game has already played for you. Replay any of them; nothing is generated while you play.</p>
+      <div class="scene-gallery"></div>`, { wide: true });
+    const grid = el.querySelector('.scene-gallery');
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-note">No cinematic moments yet. Talk to someone, cook something, or sit by the fire.</div>';
+      return;
+    }
+    list.forEach((entry) => {
+      const card = document.createElement('button');
+      card.className = 'scene-card';
+      card.innerHTML = `<div class="scene-card-art" style="background-image:url('${SAN.scenes.backdropSrc(entry.backdrop)}')"></div>
+        <div class="scene-card-body">
+          <div class="scene-card-cat">${U.esc(SAN.data.scenes.CATEGORIES[entry.cat] || entry.cat)}</div>
+          <div class="scene-card-title">${U.esc(entry.title)}</div>
+          <div class="scene-card-meta">Day ${entry.day} · Season ${entry.season + 1}</div>
+        </div>`;
+      card.addEventListener('click', () => {
+        UI.closePanel('scenes');
+        SAN.scenes.replay(entry.id);
+      });
+      grid.appendChild(card);
+    });
+  };
   P.pause = function () {
     const el = UI.panel('pause', 'Sanctuary', `
       <div class="pause-menu">

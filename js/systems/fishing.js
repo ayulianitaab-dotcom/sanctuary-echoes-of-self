@@ -186,6 +186,7 @@
     SAN.progression.addXp('fishing', Math.round(8 + fish.diff * 22));
     SAN.audio.sfx('catch');
     F.result = fish;
+    if (SAN.scenes) SAN.scenes.showDaily('fish', { caption: 'A ' + fish.name + ', still silver in the light.' });
     const rarity = fish.rarity || 'common';
     SAN.ui.toast('Caught a ' + fish.name + ' (' + rarity + ')!', 'fish', SAN.render.itemIcon(fish.id));
     if (rarity === 'rare' || rarity === 'legendary') {

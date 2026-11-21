@@ -192,6 +192,7 @@
       },
       friendship: {},
       romance: {},
+      scenes: { seen: {}, log: [] },
       quests: { active: {}, completed: {}, board: [], boardDay: 0, offered: {} },
       journal: [],
       memories: [],
@@ -261,6 +262,7 @@
     merged.discovered = Object.assign({ home: true }, snap.discovered || {});
     merged.friendship = Object.assign({}, base.friendship, snap.friendship || {});
     merged.romance = Object.assign({}, base.romance, snap.romance || {});
+    merged.scenes = Object.assign({ seen: {}, log: [] }, snap.scenes || {});
     merged.journal = snap.journal || [];
     merged.memories = snap.memories || [];
     merged.achievements = snap.achievements || {};

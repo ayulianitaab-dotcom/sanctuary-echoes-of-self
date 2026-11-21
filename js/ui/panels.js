@@ -399,6 +399,11 @@
       </div>
       <div id="vault-body"></div>`, { wide: true });
     const body = el.querySelector('#vault-body');
+    const sceneBtn = document.createElement('button');
+    sceneBtn.className = 'btn small vault-scene-btn';
+    sceneBtn.textContent = 'Cinematic scenes';
+    sceneBtn.addEventListener('click', () => { UI.closePanel('memories'); UI.openPanel('scenes'); });
+    el.querySelector('.panel-head').appendChild(sceneBtn);
 
     function gardenView() {
       const list = S().memories;
@@ -1392,6 +1397,32 @@
   /* =========================================================
      PAUSE
      ========================================================= */
+  P.scenes = function () {
+    const list = SAN.scenes ? SAN.scenes.gallery() : [];
+    const el = UI.panel('scenes', 'Cinematic Moments', `
+      <p class="panel-intro">Frames the game has already played for you. Replay any of them; nothing is generated while you play.</p>
+      <div class="scene-gallery"></div>`, { wide: true });
+    const grid = el.querySelector('.scene-gallery');
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-note">No cinematic moments yet. Talk to someone, cook something, or sit by the fire.</div>';
+      return;
+    }
+    list.forEach((entry) => {
+      const card = document.createElement('button');
+      card.className = 'scene-card';
+      card.innerHTML = `<div class="scene-card-art" style="background-image:url('${SAN.scenes.backdropSrc(entry.backdrop)}')"></div>
+        <div class="scene-card-body">
+          <div class="scene-card-cat">${U.esc(SAN.data.scenes.CATEGORIES[entry.cat] || entry.cat)}</div>
+          <div class="scene-card-title">${U.esc(entry.title)}</div>
+          <div class="scene-card-meta">Day ${entry.day} · Season ${entry.season + 1}</div>
+        </div>`;
+      card.addEventListener('click', () => {
+        UI.closePanel('scenes');
+        SAN.scenes.replay(entry.id);
+      });
+      grid.appendChild(card);
+    });
+  };
   P.pause = function () {
     const el = UI.panel('pause', 'Sanctuary', `
       <div class="pause-menu">

@@ -18,6 +18,7 @@
     SAN.progression.addXp('crafting', 8);
     SAN.audio.sfx('craft');
     SAN.ui.toast('Cooked ' + r.name + '.', 'item', SAN.render.itemIcon(r.out));
+    if (SAN.scenes) SAN.scenes.showDaily('cook', { caption: r.name + ', warm from the pan.' });
     return true;
   };
 
@@ -40,6 +41,7 @@
     SAN.progression.addXp('crafting', 10);
     SAN.audio.sfx('craft');
     SAN.ui.toast('Crafted ' + r.name + '.', 'item', SAN.render.itemIcon(r.out));
+    if (SAN.scenes) SAN.scenes.showDaily('craft', { caption: r.name + ', a little crooked and entirely yours.' });
     return true;
   };
 

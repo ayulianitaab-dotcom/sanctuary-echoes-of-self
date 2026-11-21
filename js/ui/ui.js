@@ -73,7 +73,7 @@
   };
 
   UI.isPaused = function () {
-    return UI.panelStack.length > 0 || !!UI.dialogueState || UI.titleActive || UI.transitioning || !!(SAN.photos && SAN.photos.mode);
+    return UI.panelStack.length > 0 || !!UI.dialogueState || UI.titleActive || UI.transitioning || !!SAN.scenes && SAN.scenes.active || !!(SAN.photos && SAN.photos.mode);
   };
 
   /* ---------------- toasts ---------------- */

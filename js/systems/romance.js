@@ -226,7 +226,8 @@
       const line = RM.npcLine(id, actId);
       const pages = [{ speaker: 'narrator', text: RM.activityNarration(id, actId, extra) }, { speaker: id, text: line, context: actId === 'kiss' || actId === 'cuddle' ? 'gentle' : 'happy' }];
       if (actId !== 'walk') RM.remember(id, line, actId);
-      SAN.ui.dialogue({ pages, onClose: function () { SAN.progression.checkAchievements(); } });
+      const play = function () { SAN.ui.dialogue({ pages, onClose: function () { SAN.progression.checkAchievements(); } }); };
+      if (SAN.scenes) SAN.scenes.showActivity(id, actId, play); else play();
       SAN.audio.sfx(actId === 'kiss' ? 'sparkle' : 'page');
       RM.heartFx(actId);
       if (RM.stageIndex(id) >= 5) RM.checkPartnerAvailable(id);
@@ -246,6 +247,14 @@
     }
     run();
     return true;
+  };
+
+  // every romantic beat becomes a cinematic frame; if scenes are unavailable the
+  // dialogue still runs exactly as before
+  RM.withScene = function (id, kind, fn) {
+    if (SAN.scenes && SAN.scenes.showEvent) { SAN.scenes.showEvent(id, kind, fn); return true; }
+    fn();
+    return false;
   };
 
   RM.activityNarration = function (id, actId, itemName) {
@@ -328,12 +337,14 @@
           st.events.date = st.events.date || false;
           RM.addAffection(id, 6, true);
           RM.remember(id, 'You told ' + npc.name + ' the truth, and they said yes.', 'confession');
-          SAN.ui.dialogue({
-            pages: def.confession.yes.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'surprised' : 'happy' })),
-            onClose: function () {
-              RM.playEvent(id, 'date');
-              SAN.ui.toast('You are dating ' + npc.name + '.', 'friend');
-            },
+          RM.withScene(id, 'confession', function () {
+            SAN.ui.dialogue({
+              pages: def.confession.yes.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'surprised' : 'happy' })),
+              onClose: function () {
+                RM.playEvent(id, 'date');
+                SAN.ui.toast('You are dating ' + npc.name + '.', 'friend');
+              },
+            });
           });
           SAN.audio.sfx('sparkle');
         } },
@@ -361,7 +372,9 @@
           st.commitSeason = S().time.season;
           RM.addAffection(id, 5, true);
           RM.remember(id, 'You and ' + npc.name + ' chose each other, out loud.', 'commitment');
-          SAN.ui.dialogue({ pages: def.events.commit.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'serious' : 'gentle' })) });
+          RM.withScene(id, 'commit', function () {
+            SAN.ui.dialogue({ pages: def.events.commit.map((t, i) => ({ speaker: id, text: D().fill(t, S().player), context: i === 0 ? 'serious' : 'gentle' })) });
+          });
           SAN.audio.sfx('sparkle');
           SAN.ui.toast('Committed to ' + npc.name + '.', 'friend');
         } },
@@ -384,7 +397,9 @@
           st.partner = true;
           st.partnerDay = S().time.day;
           RM.remember(id, npc.name + ' said yes to a shared life.', 'partner');
-          SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Yes. Not as an ending. As the ordinary thing we keep choosing.', context: 'happy' }] });
+          RM.withScene(id, 'partner', function () {
+            SAN.ui.dialogue({ pages: [{ speaker: id, text: 'Yes. Not as an ending. As the ordinary thing we keep choosing.', context: 'happy' }] });
+          });
           SAN.audio.sfx('sparkle');
           SAN.ui.toast(npc.name + ' is your life partner.', 'friend');
         } },
@@ -410,9 +425,11 @@
     if (!lines.length) { st.events[kind] = true; return false; }
     st.events[kind] = true;
     RM.remember(id, lines[0], 'event_' + kind);
-    SAN.ui.dialogue({
-      pages: lines.map((t, i) => ({ speaker: id, text: t, context: i === 0 ? 'serious' : 'gentle' })),
-      onClose: function () { if (kind === 'story') RM.addAffection(id, 4, true); },
+    RM.withScene(id, kind, function () {
+      SAN.ui.dialogue({
+        pages: lines.map((t, i) => ({ speaker: id, text: t, context: i === 0 ? 'serious' : 'gentle' })),
+        onClose: function () { if (kind === 'story') RM.addAffection(id, 4, true); },
+      });
     });
     return true;
   };
@@ -433,10 +450,12 @@
     const npc = SAN.data.npcs[id];
     RM.remember(id, 'An anniversary with ' + npc.name + '.', 'anniversary');
     RM.addAffection(id, 4, true);
-    SAN.ui.dialogue({
-      pages: [
-        { speaker: 'narrator', text: 'It is the day you began. Neither of you said so out loud this morning, and both of you remembered.' },
-      ].concat(RM.eventLines(id, 'anniversary').map((t) => ({ speaker: id, text: t, context: 'happy' }))),
+    RM.withScene(id, 'anniversary', function () {
+      SAN.ui.dialogue({
+        pages: [
+          { speaker: 'narrator', text: 'It is the day you began. Neither of you said so out loud this morning, and both of you remembered.' },
+        ].concat(RM.eventLines(id, 'anniversary').map((t) => ({ speaker: id, text: t, context: 'happy' }))),
+      });
     });
     SAN.audio.sfx('sparkle');
   };
@@ -495,7 +514,8 @@
         RM.remember(id, 'You slept beside ' + npc.name + ', and woke up to the same quiet.', 'night');
         RM.heartFx('cuddle');
         st.lastGoodnight = today();
-        SAN.ui.fadeTo(function () {
+        const sleepNow = function () {
+          SAN.ui.fadeTo(function () {
           SAN.time.sleep(true);
           RM.addAffection(id, 4, true);
           SAN.ui.dialogue({
@@ -504,7 +524,9 @@
               { speaker: id, text: D().fill(def.morning, s.player), context: 'gentle' },
             ],
           });
-        }, 900);
+          }, 900);
+        };
+        if (SAN.scenes) SAN.scenes.showEvent(id, 'night', sleepNow); else sleepNow();
         st.lastMorning = today() + 1;
         if (SAN.state.S.stats) SAN.state.S.stats.nightsTogether = (SAN.state.S.stats.nightsTogether || 0) + 1;
       },
