@@ -442,11 +442,6 @@
     N[id].expressions = Object.keys(N[id].art.expressions);
   });
 
-  /* Aria's full-body file in the repository is a duplicate of Rowan's
-     artwork. Until a verified full body exists, she renders from her own
-     official neutral portrait instead of another character's body. */
-  if (N.aria) { N.aria.fullBodyMissing = true; N.aria.art.fullBody = ''; N.aria.fullBody = ''; }
-
   D.FRIEND_TIERS = [
     { min: 0, name: 'Stranger' },
     { min: 21, name: 'Acquaintance' },

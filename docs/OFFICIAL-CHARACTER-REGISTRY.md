@@ -52,17 +52,16 @@ eight expressions. Verified by loading every image in the browser.
 | mira | 10 | yes | correct |
 | celeste | 10 | yes | blonde, green eyes, correct |
 | theo | 10 | yes | correct |
-| aria | 9 | **missing** | `aria/fullbody.png` was byte-identical to Rowan's artwork |
+| aria | 10 | yes | official full body supplied (navy hair, glasses, book, lavender dress) |
 | finn | 10 | yes | correct |
 
-### Known gap
+### Aria full body (resolved)
 
-Aria has **no verified full-body artwork**. The file that used to sit at
-`assets/portraits/aria/fullbody.png` was an exact duplicate of
+The old `assets/portraits/aria/fullbody.png` was an exact duplicate of
 `rowan/fullbody.png` (checked by hash and visually), so it was removed rather
-than shown. Aria now renders from her own official `neutral.png` portrait
-wherever a full body would be drawn. A correct Aria full body needs to be
-supplied before that view can look complete.
+than shown — Aria briefly rendered from her portrait. A correct full body has
+since been supplied and validated (97 artworks, no near-duplicates), so the
+bust fallback and `N.aria.fullBodyMissing` are gone.
 
 Two characters (`lucien`, `elowen`) ship nine files instead of ten; their
 missing `surprised` expression resolves to `neutral`, so no broken images.

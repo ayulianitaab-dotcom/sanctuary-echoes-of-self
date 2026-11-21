@@ -15,7 +15,7 @@
   const V = (SAN.visual = {});
 
   // bump whenever official artwork files change
-  V.VERSION = 'cvr-2026-11-21-1';
+  V.VERSION = 'cvr-2026-11-21-2';
   V.PORTRAIT_ROOT = 'assets/portraits/';
   V.MOODS = ['neutral', 'happy', 'sad', 'smile', 'serious', 'thinking', 'concerned', 'gentle', 'surprised'];
 

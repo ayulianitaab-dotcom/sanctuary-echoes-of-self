@@ -20,7 +20,9 @@ SCENE_PROVIDER=openai OPENAI_API_KEY=... php tools/scene-generate.php --scene ..
 
 ## Pending
 
-### 1. Aria — full body
+### 1. Aria — full body — DONE (2026-11-21)
+- **Status:** supplied and validated; the bust fallback was removed and the
+  visual registry version bumped. Kept here as history only.
 - **Target:** `assets/portraits/aria/fullbody.png`
 - **Why:** the file in the repository was byte-identical to `rowan/fullbody.png`
   (a male body), so it was removed rather than displayed.

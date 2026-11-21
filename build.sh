@@ -73,16 +73,11 @@ for id in nyssa lucien elowen rowan mira celeste theo aria finn; do
     echo "ERROR: missing official artwork for $id" >&2
     exit 1
   fi
-  # aria has no verified full body yet; her face portrait is used instead
-  if [ "$id" != "aria" ] && [ ! -f "assets/portraits/$id/fullbody.png" ]; then
+  if [ ! -f "assets/portraits/$id/fullbody.png" ]; then
     echo "ERROR: missing official full body for $id" >&2
     exit 1
   fi
 done
-if [ -f assets/portraits/aria/fullbody.png ]; then
-  echo "ERROR: assets/portraits/aria/fullbody.png is a duplicate of Rowan and must stay removed" >&2
-  exit 1
-fi
 DUPES=$(find assets/portraits -name fullbody.png -exec md5sum {} + | sort | awk "{print \$1}" | uniq -d | wc -l)
 if [ "$DUPES" -gt 0 ]; then
   echo "ERROR: two NPCs share the same full-body artwork" >&2
